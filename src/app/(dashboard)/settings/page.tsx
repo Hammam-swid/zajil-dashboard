@@ -97,6 +97,7 @@ const DashboardSettings = () => {
                       size='sm'
                       variant='primary-bg'
                       onClick={() => setOpenModalAvatar(true)}
+                      type='button'
                     >
                       Add Image
                     </Button>

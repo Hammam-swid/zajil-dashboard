@@ -6,7 +6,7 @@ interface Button {
   className?: string
   disabled?: boolean
   href?: string
-  type: "button" | "submit" | "reset"
+  type?: "button" | "submit" | "reset"
   size?: "sm" | "md" | "lg"
   variant:
     | "primary-bg"

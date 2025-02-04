@@ -56,8 +56,11 @@ const Input: React.FC<Input> = ({
       <div className='relative w-full'>
         {variant?.includes("phone") && (
           <div className='absolute left-3 top-1/2 z-10 flex w-fit -translate-y-1/2 items-center gap-1.5'>
-            <button className='flex items-center gap-1 rounded-md bg-netral-20 px-2 py-1 text-netral-80'>
-              <span className='text-body-base font-bold'>+62</span>
+            <button
+              type='button'
+              className='flex items-center gap-1 rounded-md bg-netral-20 px-2 py-1 text-netral-80'
+            >
+              <span className='text-body-base font-bold'>+218</span>
 
               <ArrowDown2Icon className='h-5 w-5 stroke-2' />
             </button>

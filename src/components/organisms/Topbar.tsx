@@ -3,27 +3,25 @@
 import React from "react"
 import Image from "next/image"
 import { Menu, Transition } from "@headlessui/react"
-import { Fragment, useEffect, useRef, useState } from "react"
+import { Fragment } from "react"
 
 import {
   BagIcon,
   BellSimpleIcon,
   CaretDownIcon,
   GearSixIcon,
-  MagnifyingGlassIcon,
   PackageIcon,
   SignOutIcon,
-  TshirtIcon,
-  XIcon
+  TshirtIcon
 } from "@/assets/icons"
 import Link from "next/link"
 
 const Topbar: React.FC = () => {
   return (
     <header
-      className={`relative flex w-full items-center justify-between border-b border-netral-20 bg-white px-8 py-4 shadow-sm`}
+      className={`relative flex w-full items-center justify-end border-b border-netral-20 bg-white px-8 py-4 shadow-sm`}
     >
-      <div className='relative w-[24rem]'>
+      {/* <div className='relative w-[24rem]'>
         <MagnifyingGlassIcon className='absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 stroke-netral-80 stroke-1.5 text-netral-80' />
 
         <input
@@ -31,7 +29,7 @@ const Topbar: React.FC = () => {
           className='w-full rounded-lg border border-netral-20 bg-netral-20/75 px-3.5 py-2.5 pl-12 text-body-base font-normal text-netral-80 outline-none ring-2 ring-transparent transition-all duration-300 ease-out placeholder:text-netral-50 focus:border-primary-main focus:ring-primary-surface'
           placeholder='ما الذي تبحث عنه؟'
         />
-      </div>
+      </div> */}
 
       <div className='flex items-center gap-5'>
         <Menu as='div' className='relative inline-block text-left'>
@@ -175,7 +173,7 @@ const Topbar: React.FC = () => {
                 />
               </div>
 
-              <div className='space-y-1 text-left'>
+              <div className='space-y-1 text-right'>
                 <h5 className='text-body-sm font-semibold text-netral-100'>
                   Hammam Swaid
                 </h5>

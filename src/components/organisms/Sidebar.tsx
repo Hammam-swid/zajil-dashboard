@@ -113,8 +113,6 @@ const Sidebar: React.FC = () => {
         </SidebarExpand>
 
         <SidebarMenu
-          active={showUsersMenu}
-          onClick={() => setShowUsersMenu(!showUsersMenu)}
           icon={<UsersIcon />}
           name='العملاء'
           variant='default'
@@ -122,14 +120,13 @@ const Sidebar: React.FC = () => {
         />
 
         <SidebarMenu
-          active={showTransactionsMenu}
-          onClick={() => setShowTransactionsMenu(!showTransactionsMenu)}
           icon={<AppWindowIcon />}
           name='السائقين'
-          variant='sub-menu'
+          variant='default'
+          href='/drivers'
         />
 
-        <SidebarExpand show={showTransactionsMenu}>
+        {/* <SidebarExpand show={showTransactionsMenu}>
           <SidebarMenu
             name='Manage Transactions'
             variant='expand'
@@ -140,7 +137,7 @@ const Sidebar: React.FC = () => {
             variant='expand'
             href='/transactions/manage-return'
           />
-        </SidebarExpand>
+        </SidebarExpand> */}
 
         <SidebarMenu
           icon={<TagIcon />}

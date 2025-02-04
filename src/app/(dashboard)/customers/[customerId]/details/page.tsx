@@ -4,6 +4,7 @@ import { Badge, Button, Title } from "@/components/atomics"
 
 import { FunnelIcon, PencilSimpleIcon, SortAscendingIcon } from "@/assets/icons"
 import Image from "next/image"
+import Link from "next/link"
 
 const Page = () => {
   return (
@@ -14,14 +15,17 @@ const Page = () => {
             تفاصيل الزبون
           </Title>
 
-          <Button
-            size='md'
-            variant='primary-bg'
-            href='/customers/buyers/update'
-          >
-            <PencilSimpleIcon className='h-4 w-4 stroke-[4px]' />
-            تعديل
-          </Button>
+          <Link href={"edit"}>
+            <Button
+              size='md'
+              variant='primary-bg'
+              href='/customers/buyers/update'
+              type='button'
+            >
+              <PencilSimpleIcon className='h-4 w-4 stroke-[4px]' />
+              تعديل
+            </Button>
+          </Link>
         </nav>
 
         <section className='flex flex-row items-center gap-5'>

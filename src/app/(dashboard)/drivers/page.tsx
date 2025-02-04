@@ -1,6 +1,5 @@
 "use client"
 import React from "react"
-
 import { Modal, PageAction } from "@/components/moleculs"
 import {
   Alerts,
@@ -9,62 +8,67 @@ import {
   Pagination,
   Title
 } from "@/components/atomics"
-
-import { FunnelIcon, SortAscendingIcon } from "@/assets/icons"
+import { FunnelIcon, PlusIcon, SortAscendingIcon } from "@/assets/icons"
 import Link from "next/link"
 
-const DBCustomersUsers = () => {
-  //----------------------------------------------------------------------------------//
+const DBDriversUsers = () => {
   const [usersData, setUsersData] = React.useState([
     {
+      id: 1,
       name: "Samanta Legend",
-      email: "samanta@mail.com",
-      address: "2972 Westheimer Rd. Santa Ana, Illinois 85486",
+      email: "0910091917",
+      region: "حي الأندلس",
       createAt: "Orange",
       date: "May 6, 2012",
       checked: false
     },
     {
+      id: 2,
       name: "Annette Black",
-      email: "annette1@mail.com",
-      address: "3517 W. Gray St. Utica, Pennsylvania 57867",
+      email: "0910091917",
+      region: "عين زارة",
       createAt: "Toledo",
       date: "April 28, 2016",
       checked: false
     },
     {
+      id: 3,
       name: "Dianne Russell",
-      email: "rdianne@mail.com",
-      address: "8502 Preston Rd. Inglewood, Maine 98380",
+      email: "0910091917",
+      region: "سوق الجمعة",
       createAt: "Naperville",
       date: "November 16, 2014",
       checked: false
     },
     {
+      id: 4,
       name: "Devon Lane",
-      email: "delane@mail.com",
-      address: "2464 Royal Ln. Mesa, New Jersey 45463",
+      email: "0910091917",
+      region: "حي الأندلس",
       createAt: "Fairfield",
       date: "March 23, 2013",
       checked: false
     },
     {
+      id: 5,
       name: "Marvin McKinney",
-      email: "marvin5@mail.com",
-      address: "3891 Ranchview Dr. Richardson, California 62639",
+      email: "0910091917",
+      region: "أبو سليم",
       createAt: "Austin",
       date: "November 16, 2014",
       checked: false
     },
     {
+      id: 6,
       name: "Jerome Bell",
-      email: "belljer@mail.com",
-      address: "8502 Preston Rd. Inglewood, Maine 98380",
+      email: "0910091917",
+      region: "السراج",
       createAt: "Orange",
       date: "March 23, 2013",
       checked: false
     }
   ])
+  //----------------------------------------------------------------------------------//
   const checkItem = (index: number, checked: boolean) => {
     const newUsersData = [...usersData]
     newUsersData[index].checked = checked
@@ -88,23 +92,28 @@ const DBCustomersUsers = () => {
   //----------------------------------------------------------------------------------//
 
   const [page, setPage] = React.useState(1)
+
   return (
     <div className='relative space-y-6 p-6'>
-      <h1 className='text-heading-sm font-semibold'>العملاء</h1>
-
       <section className='relative rounded-lg-10 bg-white p-6'>
         <nav className='mb-8 flex items-center justify-between'>
           <Title size='lg' variant='default'>
-            المستخدمين
+            السائقين
           </Title>
 
           <div className='flex flex-row gap-3'>
-            <Button size='md' variant='default-bg'>
+            <Link href='/drivers/add'>
+              <Button type='button' size='md' variant='primary-bg'>
+                <span>أضف سائق</span>
+                <PlusIcon className='h-4 w-4 text-neutral-50' />
+              </Button>
+            </Link>
+            <Button type='button' size='md' variant='default-bg'>
               ترتيب
               <SortAscendingIcon className='h-4 w-4 stroke-netral-100 stroke-[4px]' />
             </Button>
 
-            <Button size='md' variant='default-bg'>
+            <Button type='button' size='md' variant='default-bg'>
               تصفية
               <FunnelIcon className='h-4 w-4 stroke-netral-100 stroke-[4px]' />
             </Button>
@@ -124,15 +133,11 @@ const DBCustomersUsers = () => {
                 </th>
 
                 <th className='whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5'>
-                  <span className='text-body-sm font-semibold'>
-                    عنوان البريد الالكتروني
-                  </span>
+                  <span className='text-body-sm font-semibold'>رقم الهاتف</span>
                 </th>
 
                 <th className='w-56 whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5'>
-                  <span className='text-body-sm font-semibold'>
-                    العنوان الكامل
-                  </span>
+                  <span className='text-body-sm font-semibold'>المنطقة</span>
                 </th>
 
                 <th className='whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5'>
@@ -173,7 +178,7 @@ const DBCustomersUsers = () => {
 
                   <td className='w-56 whitespace-pre-wrap px-3 py-5 text-center first:pl-5 last:pr-5'>
                     <span className='whitespace-pre-wrap break-words text-body-base font-medium text-netral-80'>
-                      {item.address}
+                      {item.region}
                     </span>
                   </td>
 
@@ -190,8 +195,8 @@ const DBCustomersUsers = () => {
                   </td>
 
                   <td className='whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5'>
-                    <Link href={`/customers/${item.email}/details`}>
-                      <Button size='md' variant='primary-nude' type='button'>
+                    <Link href={`/drivers/${item.id}/details`}>
+                      <Button size='md' variant='primary-nude'>
                         التفاصيل
                       </Button>
                     </Link>
@@ -262,4 +267,4 @@ const DBCustomersUsers = () => {
   )
 }
 
-export default DBCustomersUsers
+export default DBDriversUsers
