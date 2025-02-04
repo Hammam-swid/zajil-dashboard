@@ -11,6 +11,8 @@ interface Input {
   logoSrc?: string
   placeholder: string
   type?: "text" | "password"
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
   value?: string
   variant?:
     | "default"
@@ -33,6 +35,8 @@ const Input: React.FC<Input> = ({
   placeholder,
   type = "text",
   value,
+  onChange,
+  onBlur,
   variant = "default"
 }) => {
   return (
@@ -94,6 +98,8 @@ const Input: React.FC<Input> = ({
           id={id}
           name={id}
           type={type}
+          onChange={onChange}
+          onBlur={onBlur}
           className={`relative z-0 w-full rounded-lg border p-3 text-body-base font-normal text-netral-80 shadow-1 outline-none ring-[2.5px] ring-transparent transition-all duration-300 ease-out placeholder:text-netral-50 2xl:p-3.5 ${
             (variant === "default" &&
               "border-netral-30 focus:border-primary-border focus:ring-primary-surface disabled:bg-netral-20") ||

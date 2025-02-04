@@ -6,6 +6,7 @@ interface Button {
   className?: string
   disabled?: boolean
   href?: string
+  type: "button" | "submit" | "reset"
   size?: "sm" | "md" | "lg"
   variant:
     | "primary-bg"
@@ -34,7 +35,8 @@ const Button: React.FC<Button> = ({
   href,
   onClick,
   size = "lg",
-  variant = "primary-bg"
+  variant = "primary-bg",
+  type = "submit"
 }) => {
   const router = useRouter()
 
@@ -44,8 +46,8 @@ const Button: React.FC<Button> = ({
 
   return (
     <button
-      type='button'
-      onClick={(href && gotoLink) || onClick}
+      type={type}
+      onClick={onClick}
       className={`Button ${
         (variant === "primary-bg" &&
           "Primary-Bg border-transparent bg-primary-main text-white hover:bg-primary-hover focus:ring-primary-border") ||

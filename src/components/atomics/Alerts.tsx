@@ -24,7 +24,7 @@ const Alerts: React.FC<Alerts> = ({
   return (
     <Toast.Provider swipeDirection='right'>
       <Toast.Root
-        className='Alerts fixed right-6 top-24 z-[999] w-96 overflow-hidden rounded-lg-10 bg-white p-7 shadow-alerts data-[swipe=cancel]:translate-x-0 data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[state=closed]:animate-hide data-[state=open]:animate-slideIn data-[swipe=end]:animate-swipeOut data-[swipe=cancel]:transition-[transform_200ms_ease-out]'
+        className='Alerts fixed end-6 top-24 z-[999] w-96 overflow-hidden rounded-lg-10 bg-white p-7 shadow-alerts data-[swipe=cancel]:translate-x-0 data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[state=closed]:animate-hide data-[state=open]:animate-slideIn data-[swipe=end]:animate-swipeOut data-[swipe=cancel]:transition-[transform_200ms_ease-out]'
         open={open}
         onOpenChange={setOpen}
       >

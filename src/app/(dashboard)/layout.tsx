@@ -1,5 +1,6 @@
 import "@/app/globals.css"
 import Head from "next/head"
+import { cairo } from "@/app/ui/fonts"
 
 import { Sidebar, Topbar } from "@/components/organisms"
 
@@ -17,20 +18,20 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang='en'>
+    <html lang='ar' dir='rtl'>
       <Head>
         <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
       </Head>
-      <body className={`UI-Ecommerce`}>
-        <div className='fixed left-0 top-0 z-10 w-64 2xl:w-72'>
+      <body className={`UI-Ecommerce ${cairo.className} antialiased`}>
+        <div className='fixed start-0 top-0 z-10 w-64 2xl:w-72'>
           <Sidebar />
         </div>
 
-        <div className='fixed inset-0 z-10 ml-64 h-20 w-[calc(100vw_-_256px)] 2xl:ml-72 2xl:w-[calc(100vw_-_288px)]'>
+        <div className='fixed inset-0 z-10 ms-64 h-20 w-[calc(100vw_-_256px)] 2xl:ms-72 2xl:w-[calc(100vw_-_288px)]'>
           <Topbar />
         </div>
 
-        <main className='relative z-0 min-h-screen bg-netral-20/50 pl-64 pt-20 2xl:pl-72'>
+        <main className='relative z-0 min-h-screen bg-netral-20/50 ps-64 pt-20 2xl:ps-72'>
           {children}
         </main>
       </body>

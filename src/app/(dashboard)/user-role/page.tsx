@@ -197,7 +197,7 @@ const DBUserRole = () => {
           <PageAction
             actionLabel='Last saved'
             actionDesc='Nov 9, 2022-17.09'
-            btnPrimaryLabel='Delete'
+            btnPrimaryLabel='حذف'
             btnPrimaryVariant='error-bg'
             btnPrimaryFun={() => setOpenModalDelete(true)}
           />
@@ -206,7 +206,7 @@ const DBUserRole = () => {
         <Modal
           variant='error'
           open={openModalDelete}
-          title='Delete User'
+          title='حذف مستخدم'
           className='max-w-lg'
           setOpen={setOpenModalDelete}
         >

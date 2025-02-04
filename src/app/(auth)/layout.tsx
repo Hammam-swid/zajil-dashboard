@@ -1,5 +1,20 @@
 import "@/app/globals.css"
 import { Metadata } from "next"
+import { cairo } from "@/app/ui/fonts"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { Providers } from "../providers"
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false
+    },
+    mutations: {
+      retry: 1
+    }
+  }
+})
 
 export const metadata: Metadata = {
   title: "Nija Dashboard",
@@ -15,8 +30,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang='en'>
-      <body className={`UI-Ecommerce`}>{children}</body>
+    <html lang='ar' dir='rtl'>
+      <body className={`UI-Ecommerce ${cairo.className} antialiased`}>
+        {/* <QueryClientProvider client={queryClient}> */}
+        <Providers>{children}</Providers>
+        {/* </QueryClientProvider> */}
+      </body>
     </html>
   )
 }

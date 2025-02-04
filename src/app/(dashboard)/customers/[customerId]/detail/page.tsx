@@ -16,39 +16,39 @@ const DBCustomersUsersDetail = () => {
   return (
     <div className='relative h-[calc(100vh_-_80px)] p-6'>
       <div className='space-y-6'>
-        <h1 className='text-heading-sm font-semibold'>Users</h1>
+        <h1 className='text-heading-sm font-semibold'>بيانات الزبون</h1>
 
         <section className='relative space-y-6 rounded-lg-10 bg-white p-6'>
           <Title size='lg' variant='default'>
-            Users
+            تحديث البيانات
           </Title>
 
           <form className='grid grid-cols-2 gap-x-5 gap-y-8'>
             <Input
               id='name'
               placeholder='Enter name'
-              label='Name'
+              label='الاسم'
               variant='default'
             />
 
             <Input
               id='email'
               placeholder='Enter email address'
-              label='Email Adress'
+              label='البريد الالكتروني'
               variant='default'
             />
 
             <Input
               id='phone'
               placeholder='0000-0000-0000'
-              label='Phone Number'
+              label='رقم الهاتف'
               variant='phone'
             />
 
             <Input
               id='complete-address'
               placeholder='Enter complete adress'
-              label='Complete Address'
+              label='العنوان الكامل'
               variant='default'
             />
           </form>

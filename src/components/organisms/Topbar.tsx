@@ -29,7 +29,7 @@ const Topbar: React.FC = () => {
         <input
           type='text'
           className='w-full rounded-lg border border-netral-20 bg-netral-20/75 px-3.5 py-2.5 pl-12 text-body-base font-normal text-netral-80 outline-none ring-2 ring-transparent transition-all duration-300 ease-out placeholder:text-netral-50 focus:border-primary-main focus:ring-primary-surface'
-          placeholder='What are you looking for'
+          placeholder='ما الذي تبحث عنه؟'
         />
       </div>
 
@@ -37,7 +37,7 @@ const Topbar: React.FC = () => {
         <Menu as='div' className='relative inline-block text-left'>
           <Menu.Button className='relative'>
             <div className='absolute -right-0 -top-0 h-3 w-3 rounded-full bg-error-main text-[8px] font-bold leading-[10px] text-white'>
-              9
+              {9}
             </div>
             <BellSimpleIcon className='h-6 w-6 text-netral-50' />
           </Menu.Button>
@@ -53,7 +53,7 @@ const Topbar: React.FC = () => {
           >
             <Menu.Items
               as='div'
-              className='absolute right-0 top-16 mt-2 w-80 origin-top-right divide-y divide-gray-100 overflow-hidden rounded-lg-10 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'
+              className='absolute left-0 right-auto top-16 mt-2 w-80 origin-top-left divide-y divide-gray-100 overflow-hidden rounded-lg-10 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'
             >
               <nav className='flex items-center justify-between border-b border-netral-30 p-4'>
                 <h5 className='text-body-lg font-medium text-netral-100'>
@@ -177,7 +177,7 @@ const Topbar: React.FC = () => {
 
               <div className='space-y-1 text-left'>
                 <h5 className='text-body-sm font-semibold text-netral-100'>
-                  Marvin McKinney
+                  Hammam Swaid
                 </h5>
                 <p className='text-body-xs text-netral-50'>Super Admin</p>
               </div>

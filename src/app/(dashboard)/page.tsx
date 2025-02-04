@@ -62,13 +62,13 @@ const DBHome = () => {
 
   const radialDummy = [
     {
-      color: "bg-[#5E59FF]",
-      label: "Product Sold",
+      color: "bg-primary-main",
+      label: "منجات مباعة",
       number: 86
     },
     {
       color: "bg-[#FFAB00]",
-      label: "Product Return",
+      label: "منتجات راجعة",
       number: 48
     }
   ]
@@ -94,7 +94,7 @@ const DBHome = () => {
           },
           total: {
             show: true,
-            label: "Total"
+            label: "الإجمالي"
             // formatter: function () {
             //   // By default this function returns the average of all series. The below is just an example to show the use of custom formatter function
             //   return 100
@@ -106,7 +106,7 @@ const DBHome = () => {
         }
       }
     },
-    labels: ["Product Sold", "Product Return"],
+    labels: ["منتجات مباعة", "منتجات راجعة"],
     stroke: {
       lineCap: "round",
       colors: ["#5E59FF", "#FFAB00"]
@@ -206,7 +206,7 @@ const DBHome = () => {
 
           <figcaption className='relative z-10 px-8 py-6'>
             <span className='text-body-sm font-medium uppercase text-netral-60 2xl:text-body-base'>
-              Total Sales
+              عدد المستخدمين
             </span>
             <h3 className='mb-1 mt-2.5 text-heading-md font-bold 2xl:mt-3.5'>
               643,823
@@ -230,7 +230,7 @@ const DBHome = () => {
 
           <figcaption className='relative z-10 px-8 py-6'>
             <span className='text-body-sm font-medium uppercase text-netral-60 2xl:text-body-base'>
-              Total Users
+              عدد المتاجر
             </span>
 
             <h3 className='mb-1 mt-2.5 text-[30px] text-heading-md font-bold 2xl:mt-3.5'>
@@ -256,7 +256,7 @@ const DBHome = () => {
 
           <figcaption className='relative z-10 px-8 py-6'>
             <span className='text-body-sm font-medium uppercase text-netral-60 2xl:text-body-base'>
-              Total Buyers
+              عدد السائقين
             </span>
             <h3 className='mb-1 mt-2.5 text-[30px] text-heading-md font-bold 2xl:mt-3.5'>
               120,981
@@ -276,7 +276,7 @@ const DBHome = () => {
           <section className='space-y-6 rounded-lg-10 bg-white p-6 2xl:min-h-[576px]'>
             <nav className='flex items-center justify-between'>
               <Title size='lg' variant='default'>
-                Sales
+                المبيعات
               </Title>
 
               <Button size='md' variant='primary-outline'>
@@ -306,10 +306,10 @@ const DBHome = () => {
                   <Selectbox
                     className='!border-transparent'
                     datas={[
-                      { name: "Filter" },
-                      { name: "This Week" },
-                      { name: "This Month" },
-                      { name: "This Year" }
+                      { name: "تصفية", value: "1" },
+                      { name: "هذا الاسبوع", value: "2" },
+                      { name: "هذا الشهر", value: "3" },
+                      { name: "هذه السنة", value: "4" }
                     ]}
                   />
                 </div>
@@ -337,17 +337,17 @@ const DBHome = () => {
           <section className='space-y-6 rounded-lg-10 bg-white p-6'>
             <nav className='flex items-center justify-between'>
               <Title size='lg' variant='default'>
-                Product
+                منتج
               </Title>
 
               <div className='w-32 2xl:w-40'>
                 <Selectbox
                   className='!border-transparent'
                   datas={[
-                    { name: "Filter" },
-                    { name: "This Week" },
-                    { name: "This Month" },
-                    { name: "This Year" }
+                    { name: "تصفية", value: "1" },
+                    { name: "هذا الاسبوع", value: "2" },
+                    { name: "هذا الشهر", value: "3" },
+                    { name: "هذه السنة", value: "4" }
                   ]}
                 />
               </div>
@@ -390,17 +390,17 @@ const DBHome = () => {
           <section className='relative space-y-6 rounded-lg-10 bg-white p-6'>
             <nav className='flex items-center justify-between'>
               <Title size='lg' variant='default'>
-                Top Product
+                أفضل المنتجات
               </Title>
 
               <div className='w-32 2xl:w-40'>
                 <Selectbox
                   className='!border-transparent'
                   datas={[
-                    { name: "Filter" },
-                    { name: "This Week" },
-                    { name: "This Month" },
-                    { name: "This Year" }
+                    { name: "تصفية", value: "1" },
+                    { name: "هذا الاسبوع", value: "2" },
+                    { name: "هذا الشهر", value: "3" },
+                    { name: "هذه السنة", value: "4" }
                   ]}
                 />
               </div>
@@ -411,14 +411,14 @@ const DBHome = () => {
               <table className='w-full table-auto'>
                 <thead className='text-body-sm font-semibold uppercase'>
                   <tr>
-                    <th className='whitespace-nowrap rounded-l-lg-10 bg-netral-15 px-3 py-4 text-left text-netral-50 first:pl-5 last:pr-5'>
+                    <th className='whitespace-nowrap rounded-l-lg-10 bg-netral-15 px-3 py-4 text-start text-netral-50 first:pl-5 last:pr-5'>
                       <span className='text-body-sm font-semibold'>
-                        Product
+                        المنتج
                       </span>
                     </th>
 
                     <th className='whitespace-nowrap rounded-r-lg-10 bg-netral-15 px-3 py-4 text-left text-netral-50 first:pl-5 last:pr-5'>
-                      <span className='text-body-sm font-semibold'>Sold</span>
+                      <span className='text-body-sm font-semibold'>المباع</span>
                     </th>
                   </tr>
                 </thead>
@@ -429,7 +429,7 @@ const DBHome = () => {
                         <div className='flex items-center gap-3'>
                           <div className='relative h-16 w-16 overflow-hidden rounded-lg-10 2xl:h-20 2xl:w-20'>
                             <Image
-                              src={"/products-1.png"}
+                              src={`/products-1.png`}
                               className='h-full w-full object-cover'
                               sizes='responsive'
                               alt='Products 1'

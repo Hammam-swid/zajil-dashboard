@@ -11,6 +11,7 @@ import {
 } from "@/components/atomics"
 
 import { FunnelIcon, SortAscendingIcon } from "@/assets/icons"
+import Link from "next/link"
 
 const DBCustomersUsers = () => {
   //----------------------------------------------------------------------------------//
@@ -88,22 +89,22 @@ const DBCustomersUsers = () => {
 
   return (
     <div className='relative space-y-6 p-6'>
-      <h1 className='text-heading-sm font-semibold'>Users</h1>
+      <h1 className='text-heading-sm font-semibold'>العملاء</h1>
 
       <section className='relative rounded-lg-10 bg-white p-6'>
         <nav className='mb-8 flex items-center justify-between'>
           <Title size='lg' variant='default'>
-            Users
+            المستخدمين
           </Title>
 
           <div className='flex flex-row gap-3'>
             <Button size='md' variant='default-bg'>
-              Sort
+              ترتيب
               <SortAscendingIcon className='h-4 w-4 stroke-netral-100 stroke-[4px]' />
             </Button>
 
             <Button size='md' variant='default-bg'>
-              Filter
+              تصفية
               <FunnelIcon className='h-4 w-4 stroke-netral-100 stroke-[4px]' />
             </Button>
           </div>
@@ -117,34 +118,34 @@ const DBCustomersUsers = () => {
                   <Checkbox active={isSelectAll} setActive={setIsSelectAll} />
                 </th>
 
-                <th className='whitespace-nowrap px-3 py-4 text-left text-netral-50 first:pl-5 last:pr-5'>
-                  <span className='text-body-sm font-semibold'>Name</span>
+                <th className='whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5'>
+                  <span className='text-body-sm font-semibold'>الاسم</span>
                 </th>
 
-                <th className='whitespace-nowrap px-3 py-4 text-left text-netral-50 first:pl-5 last:pr-5'>
+                <th className='whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5'>
                   <span className='text-body-sm font-semibold'>
-                    Email Adress
+                    عنوان البريد الالكتروني
                   </span>
                 </th>
 
-                <th className='w-56 whitespace-nowrap px-3 py-4 text-left text-netral-50 first:pl-5 last:pr-5'>
+                <th className='w-56 whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5'>
                   <span className='text-body-sm font-semibold'>
-                    Complete Adress
+                    العنوان الكامل
                   </span>
                 </th>
 
-                <th className='whitespace-nowrap px-3 py-4 text-left text-netral-50 first:pl-5 last:pr-5'>
-                  <span className='text-body-sm font-semibold'>Created At</span>
+                <th className='whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5'>
+                  <span className='text-body-sm font-semibold'>إنشاء في</span>
                 </th>
 
-                <th className='whitespace-nowrap px-3 py-4 text-left text-netral-50 first:pl-5 last:pr-5'>
+                <th className='whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5'>
                   <span className='text-body-sm font-semibold'>
-                    Last Activity
+                    النشاط الأخير
                   </span>
                 </th>
 
-                <th className='whitespace-nowrap px-3 py-4 text-left text-netral-50 first:pl-5 last:pr-5'>
-                  <span className='text-body-sm font-semibold'>Action</span>
+                <th className='whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5'>
+                  <span className='text-body-sm font-semibold'>الإجراءات</span>
                 </th>
               </tr>
             </thead>
@@ -157,44 +158,46 @@ const DBCustomersUsers = () => {
                       setActive={(value: boolean) => checkItem(index, value)}
                     />
                   </td>
-                  <td className='whitespace-nowrap px-3 py-5 text-left first:pl-5 last:pr-5'>
+                  <td className='whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5'>
                     <span className='text-body-base font-medium text-netral-80'>
                       {item.name}
                     </span>
                   </td>
 
-                  <td className='whitespace-nowrap px-3 py-5 text-left first:pl-5 last:pr-5'>
+                  <td className='whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5'>
                     <span className='text-body-base font-medium text-netral-80'>
                       {item.email}
                     </span>
                   </td>
 
-                  <td className='w-56 whitespace-pre-wrap px-3 py-5 text-left first:pl-5 last:pr-5'>
+                  <td className='w-56 whitespace-pre-wrap px-3 py-5 text-center first:pl-5 last:pr-5'>
                     <span className='whitespace-pre-wrap break-words text-body-base font-medium text-netral-80'>
                       {item.address}
                     </span>
                   </td>
 
-                  <td className='whitespace-nowrap px-3 py-5 text-left first:pl-5 last:pr-5'>
+                  <td className='whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5'>
                     <span className='text-body-base font-medium text-netral-80'>
                       {item.createAt}
                     </span>
                   </td>
 
-                  <td className='whitespace-nowrap px-3 py-5 text-left first:pl-5 last:pr-5'>
+                  <td className='whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5'>
                     <span className='text-body-base font-medium text-netral-80'>
                       {item.date}
                     </span>
                   </td>
 
-                  <td className='whitespace-nowrap px-3 py-5 text-left first:pl-5 last:pr-5'>
-                    <Button
-                      size='md'
-                      variant='primary-nude'
-                      href='/customers/users/detail'
-                    >
-                      Detail
-                    </Button>
+                  <td className='whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5'>
+                    <Link href={`/customers/${item.email}/details`}>
+                      <Button
+                        size='md'
+                        variant='primary-nude'
+                        // href={`/customers/${item}/details`}
+                      >
+                        Detail
+                      </Button>
+                    </Link>
                   </td>
                 </tr>
               ))}
@@ -219,14 +222,14 @@ const DBCustomersUsers = () => {
       <Modal
         variant='error'
         open={openModalDelete}
-        title='Delete User'
+        title='حذف مستخدم'
         className='max-w-lg'
         setOpen={setOpenModalDelete}
       >
         <main className='mb-10 mt-4'>
           <p className='text-body-base text-netral-80'>
-            Are you sure want to delete this user? User which already deleted
-            can not be recovered.
+            هل أنت متأكد من أنك تريد حذف هذا المستخدم؟ لا يمكن استرداد المستخدم
+            الذي تم حذفه بالفعل.
           </p>
         </main>
 
@@ -236,7 +239,7 @@ const DBCustomersUsers = () => {
             variant='default-nude'
             onClick={() => setOpenModalDelete(false)}
           >
-            Cancel
+            إلغاء
           </Button>
           <Button
             size='md'
@@ -246,7 +249,7 @@ const DBCustomersUsers = () => {
               setOpenAlertsDelete(true)
             }}
           >
-            Submit
+            حذف
           </Button>
         </footer>
       </Modal>
@@ -255,8 +258,8 @@ const DBCustomersUsers = () => {
         variant='error'
         open={openAlertsDelete}
         setOpen={setOpenAlertsDelete}
-        title='Users has been deleted'
-        desc='User which already deleted can not be recovered.'
+        title='تم حذف المستخدمين'
+        desc='لا يمكن استرداد المستخدم الذي تم حذفه بالفعل.'
       />
     </div>
   )
