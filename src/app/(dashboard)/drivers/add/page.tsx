@@ -14,15 +14,28 @@ import {
 import Image from "next/image"
 import { DropzoneIll } from "@/assets/illustration"
 
+const vehicleTypes = [
+  {
+    name: "اختر نوع المركبة",
+    disabled: true
+  },
+  { name: "سيارة" },
+  { name: "شاحنة" },
+  { name: "باص" },
+  { name: "دراجة نارية" }
+]
+
 const AddDriverPage = () => {
   const router = useRouter()
   // -------------------------------------------------------------------------
-  const categories = [
-    { name: "Select Category", disabled: true },
-    { name: "Jacket" },
-    { name: "Outer" },
-    { name: "T-shirt" }
+  const regions = [
+    { name: "اختر المنطقة", disabled: true },
+    { name: "عين زارة" },
+    { name: "غوط الشعال" },
+    { name: "النجيلة" },
+    { name: "حي الأندلس" }
   ]
+
   // -------------------------------------------------------------------------
   const genders = [
     { name: "Select Gender", disabled: true },
@@ -112,17 +125,17 @@ const AddDriverPage = () => {
             </div>
           </div>
 
-          <div className='flex w-full items-start gap-32 border-b border-netral-20 py-7 first:border-y'>
+          <div className='flex w-full items-start gap-8 border-b border-netral-20 py-7 first:border-y'>
             <div className='w-full max-w-sm space-y-2'>
               <h5 className='space-y-2 text-body-base font-semibold'>
-                Category
+                المنطقة
               </h5>
               <p className='w-64 text-body-sm text-netral-50'>
-                Please select your product category from the list provided
+                اختيار المنطقة التي سيعمل في نطاقها السائق
               </p>
             </div>
 
-            <Selectbox datas={categories} selectedNow={false}></Selectbox>
+            <Selectbox datas={regions} selectedNow={false}></Selectbox>
           </div>
 
           <div className='flex w-full items-start gap-32 border-b border-netral-20 py-7 first:border-y'>
@@ -136,7 +149,66 @@ const AddDriverPage = () => {
             <Selectbox datas={genders} selectedNow={false}></Selectbox>
           </div>
 
-          <div className='flex w-full items-start gap-32 border-b border-netral-20 py-7 first:border-y'>
+          <div className='grid grid-cols-2 gap-4'>
+            <div className='w-full border-b border-netral-20 py-7 first:border-y'>
+              <h5 className='space-y-2 text-body-base font-semibold'>
+                نوع المركبة
+              </h5>
+              <Input
+                type='text'
+                id='vehicle_type'
+                variant='default'
+                placeholder='Toyota'
+              />
+            </div>
+
+            <div className='w-full border-b border-netral-20 py-7 first:border-y'>
+              <h5 className='space-y-2 text-body-base font-semibold'>
+                رقم الهيكل
+              </h5>
+
+              <Input
+                id='vehicle_number'
+                type='text'
+                variant='default'
+                placeholder='أدخل رقم الهيكل الخاص بالسيارة'
+              />
+            </div>
+
+            <div className='w-full border-b border-netral-20 py-7 first:border-y'>
+              <h5 className='space-y-2 text-body-base font-semibold'>
+                موديل المركبة
+              </h5>
+
+              <Input
+                id='vehicle_model'
+                type='text'
+                variant='default'
+                placeholder='أدخل موديل المركبة'
+              />
+            </div>
+            <div className='w-full border-b border-netral-20 py-7 first:border-y'>
+              <h5 className='space-y-2 text-body-base font-semibold'>
+                رقم لوحة المركبة
+              </h5>
+
+              <Input
+                id='vehicle_targa'
+                type='text'
+                variant='default'
+                placeholder='أدخل رقم لوحة المركبة'
+              />
+            </div>
+            <div className='w-full border-b border-netral-20 py-7 first:border-y'>
+              <h5 className='space-y-2 text-body-base font-semibold'>
+                نوع المركبة
+              </h5>
+
+              <Selectbox datas={vehicleTypes} selectedNow={false} />
+            </div>
+          </div>
+
+          {/* <div className='flex w-full items-start gap-32 border-b border-netral-20 py-7 first:border-y'>
             <div className='w-full max-w-sm space-y-2'>
               <h5 className='space-y-2 text-body-base font-semibold'>Weight</h5>
             </div>
@@ -240,11 +312,11 @@ const AddDriverPage = () => {
                 </div>
               )}
             </section>
-          </div>
+          </div> */}
         </form>
       </section>
 
-      <section className='relative w-full space-y-7 rounded-lg-10 bg-white p-6'>
+      {/* <section className='relative w-full space-y-7 rounded-lg-10 bg-white p-6'>
         <Title variant='default' size='lg'>
           Price
         </Title>
@@ -292,7 +364,7 @@ const AddDriverPage = () => {
             placeholder='Enter nominal discount'
           />
         </div>
-      </section>
+      </section> */}
 
       <PageAction
         actionLabel='Last saved'

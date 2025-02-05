@@ -1,8 +1,8 @@
-'use client'
+"use client"
 
-import React, { Fragment, useState } from 'react'
-import { Listbox, Transition } from '@headlessui/react'
-import { CheckIcon, CaretDownIcon } from '@/assets/icons'
+import React, { Fragment, useState } from "react"
+import { Listbox, Transition } from "@headlessui/react"
+import { CheckIcon, CaretDownIcon } from "@/assets/icons"
 
 // ------------------------------------------------
 /**
@@ -22,14 +22,14 @@ interface Selectbox {
   datas: any
   label?: string
   selectedNow?: boolean
-  variant?: 'default' | 'status' | 'no-border'
+  variant?: "default" | "status" | "no-border"
 }
 
 const Selectbox: React.FC<Selectbox> = ({
   datas,
   label,
   selectedNow = false,
-  variant = 'default',
+  variant = "default",
   className
 }) => {
   const [selected, setSelected] = useState(datas[0])
@@ -44,8 +44,9 @@ const Selectbox: React.FC<Selectbox> = ({
         )}
 
         <Listbox.Button
+          dir='rtl'
           className={`relative w-full cursor-pointer rounded-lg border bg-white ${
-            variant === 'default' ? 'px-4 py-3' : 'p-2 pr-4'
+            variant === "default" ? "px-4 py-3" : "p-2 pr-4"
           } ring-2 ring-transparent placeholder:text-netral-50 focus:border-primary-main focus:outline-none focus:ring-primary-surface/50 ${className}`}
         >
           {selectedNowState && (
@@ -57,27 +58,27 @@ const Selectbox: React.FC<Selectbox> = ({
             </button>
           )}
 
-          {variant === 'default' && (
+          {variant === "default" && (
             <>
               <span
-                className={`block truncate text-left text-body-base text-netral-80`}
+                className={`block truncate text-start text-body-base text-netral-80`}
               >
                 {selectedNowState ? datas[1].name : selected.name}
               </span>
             </>
           )}
 
-          {variant === 'status' && (
+          {variant === "status" && (
             <>
               <div className='flex w-fit flex-row items-center gap-2 rounded-full bg-netral-20 px-2 py-1.5'>
                 <span
                   className={`h-5 w-5 rounded-full ${
-                    selected.color || 'bg-netral-80'
+                    selected.color || "bg-netral-80"
                   }`}
                 />
 
                 <span
-                  className={`block truncate text-left text-body-sm text-netral-80`}
+                  className={`block truncate text-right text-body-sm text-netral-80`}
                 >
                   {selected.name}
                 </span>
@@ -85,7 +86,7 @@ const Selectbox: React.FC<Selectbox> = ({
             </>
           )}
 
-          <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4'>
+          <span className='pointer-events-none absolute inset-y-0 end-0 flex items-center pe-4'>
             <CaretDownIcon
               className='h-5 w-5 text-netral-50'
               aria-hidden='true'
@@ -110,9 +111,9 @@ const Selectbox: React.FC<Selectbox> = ({
                 className={({ active }) =>
                   `relative select-none px-4 py-2 ${
                     active && !data.disabled
-                      ? 'bg-primary-surface/50'
+                      ? "bg-primary-surface/50"
                       : `text-netral-60`
-                  } ${data.disabled ? 'cursor-default' : 'cursor-pointer'}`
+                  } ${data.disabled ? "cursor-default" : "cursor-pointer"}`
                 }
                 value={data}
               >
@@ -121,8 +122,8 @@ const Selectbox: React.FC<Selectbox> = ({
                     <span
                       className={`block truncate ${
                         selected && !data.disabled
-                          ? 'font-medium'
-                          : 'font-normal'
+                          ? "font-medium"
+                          : "font-normal"
                       } `}
                     >
                       {data.name}
