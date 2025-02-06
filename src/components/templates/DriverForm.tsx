@@ -25,7 +25,12 @@ const vehicleTypes = [
   { name: "دراجة نارية" }
 ]
 
-const AddDriverPage = () => {
+interface DriverFormProps {
+  driver?: any
+  formType: "edit" | "add"
+}
+
+const AddDriverPage = ({ driver, formType }: DriverFormProps) => {
   const router = useRouter()
   // -------------------------------------------------------------------------
   const regions = [
@@ -67,11 +72,11 @@ const AddDriverPage = () => {
 
   return (
     <div className='relative space-y-6 p-6'>
-      <h1 className='text-heading-sm font-semibold'>إضافة سائق</h1>
+      {/* <h1 className='text-heading-sm font-semibold'>إضافة سائق</h1> */}
 
       <section className='relative w-full space-y-7 rounded-lg-10 bg-white p-6'>
         <Title variant='default' size='lg'>
-          معلومات السائق
+          {formType === "edit" ? "تعديل بيانات السائق" : "إضافة سائق جديد"}
         </Title>
 
         <form>
@@ -83,6 +88,7 @@ const AddDriverPage = () => {
                 id='name'
                 variant='default'
                 placeholder='أدخل اسم السائق'
+                value={driver?.name || ""}
               />
             </div>
 

@@ -412,9 +412,7 @@ const DBHome = () => {
                 <thead className='text-body-sm font-semibold uppercase'>
                   <tr>
                     <th className='whitespace-nowrap rounded-l-lg-10 bg-netral-15 px-3 py-4 text-start text-netral-50 first:pl-5 last:pr-5'>
-                      <span className='text-body-sm font-semibold'>
-                        المنتج
-                      </span>
+                      <span className='text-body-sm font-semibold'>المنتج</span>
                     </th>
 
                     <th className='whitespace-nowrap rounded-r-lg-10 bg-netral-15 px-3 py-4 text-left text-netral-50 first:pl-5 last:pr-5'>
@@ -432,8 +430,9 @@ const DBHome = () => {
                               src={`/products-1.png`}
                               className='h-full w-full object-cover'
                               sizes='responsive'
+                              width={80}
+                              height={80}
                               alt='Products 1'
-                              fill
                             />
                           </div>
 

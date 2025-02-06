@@ -169,7 +169,8 @@ const Topbar: React.FC = () => {
                   src='/avatar-1.png'
                   sizes='40'
                   alt='Avatar People 1'
-                  fill
+                  width={40}
+                  height={40}
                 />
               </div>
 

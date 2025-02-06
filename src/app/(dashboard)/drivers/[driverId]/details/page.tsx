@@ -1,6 +1,6 @@
 "use client"
 
-import { Badge, Button, Title } from "@/components/atomics"
+import { Badge, Button, Title, Toggle } from "@/components/atomics"
 
 import {
   CheckIcon,
@@ -72,15 +72,9 @@ const Page = () => {
 
                 <p className='text-body-base font-medium'>النجيلة</p>
               </div>
-              <Switch
-                checked={isActive}
-                onChange={setIsActive}
-                className={`group absolute end-0 inline-flex h-7 w-14 items-center rounded-full p-1  transition ${
-                  !isActive ? "justify-end bg-gray-200" : "bg-primary-main"
-                }`}
-              >
-                <span className={`h-4 w-4 rounded-full bg-white transition`} />
-              </Switch>
+              <div className='absolute end-0'>
+                <Toggle enabled={isActive} setEnabled={setIsActive} />
+              </div>
             </section>
           </div>
           <section>

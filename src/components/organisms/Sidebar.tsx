@@ -150,7 +150,7 @@ const Sidebar: React.FC = () => {
           icon={<AppWindowIcon />}
           name='البيانات'
           variant='default'
-          href='/banner'
+          href='/categories'
         />
 
         <SidebarMenu

@@ -22,7 +22,9 @@ export default function RootLayout({
       <Head>
         <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
       </Head>
-      <body className={`UI-Ecommerce ${cairo.className} antialiased`}>
+      <body
+        className={`UI-Ecommerce ${cairo.className} overflow-x-hidden antialiased`}
+      >
         <div className='fixed start-0 top-0 z-10 w-64 2xl:w-72'>
           <Sidebar />
         </div>
