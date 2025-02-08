@@ -20,6 +20,7 @@ import {
 import { SidebarMenu } from "@/components/moleculs"
 import { NijaLogo } from "@/assets/brands"
 import Image from "next/image"
+import { TruckIcon } from "lucide-react"
 
 const SidebarExpand: React.FC<{
   children?: React.ReactNode
@@ -120,7 +121,7 @@ const Sidebar: React.FC = () => {
         />
 
         <SidebarMenu
-          icon={<AppWindowIcon />}
+          icon={<TruckIcon />}
           name='السائقين'
           variant='default'
           href='/drivers'
