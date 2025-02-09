@@ -19,6 +19,7 @@ import { CategoriesList } from "@/components/moleculs/CategoriesList";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { ProductCategory } from "@/types";
+import { useAppSelector } from "@/store/hooks";
 const getCategories = async (): Promise<ProductCategory[]> => {
   const res = await api.get("/product-categories");
   console.log(res);
@@ -26,6 +27,7 @@ const getCategories = async (): Promise<ProductCategory[]> => {
 };
 
 const DBCategories = () => {
+  console.log(useAppSelector((state) => state.token));
   const { isLoading, data } = useQuery({
     queryKey: ["categories"],
     staleTime: 1000 * 60 * 5,

@@ -1,13 +1,14 @@
-import React from "react"
-import { useRouter } from "next/navigation"
+import React from "react";
+import { useRouter } from "next/navigation";
 
 interface Button {
-  children: React.ReactNode
-  className?: string
-  disabled?: boolean
-  href?: string
-  type?: "button" | "submit" | "reset"
-  size?: "sm" | "md" | "lg"
+  children: React.ReactNode;
+  className?: string;
+  disabled?: boolean;
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  size?: "sm" | "md" | "lg";
+  id?: string;
   variant:
     | "primary-bg"
     | "primary-outline"
@@ -23,9 +24,9 @@ interface Button {
     | "default-nude"
     | "disabled-bg"
     | "disabled-outline"
-    | "disabled-nude"
+    | "disabled-nude";
 
-  onClick?: React.MouseEventHandler
+  onClick?: React.MouseEventHandler;
 }
 
 const Button: React.FC<Button> = ({
@@ -36,16 +37,18 @@ const Button: React.FC<Button> = ({
   onClick,
   size = "lg",
   variant = "primary-bg",
-  type = "submit"
+  type = "submit",
+  id,
 }) => {
-  const router = useRouter()
+  const router = useRouter();
 
   const gotoLink = () => {
-    router.push(`${href}`)
-  }
+    router.push(`${href}`);
+  };
 
   return (
     <button
+      id={id}
       type={type}
       onClick={onClick}
       className={`Button ${
@@ -90,7 +93,7 @@ const Button: React.FC<Button> = ({
     >
       {children}
     </button>
-  )
-}
+  );
+};
 
-export default Button
+export default Button;

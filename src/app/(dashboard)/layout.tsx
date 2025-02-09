@@ -4,6 +4,7 @@ import { cairo } from "@/app/ui/fonts";
 
 import { Sidebar, Topbar } from "@/components/organisms";
 import Provider from "@/utils/Provider";
+import { Providers } from "../providers";
 
 export const metadata = {
   title: "لوحة تحكم زاجل | الصفحة الرئيسية",
@@ -26,7 +27,7 @@ export default function RootLayout({
       <body
         className={`UI-Ecommerce ${cairo.className} overflow-x-hidden antialiased`}
       >
-        <Provider>
+        <Providers>
           <div className="fixed start-0 top-0 z-10 w-64 2xl:w-72">
             <Sidebar />
           </div>
@@ -38,7 +39,7 @@ export default function RootLayout({
           <main className="relative z-0 min-h-screen bg-netral-20/50 ps-64 pt-20 2xl:ps-72">
             {children}
           </main>
-        </Provider>
+        </Providers>
       </body>
     </html>
   );
