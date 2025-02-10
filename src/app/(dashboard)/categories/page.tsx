@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Tab } from "@headlessui/react";
@@ -20,21 +20,20 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { ProductCategory } from "@/types";
 import { useAppSelector } from "@/store/hooks";
+import CategoryForm from "@/components/templates/CategoryForm";
 const getCategories = async (): Promise<ProductCategory[]> => {
   const res = await api.get("/product-categories");
-  console.log(res);
+  console.log(res.data.data);
   return res.data.data as ProductCategory[];
 };
 
 const DBCategories = () => {
-  console.log(useAppSelector((state) => state.token));
-  const { isLoading, data } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["categories"],
     staleTime: 1000 * 60 * 5,
     queryFn: getCategories,
   });
   // ------------------------------------------------------------------------------ //
-  const [isEmpty, setIsEmpty] = React.useState(true);
   // ------------------------------------------------------------------------------ //
   const [listCategoriesData, setListCategoriesData] = React.useState([
     {
@@ -59,31 +58,19 @@ const DBCategories = () => {
     },
   ]);
   // ------------------------------------------------------------------------------ //
-  const checkItem = (index: number, checked: boolean) => {
-    const newListCategoriesData = [...listCategoriesData];
-    newListCategoriesData[index].checked = checked;
-    setListCategoriesData(newListCategoriesData);
-  };
-  const isSelectAll = React.useMemo(
-    () => listCategoriesData.filter((item) => !item.checked).length === 0,
-    [listCategoriesData]
-  );
-  const setIsSelectAll = (newIsSelectAll: boolean) => {
-    setListCategoriesData(
-      listCategoriesData.map((item) => ({ ...item, checked: newIsSelectAll }))
-    );
-  };
+
   const isSelecting = React.useMemo(
     () => listCategoriesData.filter((item) => item.checked).length > 0,
     [listCategoriesData]
   );
   // ------------------------------------------------------------------------------ //
-  const [openModalDelete, setOpenModalDelete] = React.useState(false);
-  const [openModalDraft, setOpenModalDraft] = React.useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
+  const [openModalDraft, setOpenModalDraft] = useState(false);
   // ------------------------------------------------------------------------------ //
-  const [openAlertsDelete, setOpenAlertsDelete] = React.useState(false);
-  const [openAlertsDraft, setOpenAlertsDraft] = React.useState(false);
+  const [openAlertsDelete, setOpenAlertsDelete] = useState(false);
+  const [openAlertsDraft, setOpenAlertsDraft] = useState(false);
   // ------------------------------------------------------------------------------ //
+  const [openAddModal, setOpenAddModal] = useState(false);
   return (
     <div className="relative min-h-screen space-y-6 p-6">
       <h1 className="text-heading-sm font-semibold">الأقسام</h1>
@@ -97,27 +84,37 @@ const DBCategories = () => {
             </Title>
 
             <div className="flex flex-row gap-3">
-              <Link href={"/categories/add"}>
-                <Button size="md" variant="primary-bg">
-                  <PlusIcon className="h-4 w-4 fill-white stroke-white stroke-[4px]" />
-                  إضافة فئة
-                </Button>
-              </Link>
-              <Button size="md" variant="default-bg">
-                ترتيب
-                <SortAscendingIcon className="h-4 w-4 stroke-netral-100 stroke-[4px]" />
+              <Button
+                onClick={() => setOpenAddModal(true)}
+                size="md"
+                variant="primary-bg"
+              >
+                <PlusIcon className="h-4 w-4 fill-white stroke-white stroke-[4px]" />
+                إضافة فئة أساسية
               </Button>
-
-              <Button size="md" variant="default-bg">
-                تصفية
-                <FunnelIcon className="h-4 w-4 stroke-netral-100 stroke-[4px]" />
-              </Button>
+              <Modal
+                open={openAddModal}
+                setOpen={setOpenAddModal}
+                variant="default"
+                className="w-11/12 max-w-lg"
+                title="إضافة فئة"
+              >
+                <CategoryForm parent={null} />
+              </Modal>
             </div>
           </div>
         </nav>
 
         <Suspense fallback={<p>Loading...</p>}>
-          <CategoriesList categories={data as ProductCategory[]} />
+          {isLoading ? (
+            <p>جار التحميل...</p>
+          ) : data ? (
+            <CategoriesList categories={data as ProductCategory[]} />
+          ) : isError ? (
+            <p>{error.message}</p>
+          ) : (
+            ""
+          )}
         </Suspense>
       </section>
 

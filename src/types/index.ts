@@ -6,6 +6,12 @@ export interface User {
   role: string;
   status: "active" | "inactive";
   phones: Phone[];
+  locations: Location[];
+  profile_photo_path?: string | null;
+  profile_photo_url?: string | null;
+  email_verified_at: Date;
+  date_of_birth: Date;
+  nationality: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,6 +21,21 @@ export interface Phone {
   phone: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface Location {
+  id: number;
+  user_id: number;
+  name: string;
+  address: string;
+  city: string;
+  country: string;
+  postal_code: string;
+  latitude: string;
+  longitude: string;
+  is_default: boolean;
+  created_at: Date;
+  updated_at: Date;
 }
 // => end
 

@@ -77,7 +77,13 @@ export default function CategoryForm({ parent, category }: CategoryFormProps) {
   return (
     <form onSubmit={formik.handleSubmit}>
       <h4>
-        <span>إضافة فئة فرعية لـ</span> <span>{parent?.name}</span>
+        {parent ? (
+          <>
+            <span>إضافة فئة فرعية لـ</span> <span>{parent?.name}</span>
+          </>
+        ) : (
+          <span>إضافة فئة أساسية</span>
+        )}
       </h4>
       <div className="mt-4 flex flex-col gap-3">
         <Input
@@ -178,10 +184,10 @@ const addCategory = async (values: CategoryFormValues) => {
   formData.append("name", values.name);
   formData.append("description", values.description);
   formData.append("image", values.image);
-  formData.append("background_color", values.background_color);
-  formData.append("text_color", values.text_color);
-  formData.append("parent_id", values.parent_id?.toString() || "null");
-  console.log(formData.get("name"));
+  formData.append("background_color", values.background_color.slice(1));
+  formData.append("text_color", values.text_color.slice(1));
+  if (values.parent_id)
+    formData.append("parent_id", values.parent_id?.toString() || "null");
   const res = await api.post("/product-categories", formData);
   const { data } = res;
   return data;
