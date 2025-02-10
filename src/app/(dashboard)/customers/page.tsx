@@ -126,7 +126,11 @@ const DBCustomersUsers = () => {
                             : "bg-error-main/20 text-error-main"
                         }`}
                       >
-                        {user.status}
+                        {user.status === "active"
+                          ? "مفعل"
+                          : user.status === "inactive"
+                          ? "غير مفعل"
+                          : ""}
                       </span>
                     </td>
 

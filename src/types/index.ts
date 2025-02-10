@@ -14,6 +14,7 @@ export interface User {
   nationality: string;
   createdAt: Date;
   updatedAt: Date;
+  orders?: Order[];
 }
 
 export interface Phone {
@@ -80,6 +81,12 @@ export interface Region {
 // => end
 
 // Products Types => start
+
+export interface Product {
+  id: number;
+  name: string;
+}
+
 export interface ProductCategory {
   id: number;
   name: string;
@@ -96,3 +103,21 @@ export interface ProductCategory {
 
 export interface ProductVariation {}
 // => end
+
+export interface Order {
+  id: number;
+  code: string;
+  status: string;
+  user: User;
+  products: Product[];
+  quantity: number;
+  total: string;
+  created_at: Date;
+  store: Store;
+}
+
+export interface Store {
+  id: number;
+  name: string;
+  products: Product;
+}

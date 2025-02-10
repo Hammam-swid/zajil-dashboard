@@ -58,7 +58,7 @@ export default function CategoryForm({ parent, category }: CategoryFormProps) {
     },
     onSubmit: (values) => {
       values.image =
-        "https://www.pngkit.com/png/detail/1005-10054641_with-the-galaxy-note-8-bigger-things-are.png";
+        "https://static.vecteezy.com/system/resources/previews/041/290/593/non_2x/ai-generated-short-sleeves-black-tshirt-isolated-on-a-transparent-background-free-png.png";
       mutation.mutate(values);
     },
   });

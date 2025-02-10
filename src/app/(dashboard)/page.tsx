@@ -5,16 +5,13 @@ import { ApexOptions } from "apexcharts";
 
 import { Button, Selectbox, Title } from "@/components/atomics";
 
-import {
-  ArrowDownRightIcon,
-  ArrowUpRightIcon,
-  DownloadSimpleIcon
-} from "@/assets/icons";
+import { DownloadSimpleIcon } from "@/assets/icons";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import MainStatistics from "@/components/organisms/MainStatistics";
 
 const ReactApexCharts = dynamic(() => import("react-apexcharts"), {
-  ssr: false
+  ssr: false,
 });
 
 const DBHome = () => {
@@ -22,22 +19,22 @@ const DBHome = () => {
   const splineSeries = [
     {
       name: "Quarter 1",
-      data: [31, 40, 28, 51, 42, 109, 100]
+      data: [31, 40, 28, 51, 42, 109, 100],
     },
     {
       name: "Quarter 2",
-      data: [11, 32, 45, 32, 34, 52, 41]
-    }
+      data: [11, 32, 45, 32, 34, 52, 41],
+    },
   ];
   const splineOptions: ApexOptions = {
     colors: ["#5E59FF", "rgba(94, 89, 255, 0.25)"],
     chart: {
       toolbar: { show: false },
-      height: 350
+      height: 350,
       // type: "area"
     },
     dataLabels: {
-      enabled: false
+      enabled: false,
     },
     xaxis: {
       type: "datetime",
@@ -48,14 +45,14 @@ const DBHome = () => {
         "2018-09-19T03:30:00.000Z",
         "2018-09-19T04:30:00.000Z",
         "2018-09-19T05:30:00.000Z",
-        "2018-09-19T06:30:00.000Z"
-      ]
+        "2018-09-19T06:30:00.000Z",
+      ],
     },
     tooltip: {
       x: {
-        format: "dd/MM/yy HH:mm"
-      }
-    }
+        format: "dd/MM/yy HH:mm",
+      },
+    },
   };
   // ---------------------------------------------------------------
   const radialSeries = [86, 48];
@@ -64,19 +61,19 @@ const DBHome = () => {
     {
       color: "bg-primary-main",
       label: "منجات مباعة",
-      number: 86
+      number: 86,
     },
     {
       color: "bg-[#FFAB00]",
       label: "منتجات راجعة",
-      number: 48
-    }
+      number: 48,
+    },
   ];
 
   const radialBarData: ApexOptions = {
     chart: {
       toolbar: { show: false },
-      height: 350
+      height: 350,
       // type: "radialBar"
     },
     colors: ["#5E59FF", "#FFAB00"],
@@ -87,58 +84,58 @@ const DBHome = () => {
         // },
         dataLabels: {
           name: {
-            fontSize: "22px"
+            fontSize: "22px",
           },
           value: {
-            fontSize: "16px"
+            fontSize: "16px",
           },
           total: {
             show: true,
-            label: "الإجمالي"
+            label: "الإجمالي",
             // formatter: function () {
             //   // By default this function returns the average of all series. The below is just an example to show the use of custom formatter function
             //   return 100
             // }
-          }
+          },
         },
         track: {
           // background: ["#5E59FF", "#FFAB00"]
-        }
-      }
+        },
+      },
     },
     labels: ["منتجات مباعة", "منتجات راجعة"],
     stroke: {
       lineCap: "round",
-      colors: ["#5E59FF", "#FFAB00"]
-    }
+      colors: ["#5E59FF", "#FFAB00"],
+    },
   };
   // ---------------------------------------------------------------
   const barSeries = [
     {
       name: "Total Outlet",
-      data: [44, 55, 41, 64, 22, 43, 21]
+      data: [44, 55, 41, 64, 22, 43, 21],
     },
     {
       name: "Percentage of Sales",
-      data: [53, 32, 33, 52, 13, 44, 32]
-    }
+      data: [53, 32, 33, 52, 13, 44, 32],
+    },
   ];
 
   const barOptions: ApexOptions = {
     colors: ["#5E59FF", "#E5E7EB"],
     stroke: {
       colors: ["transparent"],
-      width: 5
+      width: 5,
     },
     chart: {
       height: 400,
-      toolbar: { show: false }
+      toolbar: { show: false },
     },
     plotOptions: {
       bar: {
         horizontal: true,
         dataLabels: {
-          position: "top"
+          position: "top",
         },
         barHeight: 24,
         borderRadius: 3,
@@ -147,12 +144,12 @@ const DBHome = () => {
           ranges: [
             {
               from: 0,
-              to: 0
+              to: 0,
               // color: ["#5E59FF", "#E5E7EB"]
-            }
-          ]
-        }
-      }
+            },
+          ],
+        },
+      },
     },
     labels: ["Clothing", "Food Products"],
     dataLabels: {
@@ -160,115 +157,41 @@ const DBHome = () => {
       offsetX: -6,
       style: {
         fontSize: "12px",
-        colors: ["#fff"]
-      }
+        colors: ["#fff"],
+      },
     },
     tooltip: {
       shared: true,
-      intersect: false
+      intersect: false,
     },
     xaxis: {
-      categories: ["New York", "Los Angeles", "Chicago", "Phoenix"]
-    }
+      categories: ["New York", "Los Angeles", "Chicago", "Phoenix"],
+    },
   };
   // ---------------------------------------------------------------
   const topProductsData = [
     {
       image: "/images/list-products/ListProducts-1.png",
       name: "T-Men's UA Storm Armour Down 2.0 Jacket",
-      sold: 213
+      sold: 213,
     },
     {
       image: "/images/list-products/ListProducts-2.png",
       name: "Windproof Handbell Oversized Long Coat",
-      sold: 143
+      sold: 143,
     },
     {
       image: "/images/list-products/ListProducts-3.png",
       name: "Women's Stripe Sweater",
-      sold: 137
-    }
+      sold: 137,
+    },
   ];
   // ---------------------------------------------------------------
 
   return (
     <div className="relative space-y-5 p-6">
       {/* Summary */}
-      <section className="grid grid-cols-3 gap-5">
-        <figure className="relative w-full overflow-hidden rounded-lg-10 bg-white">
-          <Image
-            className="absolute right-0 top-0 -z-0 h-full w-fit object-contain object-right-top"
-            src="/pattern-home-1.png"
-            alt="Pattern Home 1"
-            sizes="responsive"
-            fill
-          />
-
-          <figcaption className="relative z-10 px-8 py-6">
-            <span className="text-body-sm font-medium uppercase text-netral-60 2xl:text-body-base">
-              عدد المستخدمين
-            </span>
-            <h3 className="mb-1 mt-2.5 text-heading-md font-bold 2xl:mt-3.5">
-              643,823
-            </h3>
-            <p className="inline-flex items-center text-body-sm">
-              <ArrowUpRightIcon className="h-4 w-4 text-success-main" />
-              <span className="ml-0.5 mr-1 text-success-main">0.4%</span>
-              <span className="text-netral-60">vs last month</span>
-            </p>
-          </figcaption>
-        </figure>
-
-        <figure className="relative w-full overflow-hidden rounded-lg-10 bg-white">
-          <Image
-            className="absolute -right-10 top-0 -z-0 h-full w-fit object-contain object-right-top"
-            src="/pattern-home-2.png"
-            alt="Pattern Home 2"
-            sizes="responsive"
-            fill
-          />
-
-          <figcaption className="relative z-10 px-8 py-6">
-            <span className="text-body-sm font-medium uppercase text-netral-60 2xl:text-body-base">
-              عدد المتاجر
-            </span>
-
-            <h3 className="mb-1 mt-2.5 text-[30px] text-heading-md font-bold 2xl:mt-3.5">
-              142,937
-            </h3>
-
-            <p className="inline-flex items-center text-body-sm">
-              <ArrowDownRightIcon className="h-4 w-4 text-red-500" />
-              <span className="ml-0.5 mr-1 text-red-500">12%</span>
-              <span className="text-netral-60">vs last month</span>
-            </p>
-          </figcaption>
-        </figure>
-
-        <figure className="relative w-full overflow-hidden rounded-lg-10 bg-white">
-          <Image
-            className="absolute right-0 top-0 -z-0 h-full w-fit object-contain object-right-top"
-            src="/pattern-home-3.png"
-            alt="Pattern Home 3"
-            sizes="responsive"
-            fill
-          />
-
-          <figcaption className="relative z-10 px-8 py-6">
-            <span className="text-body-sm font-medium uppercase text-netral-60 2xl:text-body-base">
-              عدد السائقين
-            </span>
-            <h3 className="mb-1 mt-2.5 text-[30px] text-heading-md font-bold 2xl:mt-3.5">
-              120,981
-            </h3>
-            <p className="inline-flex items-center text-body-sm">
-              <ArrowUpRightIcon className="h-4 w-4 text-success-main" />
-              <span className="ml-0.5 mr-1 text-success-main">0.4%</span>
-              <span className="text-netral-60">vs last month</span>
-            </p>
-          </figcaption>
-        </figure>
-      </section>
+      <MainStatistics />
 
       <div className="grid grid-cols-12 gap-5">
         <div className="col-span-8 space-y-5">
@@ -309,7 +232,7 @@ const DBHome = () => {
                       { name: "تصفية", value: "1" },
                       { name: "هذا الاسبوع", value: "2" },
                       { name: "هذا الشهر", value: "3" },
-                      { name: "هذه السنة", value: "4" }
+                      { name: "هذه السنة", value: "4" },
                     ]}
                   />
                 </div>
@@ -347,7 +270,7 @@ const DBHome = () => {
                     { name: "تصفية", value: "1" },
                     { name: "هذا الاسبوع", value: "2" },
                     { name: "هذا الشهر", value: "3" },
-                    { name: "هذه السنة", value: "4" }
+                    { name: "هذه السنة", value: "4" },
                   ]}
                 />
               </div>
@@ -400,7 +323,7 @@ const DBHome = () => {
                     { name: "تصفية", value: "1" },
                     { name: "هذا الاسبوع", value: "2" },
                     { name: "هذا الشهر", value: "3" },
-                    { name: "هذه السنة", value: "4" }
+                    { name: "هذه السنة", value: "4" },
                   ]}
                 />
               </div>

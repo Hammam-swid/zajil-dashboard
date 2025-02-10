@@ -37,19 +37,23 @@ const Pagination = ({ page, setPage, lastPage }: PaginationProps) => {
           <ArrowRight2Icon className="h-4 w-4 stroke-2" />
         </button>
 
-        {paginations.map((pagination, index) => (
-          <button
-            onClick={() => setPage(index + 1)}
-            key={index}
-            className={`flex h-8 w-8 items-center justify-center rounded-lg-10 ${
-              page === index + 1
-                ? "cursor-auto bg-primary-main text-white"
-                : "cursor-pointer bg-white text-netral-60 hover:bg-netral-30"
-            } text-body-sm font-semibold leading-none transition-all duration-300 ease-out`}
-          >
-            {pagination.name}
-          </button>
-        ))}
+        {paginations.map((pagination, index, array) =>
+          index < 5 || array.length === index - 1 || index + 2 === page + 1 ? (
+            <button
+              onClick={() => setPage(index + 1)}
+              key={index}
+              className={`flex h-8 w-8 items-center justify-center rounded-lg-10 ${
+                page === index + 1
+                  ? "cursor-auto bg-primary-main text-white"
+                  : "cursor-pointer bg-white text-netral-60 hover:bg-netral-30"
+              } text-body-sm font-semibold leading-none transition-all duration-300 ease-out`}
+            >
+              {pagination.name}
+            </button>
+          ) : (
+            "."
+          )
+        )}
 
         <button
           onClick={handleNext}

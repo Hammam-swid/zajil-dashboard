@@ -178,7 +178,7 @@ const DBDriversUsers = () => {
           </table>
         </div>
 
-        <Pagination page={page} setPage={setPage} />
+        <Pagination page={page} setPage={setPage} lastPage={5} />
       </section>
 
       {/* Page Action */}
