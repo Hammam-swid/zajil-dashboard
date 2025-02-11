@@ -17,7 +17,7 @@ export function CategoriesList({ categories, level = 0 }: CategoriesListProps) {
   return (
     <ul
       className={`w-full space-y-2 ${
-        level > 0 ? "ms-4 mt-1 w-[calc(100%-1rem)]" : ""
+        level > 0 ? "me-3 mt-2 w-[95%] justify-self-end" : ""
       }`}
     >
       {categories?.map((category) => (

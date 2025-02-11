@@ -1,5 +1,5 @@
 "use client";
-import { Badge, Button, Title } from "@/components/atomics";
+import { Button, Title } from "@/components/atomics";
 
 import {
   FunnelIcon,

@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowDownRightIcon, ArrowUpRightIcon } from "@/assets/icons";
 import api from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
@@ -40,11 +42,11 @@ export default function MainStatistics() {
           <h3 className="mb-1 mt-2.5 text-heading-md font-bold 2xl:mt-3.5">
             {data?.users_count}
           </h3>
-          <p className="inline-flex items-center text-body-sm">
+          {/* <p className="inline-flex items-center text-body-sm">
             <ArrowUpRightIcon className="h-4 w-4 text-success-main" />
             <span className="ml-0.5 mr-1 text-success-main">0.4%</span>
             <span className="text-netral-60">vs last month</span>
-          </p>
+          </p> */}
         </figcaption>
       </figure>
 
@@ -67,11 +69,11 @@ export default function MainStatistics() {
             {data?.stores_count}
           </h3>
 
-          <p className="inline-flex items-center text-body-sm">
+          {/* <p className="inline-flex items-center text-body-sm">
             <ArrowDownRightIcon className="h-4 w-4 text-red-500" />
             <span className="ml-0.5 mr-1 text-red-500">12%</span>
             <span className="text-netral-60">vs last month</span>
-          </p>
+          </p> */}
         </figcaption>
       </figure>
 
@@ -92,11 +94,11 @@ export default function MainStatistics() {
           <h3 className="mb-1 mt-2.5 text-[30px] text-heading-md font-bold 2xl:mt-3.5">
             {data?.orders_count}
           </h3>
-          <p className="inline-flex items-center text-body-sm">
+          {/* <p className="inline-flex items-center text-body-sm">
             <ArrowUpRightIcon className="h-4 w-4 text-success-main" />
             <span className="ml-0.5 mr-1 text-success-main">0.4%</span>
             <span className="text-netral-60">vs last month</span>
-          </p>
+          </p> */}
         </figcaption>
       </figure>
     </section>

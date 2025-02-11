@@ -92,7 +92,23 @@ export default function CustomerOrders({
 
                   <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
                     <span className=" text-body-base font-medium text-netral-80">
-                      <Badge variant="success">{order.status}</Badge>
+                      <Badge
+                        variant={
+                          order.status === "canceled"
+                            ? "error"
+                            : order.status === "in-transit"
+                            ? "warning"
+                            : "success"
+                        }
+                      >
+                        {order.status === "canceled"
+                          ? "ملغية"
+                          : order.status === "in-transit"
+                          ? "جار توصيلها"
+                          : order.status === "delivered"
+                          ? "تم التوصيل"
+                          : order.status}
+                      </Badge>
                     </span>
                   </td>
 

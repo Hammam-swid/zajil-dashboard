@@ -119,5 +119,13 @@ export interface Order {
 export interface Store {
   id: number;
   name: string;
-  products: Product;
+  description: string;
+  image: string;
+  average_rating: number | string;
+  number_of_ratings: number;
+  number_of_followers: number;
+  categories: Partial<ProductCategory>[];
+  categories_string: string;
+  location: Location;
+  products: Product[];
 }

@@ -9,7 +9,6 @@ import { Upload, UploadCloud } from "lucide-react";
 import NextImage from "next/image";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { headers } from "next/headers";
 
 interface CategoryFormProps {
   parent: ProductCategory | null;

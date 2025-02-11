@@ -6,6 +6,7 @@ import {
   Alerts,
   Button,
   Checkbox,
+  Input,
   Pagination,
   Title,
 } from "@/components/atomics";
@@ -17,8 +18,11 @@ import { User } from "@/types";
 import api from "@/lib/api";
 import { useSearchParams } from "next/navigation";
 
-const getCustomers = async (page: number) => {
-  const res = await api.get(`/dashboards/users?per_page=10&page=${page}`);
+const getCustomers = async (page: number, search?: string) => {
+  const searchQuery = search ? `&search=${search}` : "";
+  const res = await api.get(
+    `/dashboards/users?per_page=10&page=${page}${searchQuery}`
+  );
   console.log(res.data);
   return res.data as { data: User[]; meta: { last_page: number } };
 };
@@ -26,10 +30,12 @@ const getCustomers = async (page: number) => {
 const DBCustomersUsers = () => {
   //----------------------------------------------------------------------------------//
 
+  const [search, setSearch] = useState("");
+  const [searchText, setSearchText] = useState("");
   const [page, setPage] = React.useState(1);
   const { data, isLoading } = useQuery({
-    queryKey: ["costumers-users", { page }],
-    queryFn: () => getCustomers(page),
+    queryKey: ["costumers-users", { page }, { search }],
+    queryFn: () => getCustomers(page, search),
   });
 
   const [openModalDelete, setOpenModalDelete] = React.useState(false);
@@ -42,9 +48,25 @@ const DBCustomersUsers = () => {
 
       <section className="relative rounded-lg-10 bg-white p-6">
         <nav className="mb-8 flex items-center justify-between">
-          <Title size="lg" variant="default">
-            المستخدمين
-          </Title>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setSearch(searchText);
+              if (page !== 1) setPage(1);
+            }}
+            className="w-64"
+          >
+            <Input
+              id="search"
+              value={searchText}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+                if (e.target.value === "") setSearch("");
+              }}
+              type="text"
+              placeholder="ابحث عن عميل"
+            />
+          </form>
 
           <div className="flex flex-row gap-3">
             <Button size="md" variant="default-bg">
