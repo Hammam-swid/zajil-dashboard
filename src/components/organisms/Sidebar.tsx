@@ -154,7 +154,7 @@ const Sidebar: React.FC = () => {
           icon={<PackageIcon />}
           name="الطلبيات"
           variant="default"
-          href="/outlet"
+          href="/orders"
         />
 
         <SidebarMenu

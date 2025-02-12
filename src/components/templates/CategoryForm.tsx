@@ -25,14 +25,18 @@ interface CategoryFormValues {
   parent_id: number | null;
 }
 
-export default function CategoryForm({ parent, category }: CategoryFormProps) {
+export default function CategoryForm({
+  parent,
+  category,
+  hideForm,
+}: CategoryFormProps) {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationKey: [category ? "update-category" : "create-category"],
     mutationFn: async (values: CategoryFormValues) => {
       console.log(values);
       if (category) {
-        return await updateCategory(values);
+        return await updateCategory(values, category);
       } else {
         return await addCategory(values);
       }
@@ -40,6 +44,7 @@ export default function CategoryForm({ parent, category }: CategoryFormProps) {
     // category ? await updateCategory(values) : await addCategory(values),
     onSuccess: () => {
       formik.resetForm();
+      hideForm?.();
       queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
     onError: (e) => {
@@ -78,10 +83,11 @@ export default function CategoryForm({ parent, category }: CategoryFormProps) {
       <h4>
         {parent ? (
           <>
-            <span>إضافة فئة فرعية لـ</span> <span>{parent?.name}</span>
+            <span>{category ? "تعديل" : "إضافة"} فئة فرعية لـ</span>
+            <span>{parent?.name}</span>
           </>
         ) : (
-          <span>إضافة فئة أساسية</span>
+          <span>{category ? "تعديل" : "إضافة"} فئة أساسية</span>
         )}
       </h4>
       <div className="mt-4 flex flex-col gap-3">
@@ -170,7 +176,7 @@ export default function CategoryForm({ parent, category }: CategoryFormProps) {
           </div>
         </div>
         <Button variant="primary-bg" type="submit">
-          إضافة الفئة
+          {category ? "تعديل" : "إضافة"} الفئة
         </Button>
       </div>
     </form>
@@ -192,17 +198,29 @@ const addCategory = async (values: CategoryFormValues) => {
   return data;
 };
 
-const updateCategory = async (values: CategoryFormValues) => {
+const updateCategory = async (
+  values: CategoryFormValues,
+  category: ProductCategory
+) => {
   const formData = new FormData();
   formData.append("name", values.name);
   formData.append("description", values.description);
   formData.append("image", values.image);
-  formData.append("background_color", values.background_color);
-  formData.append("text_color", values.text_color);
-  formData.append("parent_id", values.parent_id?.toString() || "null");
-  const res = await api.patch("/api/product-categories", {
-    formData,
-  });
+  formData.append(
+    "background_color",
+    values.background_color.startsWith("#")
+      ? values.background_color.slice(1)
+      : values.background_color
+  );
+  formData.append(
+    "text_color",
+    values.text_color.startsWith("#")
+      ? values.text_color.slice(1)
+      : values.text_color
+  );
+  if (values.parent_id)
+    formData.append("parent_id", values.parent_id?.toString() || "null");
+  const res = await api.patch("/product-categories/" + category?.id, formData);
   const { data } = res;
   return data;
 };

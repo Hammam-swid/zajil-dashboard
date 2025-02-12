@@ -24,6 +24,9 @@ const authSlice = createSlice({
       setCookie("token", action.payload.token, {
         maxAge: 60 * 60 * 24 * 7,
       });
+      setCookie("user", action.payload.user, {
+        maxAge: 60 * 60 * 24 * 7,
+      });
     },
     logout: (state) => {
       state.token = null;

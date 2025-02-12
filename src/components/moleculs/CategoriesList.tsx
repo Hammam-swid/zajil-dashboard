@@ -16,6 +16,7 @@ interface CategoriesListProps {
 export function CategoriesList({ categories, level = 0 }: CategoriesListProps) {
   return (
     <ul
+      dir="rtl"
       className={`w-full space-y-2 ${
         level > 0 ? "me-3 mt-2 w-[95%] justify-self-end" : ""
       }`}
@@ -36,6 +37,7 @@ function CategoryItem({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [modal, setModal] = useState(false);
+  const [edit, setEdit] = useState(false);
   const hasSubcategories = category.children && category.children.length > 0;
 
   return (
@@ -55,6 +57,14 @@ function CategoryItem({
           hasSubcategories &&
             !e.target.id.includes("add-subcategory-button") &&
             setIsOpen(!isOpen);
+        }}
+        onContextMenu={(
+          e: React.MouseEvent<HTMLDivElement> & { target: HTMLDivElement }
+        ) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setEdit(true);
+          setModal(true);
         }}
       >
         {hasSubcategories && (
@@ -111,9 +121,13 @@ function CategoryItem({
         className="w-11/12 max-w-lg"
         open={modal}
         setOpen={setModal}
-        title="إضافة صنف"
+        title={edit ? "تعديل فئة" : "إضافة فئة"}
       >
-        <CategoryForm parent={category} hideForm={() => setModal(false)} />
+        <CategoryForm
+          parent={edit ? category.parent || null : category}
+          hideForm={() => setModal(false)}
+          category={edit ? category : undefined}
+        />
       </Modal>
     </li>
   );

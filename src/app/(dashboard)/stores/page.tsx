@@ -87,14 +87,12 @@ const Page = () => {
               <FunnelIcon className="h-4 w-4 stroke-netral-100 stroke-[4px]" />
             </Button>
 
-            <Button
-              size="md"
-              variant="primary-bg"
-              href="/products/list-products/add"
-            >
-              <PlusIcon className="h-4 w-4 stroke-white stroke-[4px]" />
-              إضافة متجر جديد
-            </Button>
+            <Link href="/stores/add">
+              <Button size="md" variant="primary-bg">
+                إضافة متجر جديد
+                <PlusIcon className="h-4 w-4 stroke-white stroke-[4px]" />
+              </Button>
+            </Link>
           </div>
         </nav>
 
