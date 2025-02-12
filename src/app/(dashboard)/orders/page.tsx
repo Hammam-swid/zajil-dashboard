@@ -143,7 +143,7 @@ const Page = () => {
                         <Badge
                           variant={
                             order.status === "in-transit"
-                              ? "warning"
+                              ? "info"
                               : order.status === "canceled"
                               ? "error"
                               : order.status === "success"

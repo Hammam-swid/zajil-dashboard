@@ -85,6 +85,15 @@ export interface Region {
 export interface Product {
   id: number;
   name: string;
+  images: ProductImage[];
+  price: string;
+}
+
+export interface ProductImage {
+  id: number;
+  image: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ProductCategory {
@@ -96,12 +105,12 @@ export interface ProductCategory {
   image: string;
   background_color: string;
   text_color: string;
-  variations?: ProductVariation[];
+  variations?: ProductVariants[];
   parent?: ProductCategory | null;
   children?: ProductCategory[];
 }
 
-export interface ProductVariation {}
+export interface ProductVariants {}
 // => end
 
 export interface Order {
@@ -109,11 +118,28 @@ export interface Order {
   code: string;
   status: string;
   user: User;
-  products: Product[];
+  orderProducts: OrderProduct[];
   quantity: number;
   total: string;
   created_at: Date;
   store: Store;
+  store_id: number;
+  transaction: Transaction;
+}
+
+export interface Transaction {
+  id: number;
+  order: Order;
+  amount: string;
+  status: string;
+  currency: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface OrderProduct extends Product {
+  quantity: number;
+  price_at_purchase: string;
 }
 
 export interface Store {

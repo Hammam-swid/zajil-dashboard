@@ -2,6 +2,7 @@ import React from "react";
 import { Badge, Button, Title } from "../atomics";
 import { FunnelIcon, SortAscendingIcon } from "@/assets/icons";
 import { Order } from "@/types";
+import Link from "next/link";
 
 interface CustomerOrdersProps {
   isLoading: boolean;
@@ -64,6 +65,10 @@ export default function CustomerOrders({
                   تاريخ المعاملة
                 </span>
               </th>
+
+              <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
+                <span className="text-body-sm font-semibold">الإجراءات</span>
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-netral-20 pt-4 text-sm">
@@ -122,6 +127,14 @@ export default function CustomerOrders({
                     <span className="text-body-base font-medium text-netral-80">
                       {order.created_at.toLocaleString()}
                     </span>
+                  </td>
+
+                  <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                    <Link href={`/orders/${order.id}/details`}>
+                      <Button type="button" variant="primary-outline">
+                        تفاصيل الطلب
+                      </Button>
+                    </Link>
                   </td>
                 </tr>
               ))
