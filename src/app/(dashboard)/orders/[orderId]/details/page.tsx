@@ -88,6 +88,7 @@ const Page = () => {
                   alt="صورة المنتج"
                   width={100}
                   height={100}
+                  className="rounded-md shadow-md"
                 />
                 <div>
                   <span className="font-bold">{product.name}</span>

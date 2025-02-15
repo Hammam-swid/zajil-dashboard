@@ -121,7 +121,7 @@ export default function CategoryForm({
         </div>
         <div
           {...getRootProps()}
-          className="h-40 rounded-md bg-primary-surface p-6"
+          className="h-40 rounded-md border-2 border-dashed border-gray-400 bg-primary-surface p-6 text-center"
         >
           <input type="file" {...getInputProps()} />
           {acceptedFiles.length > 0 ? (
@@ -132,7 +132,16 @@ export default function CategoryForm({
               alt="image"
             />
           ) : (
-            <UploadCloud className="h-full w-full" />
+            <>
+              <UploadCloud className="mx-auto h-16 w-16" />
+              <Button
+                variant="primary-bg"
+                type="button"
+                className="justify-self-center"
+              >
+                تحميل صورة
+              </Button>
+            </>
           )}
           {isDragAccept && (
             <p className="text-green-500">Drop the files here ...</p>

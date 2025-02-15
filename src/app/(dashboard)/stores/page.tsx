@@ -105,9 +105,9 @@ const Page = () => {
                   <span className="text-body-sm font-semibold">المتجر</span>
                 </th>
 
-                <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
+                {/* <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
                   <span className="text-body-sm font-semibold">التصنيفات</span>
-                </th>
+                </th> */}
 
                 <th className="w-56 whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
                   <span className="text-body-sm font-semibold">
@@ -155,11 +155,11 @@ const Page = () => {
                         </div>
                       </td>
 
-                      <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                      {/* <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
                         <span className="text-body-base font-medium capitalize text-netral-80">
                           {store.categories_string}
                         </span>
-                      </td>
+                      </td> */}
 
                       <td className="w-56 whitespace-pre-wrap px-3 py-5 text-center capitalize first:pl-5 last:pr-5">
                         {Number(store.average_rating).toFixed(2)}
@@ -320,13 +320,13 @@ function Skeleton({ width }: { width: number }) {
           }px] animate-pulse rounded-md bg-netral-40`}
         ></span>
       </td>
-      <td className="whitespace-nowrap px-3 py-5 text-center">
+      {/* <td className="whitespace-nowrap px-3 py-5 text-center">
         <span
           className={`mx-auto block h-8 w-[${
             width * 0.3
           }px] animate-pulse rounded-md bg-netral-40`}
         ></span>
-      </td>
+      </td> */}
       <td className="whitespace-nowrap px-3 py-5 text-center">
         <span
           className={`mx-auto block h-8 w-[${

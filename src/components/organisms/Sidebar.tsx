@@ -117,7 +117,7 @@ const Sidebar: React.FC = () => {
         />
 
         <SidebarMenu
-          icon={<TruckIcon />}
+          icon={<TruckIcon width={24} height={24} />}
           name="السائقين"
           variant="default"
           href="/drivers"

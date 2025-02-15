@@ -128,7 +128,7 @@ const Page = () => {
               )}
             </h3>
 
-            <section className="flex flex-row items-start gap-2.5">
+            <section className="flex w-full flex-row flex-wrap items-start gap-2.5">
               <div className="w-72 space-y-1.5">
                 <h5 className="text-body-sm uppercase text-netral-50">
                   البريد الالكتروني
@@ -168,6 +168,20 @@ const Page = () => {
                   ) : (
                     data?.locations.find((l) => l.is_default)?.address ||
                     "لا يوجد"
+                  )}
+                </p>
+              </div>
+
+              <div className="w-72 space-y-1.5">
+                <h5 className="text-body-sm uppercase text-netral-50">
+                  الجنسية
+                </h5>
+
+                <p className="text-body-base font-medium">
+                  {isLoading ? (
+                    <span className="inline-block animate-pulse rounded-md bg-netral-40 px-12 py-3"></span>
+                  ) : (
+                    data?.nationality || "لا يوجد"
                   )}
                 </p>
               </div>

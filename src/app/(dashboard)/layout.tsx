@@ -10,7 +10,7 @@ export const metadata = {
   title: "لوحة تحكم زاجل | الصفحة الرئيسية",
   description: "لوحة التحكم الخاصة بتطبيق زاجل",
   icons: {
-    icon: "./favicon.ico",
+    icon: "./zajil-logo.png",
   },
 };
 
@@ -21,9 +21,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar" dir="rtl">
-      <Head>
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-      </Head>
       <body
         className={`UI-Ecommerce ${cairo.className} overflow-x-hidden antialiased`}
       >
