@@ -71,6 +71,7 @@ export interface VehicleType {
 export interface City {
   id: number;
   name: string;
+  regions?: Region[];
 }
 
 export interface Region {
