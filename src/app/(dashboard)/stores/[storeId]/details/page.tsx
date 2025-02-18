@@ -83,9 +83,9 @@ const Page = () => {
           <div className="relative block aspect-video h-80 w-full rounded-lg-10">
             <Image
               className={`h-full w-full rounded-lg-10 object-cover ${
-                store?.coverImage ? "brightness-75" : "brightness-[25%]"
+                store?.cover_image ? "brightness-75" : "brightness-[25%]"
               } `}
-              src={store?.coverImage || "/outlet-1.jpg"}
+              src={store?.cover_image || "/outlet-1.jpg"}
               alt="الصورة الخلفية للمتجر"
               width={1920}
               height={1280}

@@ -71,6 +71,7 @@ export interface VehicleType {
 export interface City {
   id: number;
   name: string;
+  is_active: boolean | 0 | 1;
   regions?: Region[];
 }
 
@@ -148,6 +149,7 @@ export interface Store {
   name: string;
   description: string;
   image: string;
+  cover_image: string;
   average_rating: number | string;
   number_of_ratings: number;
   number_of_followers: number;

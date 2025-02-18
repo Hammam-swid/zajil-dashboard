@@ -69,6 +69,7 @@ const Sidebar: React.FC = () => {
           alt="Zajil Logo"
           width={100}
           height={100}
+          priority
         />
         {/* <h5 className='text-body-xl font-semibold uppercase'>Nija Kit</h5> */}
       </Link>
@@ -103,9 +104,9 @@ const Sidebar: React.FC = () => {
         <SidebarExpand show={showProductsMenu}>
           <SidebarMenu name="قائمة المتاجر" variant="expand" href="/stores" />
           <SidebarMenu
-            name="Categories"
+            name="قائمة الفئات"
             variant="expand"
-            href="/products/categories"
+            href="/categories"
           />
         </SidebarExpand>
 
@@ -147,7 +148,7 @@ const Sidebar: React.FC = () => {
           icon={<AppWindowIcon />}
           name="البيانات"
           variant="default"
-          href="/categories"
+          href="/entries"
         />
 
         <SidebarMenu

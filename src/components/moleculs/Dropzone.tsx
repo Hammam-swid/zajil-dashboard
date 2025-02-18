@@ -9,6 +9,7 @@ interface DropzoneProps {
   arabicName?: string;
   className?: string;
   setField: (field: string, value: any) => void;
+  setTouched: (field: string, value: boolean) => void;
 }
 
 export default function Dropzone({
@@ -17,15 +18,17 @@ export default function Dropzone({
   file,
   arabicName,
   className,
+  setTouched,
 }: DropzoneProps) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      if (acceptedFiles[0].size > 2048) {
-        throw new Error("File size is too large");
-      }
+      // if (acceptedFiles[0].size > 2048) {
+      //   throw new Error("File size is too large");
+      // }
       setField(fieldName, acceptedFiles[0]);
+      setTouched(fieldName, true);
     },
-    [setField, fieldName]
+    [setField, fieldName, setTouched]
   );
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
   return (

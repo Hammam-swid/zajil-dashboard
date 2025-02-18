@@ -1,19 +1,25 @@
-import React from "react"
+import React from "react";
 
-import { ArrowDown2Icon, CurrencyDollarIcon, PercentIcon } from "@/assets/icons"
+import {
+  ArrowDown2Icon,
+  CurrencyDollarIcon,
+  PercentIcon,
+} from "@/assets/icons";
 
 interface Input {
-  disabled?: boolean
-  defaultValue?: any
-  id: string
-  message?: string
-  label?: string
-  logoSrc?: string
-  placeholder: string
-  type?: "text" | "password"
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
-  value?: string
+  disabled?: boolean;
+  defaultValue?: any;
+  id: string;
+  message?: string;
+  label?: string;
+  logoSrc?: string;
+  placeholder: string;
+  type?: "text" | "password";
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  value?: string;
+  className?: string;
+  dir?: "rtl" | "ltr";
   variant?:
     | "default"
     | "default-error"
@@ -22,7 +28,7 @@ interface Input {
     | "logo"
     | "logo-error"
     | "discount"
-    | "currency"
+    | "currency";
 }
 
 const Input: React.FC<Input> = ({
@@ -37,10 +43,12 @@ const Input: React.FC<Input> = ({
   value,
   onChange,
   onBlur,
-  variant = "default"
+  className,
+  dir = "rtl",
+  variant = "default",
 }) => {
   return (
-    <div className='INPUT relative flex w-full flex-col items-start gap-1.5'>
+    <div className="INPUT relative flex w-full flex-col items-start gap-1.5">
       {label && (
         <label
           htmlFor={id}
@@ -53,51 +61,52 @@ const Input: React.FC<Input> = ({
         </label>
       )}
 
-      <div className='relative w-full'>
+      <div className="relative w-full">
         {variant?.includes("phone") && (
-          <div className='absolute left-3 top-1/2 z-10 flex w-fit -translate-y-1/2 items-center gap-1.5'>
+          <div className="absolute left-3 top-1/2 z-10 flex w-fit -translate-y-1/2 items-center gap-1.5">
             <button
-              type='button'
-              className='flex items-center gap-1 rounded-md bg-netral-20 px-2 py-1 text-netral-80'
+              type="button"
+              className="flex items-center gap-1 rounded-md bg-netral-20 px-2 py-1 text-netral-80"
             >
-              <span className='text-body-base font-bold'>+218</span>
+              <span className="text-body-base font-bold">+218</span>
 
-              <ArrowDown2Icon className='h-5 w-5 stroke-2' />
+              <ArrowDown2Icon className="h-5 w-5 stroke-2" />
             </button>
 
-            <span className='text-body-base font-normal text-netral-40'>|</span>
+            <span className="text-body-base font-normal text-netral-40">|</span>
           </div>
         )}
 
         {variant?.includes("discount") && (
-          <div className='absolute left-3 top-1/2 z-10 flex w-fit -translate-y-1/2 items-center gap-1.5'>
-            <button className='flex items-center gap-1 rounded-md bg-netral-20 px-2 py-1 text-netral-80'>
-              <PercentIcon className='h-5 w-5 stroke-2' />
+          <div className="absolute left-3 top-1/2 z-10 flex w-fit -translate-y-1/2 items-center gap-1.5">
+            <button className="flex items-center gap-1 rounded-md bg-netral-20 px-2 py-1 text-netral-80">
+              <PercentIcon className="h-5 w-5 stroke-2" />
             </button>
-            <span className='text-body-base font-normal text-netral-30'>|</span>
+            <span className="text-body-base font-normal text-netral-30">|</span>
           </div>
         )}
 
         {variant?.includes("currency") && (
-          <div className='absolute left-3 top-1/2 z-10 flex w-fit -translate-y-1/2 items-center gap-1.5'>
-            <button className='flex items-center gap-1 rounded-md bg-netral-20 px-2 py-1 text-netral-80'>
-              <CurrencyDollarIcon className='h-5 w-5 stroke-2' />
+          <div className="absolute left-3 top-1/2 z-10 flex w-fit -translate-y-1/2 items-center gap-1.5">
+            <button className="flex items-center gap-1 rounded-md bg-netral-20 px-2 py-1 text-netral-80">
+              <CurrencyDollarIcon className="h-5 w-5 stroke-2" />
             </button>
-            <span className='text-body-base font-normal text-netral-30'>|</span>
+            <span className="text-body-base font-normal text-netral-30">|</span>
           </div>
         )}
 
         {variant?.includes("logo") && (
-          <div className='absolute left-3 top-1/2 z-10 flex w-fit -translate-y-1/2 items-center gap-1.5'>
+          <div className="absolute left-3 top-1/2 z-10 flex w-fit -translate-y-1/2 items-center gap-1.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              className='h-6 w-auto'
+              className="h-6 w-auto"
               src={logoSrc ?? "/input-bank-logo.png"}
-              alt='Maybank Logo'
+              alt="Maybank Logo"
             />
           </div>
         )}
         <input
+          dir={dir}
           id={id}
           name={id}
           type={type}
@@ -120,7 +129,7 @@ const Input: React.FC<Input> = ({
               "border-netral-30 pl-28 focus:border-primary-border focus:ring-primary-surface disabled:bg-netral-20 2xl:pl-28") ||
             (variant === "logo-error" &&
               "border-error-border/50 pl-28 focus:border-error-border focus:ring-error-surface 2xl:pl-28")
-          }`}
+          } ${className}`}
           placeholder={placeholder ?? "Please add your placeholder"}
           value={value}
           defaultValue={defaultValue}
@@ -138,7 +147,7 @@ const Input: React.FC<Input> = ({
         </p>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Input
+export default Input;

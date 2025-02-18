@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Modal, PageAction } from "@/components/moleculs";
 import {
   Alerts,
@@ -11,65 +11,30 @@ import {
 import { FunnelIcon, PlusIcon, SortAscendingIcon } from "@/assets/icons";
 import Link from "next/link";
 import { Driver, User } from "@/types";
+import api from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { Loader, Loader2, TriangleAlert } from "lucide-react";
+import { AxiosError } from "axios";
 
-const initialDrivers: Partial<Driver>[] = [
-  {
-    id: 1,
-    user: {
-      name: "عبد الرزاق البكوش",
-      phones: [{ phone: "0910064106" }],
-    } as User,
-    region: { id: 1, name: "حي الأندلس", city: { id: 1, name: "طرابلس" } },
-  },
-  {
-    id: 1,
-    user: {
-      name: "عبد الرزاق البكوش",
-      phones: [{ phone: "0910064106" }],
-    } as User,
-    region: { id: 1, name: "حي الأندلس", city: { id: 1, name: "طرابلس" } },
-  },
-  {
-    id: 1,
-    user: {
-      name: "عبد الرزاق البكوش",
-      phones: [{ phone: "0910064106" }],
-    } as User,
-    region: { id: 1, name: "حي الأندلس", city: { id: 1, name: "طرابلس" } },
-  },
-  {
-    id: 1,
-    user: {
-      name: "عبد الرزاق البكوش",
-      phones: [{ phone: "0910064106" }],
-    } as User,
-    region: { id: 1, name: "حي الأندلس", city: { id: 1, name: "طرابلس" } },
-  },
-  {
-    id: 1,
-    user: {
-      name: "عبد الرزاق البكوش",
-      phones: [{ phone: "0910064106" }],
-    } as User,
-    region: { id: 1, name: "حي الأندلس", city: { id: 1, name: "طرابلس" } },
-  },
-  {
-    id: 1,
-    user: {
-      name: "عبد الرزاق البكوش",
-      phones: [{ phone: "0910064106" }],
-    } as User,
-    region: { id: 1, name: "حي الأندلس", city: { id: 1, name: "طرابلس" } },
-  },
-];
+const getDrivers = async (page: number) => {
+  const res = await api.get<{ data: Driver[] }>(
+    `/dashboards/drivers?perPage=10&page=${page}`
+  );
+  console.log(res);
+  return res.data.data;
+};
+
 const DBDriversUsers = () => {
-  const [usersData, setUsersData] = React.useState(initialDrivers);
-  //----------------------------------------------------------------------------------//
-  const [openModalDelete, setOpenModalDelete] = React.useState(false);
-  const [openAlertsDelete, setOpenAlertsDelete] = React.useState(false);
-  //----------------------------------------------------------------------------------//
-
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = useState(1);
+  const {
+    data: drivers,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<Driver[], AxiosError<{ message: string }>>({
+    queryKey: ["drivers", { page }],
+    queryFn: () => getDrivers(page),
+  });
 
   return (
     <div className="relative space-y-6 p-6">
@@ -130,55 +95,85 @@ const DBDriversUsers = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-netral-20 pt-4 text-sm">
-              {usersData.map((item, index) => (
-                <tr key={item.id}>
+              {isError ? (
+                <tr>
                   <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
                     <span className="text-body-base font-medium text-netral-80">
-                      {item.user?.name}
+                      {error?.response?.data?.message || (
+                        <>
+                          حدث خطأ ما <TriangleAlert />
+                        </>
+                      )}
                     </span>
-                  </td>
-
-                  <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
-                    <span className="text-body-base font-medium text-netral-80">
-                      {item.user?.phones[0]?.phone}
-                    </span>
-                  </td>
-
-                  <td className="w-56 whitespace-pre-wrap px-3 py-5 text-center first:pl-5 last:pr-5">
-                    <span className="whitespace-pre-wrap break-words text-body-base font-medium text-netral-80">
-                      {item.region?.name}
-                    </span>
-                  </td>
-
-                  <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
-                    <span className="text-body-base font-medium text-netral-80">
-                      {item.isAvailable ? "متاح" : "غير متاح"}
-                    </span>
-                  </td>
-
-                  <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
-                    <span className="text-body-base font-medium text-netral-80">
-                      {item.isOnline ? "متصل" : "غير متصل"}
-                    </span>
-                  </td>
-
-                  <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
-                    <Link
-                      className="block w-full text-center"
-                      href={`/drivers/${item.id}/details`}
-                    >
-                      <Button size="md" variant="primary-nude">
-                        التفاصيل
-                      </Button>
-                    </Link>
                   </td>
                 </tr>
-              ))}
+              ) : !isLoading ? (
+                drivers && drivers?.length > 0 ? (
+                  drivers?.map((item) => (
+                    <tr key={item.id}>
+                      <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                        <span className="text-body-base font-medium text-netral-80">
+                          {item.user?.name}
+                        </span>
+                      </td>
+
+                      <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                        <span className="text-body-base font-medium text-netral-80">
+                          {item.user?.phones && item.user?.phones[0]?.phone}
+                        </span>
+                      </td>
+
+                      <td className="w-56 whitespace-pre-wrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                        <span className="whitespace-pre-wrap break-words text-body-base font-medium text-netral-80">
+                          {item.region?.name}
+                        </span>
+                      </td>
+
+                      <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                        <span className="text-body-base font-medium text-netral-80">
+                          {item.isAvailable ? "متاح" : "غير متاح"}
+                        </span>
+                      </td>
+
+                      <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                        <span className="text-body-base font-medium text-netral-80">
+                          {item.isOnline ? "متصل" : "غير متصل"}
+                        </span>
+                      </td>
+
+                      <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                        <Link
+                          className="block w-full text-center"
+                          href={`/drivers/${item.id}/details`}
+                        >
+                          <Button size="md" variant="primary-nude">
+                            التفاصيل
+                          </Button>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="py-10 text-center">
+                      <span className="text-body-base font-medium text-netral-80">
+                        لا يوجد أي سائق
+                      </span>
+                    </td>
+                  </tr>
+                )
+              ) : (
+                <tr>
+                  <td colSpan={6} className="py-10 text-center">
+                    <Loader2 className="mx-auto h-16 w-16 animate-spin text-primary-main" />
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
 
-        <Pagination page={page} setPage={setPage} lastPage={5} />
+        <Pagination page={page} setPage={setPage} lastPage={1} />
       </section>
 
       {/* Page Action */}
@@ -191,49 +186,6 @@ const DBDriversUsers = () => {
           btnPrimaryFun={() => setOpenModalDelete(true)}
         />
       )} */}
-
-      <Modal
-        variant="error"
-        open={openModalDelete}
-        title="حذف مستخدم"
-        className="max-w-lg"
-        setOpen={setOpenModalDelete}
-      >
-        <main className="mb-10 mt-4">
-          <p className="text-body-base text-netral-80">
-            هل أنت متأكد من أنك تريد حذف هذا المستخدم؟ لا يمكن استرداد المستخدم
-            الذي تم حذفه بالفعل.
-          </p>
-        </main>
-
-        <footer className="flex w-full justify-end gap-3">
-          <Button
-            size="md"
-            variant="default-nude"
-            onClick={() => setOpenModalDelete(false)}
-          >
-            إلغاء
-          </Button>
-          <Button
-            size="md"
-            variant="error-bg"
-            onClick={() => {
-              setOpenModalDelete(false);
-              setOpenAlertsDelete(true);
-            }}
-          >
-            حذف
-          </Button>
-        </footer>
-      </Modal>
-
-      <Alerts
-        variant="error"
-        open={openAlertsDelete}
-        setOpen={setOpenAlertsDelete}
-        title="تم حذف المستخدمين"
-        desc="لا يمكن استرداد المستخدم الذي تم حذفه بالفعل."
-      />
     </div>
   );
 };
