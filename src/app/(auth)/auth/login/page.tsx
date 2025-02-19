@@ -16,18 +16,24 @@ import api from "@/lib/api";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { login } from "@/store/authSlice";
 import { User } from "@/types";
+import { AxiosError } from "axios";
+
+interface ValuesTypes {
+  email: string;
+  password: string;
+}
 
 const AuthLogin = () => {
   // const token = useAppSelector((state) => state.token);
   // ---------------------------------------------------
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const loginMutation = useMutation({
-    mutationFn: async (credentials: {
-      email: string;
-      password: string;
-      isRemember: boolean;
-    }) => {
+  const loginMutation = useMutation<
+    any,
+    AxiosError<{ message: string }, ValuesTypes>,
+    ValuesTypes
+  >({
+    mutationFn: async (credentials: { email: string; password: string }) => {
       const { data } = await api.post("/login", credentials);
       return data;
     },
@@ -44,14 +50,13 @@ const AuthLogin = () => {
     },
   });
 
-  const [isRemember, setIsRemember] = React.useState(false);
   // ---------------------------------------------------
   const [showPassword, setShowPassword] = React.useState(false);
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
   // ---------------------------------------------------
-  const formik = useFormik({
+  const formik = useFormik<ValuesTypes>({
     initialValues: {
       email: "",
       password: "",
@@ -65,7 +70,7 @@ const AuthLogin = () => {
         .min(8, "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل"),
     }),
     onSubmit: async (values) => {
-      loginMutation.mutate({ ...values, isRemember });
+      loginMutation.mutate(values);
     },
   });
 
@@ -136,31 +141,6 @@ const AuthLogin = () => {
               {formik.errors.password}
             </span>
           ) : null}
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Switch
-                checked={isRemember}
-                onChange={setIsRemember}
-                className={`Checkbox ${
-                  isRemember
-                    ? "border-primary-border bg-primary-main text-white ring-primary-surface"
-                    : "border-netral-60 bg-white ring-netral-15"
-                } relative inline-flex h-5 w-5 items-center rounded-md border ring-2`}
-              >
-                {isRemember && <CheckIcon className="h-5 w-5" />}
-              </Switch>
-
-              <span className="text-body-base text-netral-80">Remember Me</span>
-            </div>
-
-            <Link
-              href={"/auth/forgot-password"}
-              className="text-body-base font-semibold underline"
-            >
-              هل نسيت كلمة السر؟
-            </Link>
-          </div>
 
           <Button
             type="submit"

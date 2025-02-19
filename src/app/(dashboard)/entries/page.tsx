@@ -72,7 +72,7 @@ export default function Page() {
           </tbody>
         </table>
       </div>
-      <div className="fixed end-4 top-48 w-1/3 rounded-md border border-netral-20 bg-white p-4 shadow-xl">
+      <div className="fixed end-4 top-48 w-1/3 rounded-md border border-primary-main/50 bg-white p-4 shadow-xl">
         <AddCityForm />
       </div>
     </div>

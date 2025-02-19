@@ -1,14 +1,16 @@
 import { User } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { getCookie, setCookie } from "cookies-next";
+import { getCookie, setCookie, deleteCookie } from "cookies-next";
 
 interface AuthState {
   user: null | User;
   token: null | string;
 }
 
+const userCookie = getCookie("user");
+
 const initialState: AuthState = {
-  user: null,
+  user: userCookie ? (JSON.parse(userCookie as string) as User) : null,
   token: (getCookie("token") as string) || null,
 };
 
@@ -31,6 +33,8 @@ const authSlice = createSlice({
     logout: (state) => {
       state.token = null;
       state.user = null;
+      deleteCookie("token");
+      deleteCookie("user");
     },
   },
 });

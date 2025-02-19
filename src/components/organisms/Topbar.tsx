@@ -1,22 +1,20 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import { Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 
-import {
-  BagIcon,
-  BellSimpleIcon,
-  CaretDownIcon,
-  GearSixIcon,
-  PackageIcon,
-  SignOutIcon,
-  TshirtIcon
-} from "@/assets/icons";
-import Link from "next/link";
+import { CaretDownIcon, SignOutIcon } from "@/assets/icons";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { logout } from "@/store/authSlice";
 
 const Topbar: React.FC = () => {
+  const user = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
+  const logoutHandler = () => {
+    dispatch(logout());
+  };
+
   return (
     <header
       className={`relative flex w-full items-center justify-end border-b border-netral-20 bg-white px-8 py-4 shadow-sm`}
@@ -30,7 +28,7 @@ const Topbar: React.FC = () => {
               <div className="relative h-10 w-10 overflow-hidden rounded-full">
                 <Image
                   className="h-full w-full object-cover"
-                  src="/avatar-1.png"
+                  src={user?.profile_photo_path || "/avatar-1.png"}
                   sizes="40"
                   alt="Avatar People 1"
                   width={40}
@@ -39,10 +37,10 @@ const Topbar: React.FC = () => {
               </div>
 
               <div className="space-y-1 text-right">
-                <h5 className="text-body-sm font-semibold text-netral-100">
-                  Hammam Swaid
+                <h5 className="text-body-sm font-bold text-netral-100">
+                  {user?.name || "اسم المستخدم"}
                 </h5>
-                <p className="text-body-xs text-netral-50">Super Admin</p>
+                <p className="text-body-xs text-netral-50">{user?.role}</p>
               </div>
             </section>
 
@@ -60,10 +58,10 @@ const Topbar: React.FC = () => {
           >
             <Menu.Items
               as="div"
-              className="absolute right-0 top-16 mt-2 w-64 origin-top-right divide-y divide-gray-100 rounded-lg-10 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="absolute end-0 top-16 mt-2 w-64 origin-top-left divide-y divide-gray-100 rounded-lg-10 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
               <div className="p-3">
-                <Menu.Item>
+                {/* <Menu.Item>
                   <Link
                     href={"/settings"}
                     className={
@@ -73,18 +71,21 @@ const Topbar: React.FC = () => {
                     <GearSixIcon className="h-6 w-6 text-netral-60" />
                     <h5 className="text-body-base text-netral-90">Settings</h5>
                   </Link>
-                </Menu.Item>
+                </Menu.Item> */}
 
                 <Menu.Item>
-                  <Link
-                    href={"/auth/login"}
+                  <span
+                    // href={"/auth/login"}
+                    onClick={logoutHandler}
                     className={
-                      "flex items-center gap-2 rounded-lg-10 px-2 py-3 hover:bg-netral-20"
+                      "flex cursor-pointer items-center gap-2 rounded-lg-10 px-2 py-3 hover:bg-netral-20"
                     }
                   >
                     <SignOutIcon className="h-6 w-6 text-netral-60" />
-                    <h5 className="text-body-base text-netral-90">Logout</h5>
-                  </Link>
+                    <h5 className="text-body-base text-netral-90">
+                      تسجيل الخروج
+                    </h5>
+                  </span>
                 </Menu.Item>
               </div>
             </Menu.Items>

@@ -1,14 +1,15 @@
-import React from 'react'
+import React from "react";
 
-import { Pagination } from '@/components/atomics'
-import { Header } from '@/components/templates'
+import { Pagination } from "@/components/atomics";
+import { Header } from "@/components/templates";
 
 const page = () => {
   return (
-    <Header title='Pagination'>
-      <Pagination />
+    <Header title="Pagination">
+      {/* <Pagination /> */}
+      Pagination
     </Header>
-  )
-}
+  );
+};
 
-export default page
+export default page;

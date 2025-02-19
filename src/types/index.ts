@@ -78,6 +78,8 @@ export interface City {
 export interface Region {
   id: number;
   name: string;
+  city_id: number;
+  is_active: boolean | 0 | 1;
   city: City;
 }
 // => end
