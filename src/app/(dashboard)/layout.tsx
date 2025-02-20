@@ -5,6 +5,7 @@ import { cairo } from "@/app/ui/fonts";
 import { Sidebar, Topbar } from "@/components/organisms";
 import Provider from "@/utils/Provider";
 import { Providers } from "../providers";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata = {
   title: "لوحة تحكم زاجل | الصفحة الرئيسية",
@@ -36,6 +37,7 @@ export default function RootLayout({
           <main className="relative z-0 min-h-screen bg-netral-20/50 ps-64 pt-20 2xl:ps-72">
             {children}
           </main>
+          <Toaster />
         </Providers>
       </body>
     </html>

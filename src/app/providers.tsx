@@ -41,7 +41,7 @@ export function Providers(props: { children: React.ReactNode }) {
         <ReactQueryStreamedHydration>
           {props.children}
         </ReactQueryStreamedHydration>
-        <ReactQueryDevtools />
+        {/* <ReactQueryDevtools /> */}
       </QueryClientProvider>
     </Provider>
   );

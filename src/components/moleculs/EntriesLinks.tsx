@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const links = [
   { name: "المدن والمناطق", href: "/entries", include: "/entries/cities" },
   { name: "أنواع المركبات", href: "/entries/vehicle-types" },
+  { name: "المتغيرات", href: "/entries/variants" },
 ];
 export default function EntriesLinks() {
   const pathname = usePathname();

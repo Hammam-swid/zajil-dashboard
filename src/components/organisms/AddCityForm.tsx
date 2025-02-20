@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import api from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const createDriver = async (values: { name: string }) => {
   const res = await api.post("/dashboards/cities", values);
@@ -12,6 +13,7 @@ const createDriver = async (values: { name: string }) => {
 };
 
 export default function AddCityForm() {
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (values: { name: string }) => createDriver(values),
@@ -30,7 +32,25 @@ export default function AddCityForm() {
       name: Yup.string().required("الاسم مطلوب"),
     }),
     onSubmit: (values, helpers) => {
-      mutation.mutate(values, { onSuccess: () => helpers.resetForm() });
+      mutation.mutate(values, {
+        onSuccess: () => {
+          helpers.resetForm();
+          const t = toast({
+            title: "تمت الاضافة بنجاح",
+            description: "تمت الاضافة بنجاح",
+          });
+          setTimeout(() => t.dismiss(), 3000);
+        },
+        onError: (e) => {
+          console.log(e);
+          const t = toast({
+            title: "حدث خطأ",
+            description: "حدث خطأ أثناء الاضافة",
+            variant: "destructive",
+          });
+          setTimeout(() => t.dismiss(), 3000);
+        },
+      });
 
       return;
     },

@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { cairo } from "@/app/ui/fonts";
 import Provider from "@/utils/Provider";
 import { Providers } from "../providers";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Nija Dashboard",
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body className={`UI-Ecommerce ${cairo.className} antialiased`}>
         {/* <QueryClientProvider client={queryClient}> */}
         <Providers>{children}</Providers>
+        <Toaster />
         {/* </QueryClientProvider> */}
       </body>
     </html>

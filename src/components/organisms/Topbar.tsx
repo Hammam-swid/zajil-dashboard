@@ -2,17 +2,27 @@
 
 import Image from "next/image";
 import { Menu, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import { CaretDownIcon, SignOutIcon } from "@/assets/icons";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/authSlice";
+import { Modal } from "../moleculs";
+import { Button } from "../atomics";
+import { useRouter } from "next/navigation";
 
 const Topbar: React.FC = () => {
+  const [modal, setModal] = useState(false);
+  const router = useRouter();
   const user = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
   const logoutHandler = () => {
+    setModal(true);
+  };
+  const logoutConfirm = () => {
     dispatch(logout());
+    setModal(false);
+    setTimeout(() => router.push("/auth/login"), 2000);
   };
 
   return (
@@ -28,7 +38,7 @@ const Topbar: React.FC = () => {
               <div className="relative h-10 w-10 overflow-hidden rounded-full">
                 <Image
                   className="h-full w-full object-cover"
-                  src={user?.profile_photo_path || "/avatar-1.png"}
+                  src={user?.profile_photo_path || "/avatar-default.png"}
                   sizes="40"
                   alt="Avatar People 1"
                   width={40}
@@ -91,6 +101,33 @@ const Topbar: React.FC = () => {
             </Menu.Items>
           </Transition>
         </Menu>
+        <Modal
+          open={modal}
+          setOpen={setModal}
+          title="تسجيل الخروج"
+          variant="error"
+          className="w-full max-w-sm"
+        >
+          هل أنت متأكد من تسجيل الخروج؟
+          <div className="mt-6 flex items-center justify-end gap-4">
+            <Button
+              type="button"
+              size="md"
+              variant="default-bg"
+              onClick={() => setModal(false)}
+            >
+              إلغاء
+            </Button>
+            <Button
+              type="button"
+              size="md"
+              variant="error-bg"
+              onClick={logoutConfirm}
+            >
+              تأكيد
+            </Button>
+          </div>
+        </Modal>
       </div>
     </header>
   );

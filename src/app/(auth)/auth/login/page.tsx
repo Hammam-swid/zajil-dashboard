@@ -17,6 +17,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { login } from "@/store/authSlice";
 import { User } from "@/types";
 import { AxiosError } from "axios";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface ValuesTypes {
   email: string;
@@ -28,6 +30,7 @@ const AuthLogin = () => {
   // ---------------------------------------------------
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { toast, toasts } = useToast();
   const loginMutation = useMutation<
     any,
     AxiosError<{ message: string }, ValuesTypes>,
@@ -41,8 +44,16 @@ const AuthLogin = () => {
       const user = data.data as User;
       const token = data.token as string;
       dispatch(login({ user, token }));
+      const t = toast({
+        title: "تم تسجيل الدخول بنجاح",
+        description: "تم تسجيل الدخول بنجاح",
+      });
       setTimeout(() => {
-        router.push("/categories");
+        t.dismiss();
+      }, 3000);
+
+      setTimeout(() => {
+        router.push("/");
       }, 500);
     },
     onError: (error) => {
@@ -145,12 +156,17 @@ const AuthLogin = () => {
           <Button
             type="submit"
             size="lg"
+            disabled={loginMutation.isPending}
             variant="primary-bg"
-            className="w-full cursor-pointer hover:bg-primary-main disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full cursor-pointer hover:bg-primary-main disabled:cursor-not-allowed disabled:opacity-50 disabled:grayscale"
             // onClick={() => router.push("/")}
             // disabled={true}
           >
-            تسجيل الدخول
+            {loginMutation.isPending ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              "تسجيل الدخول"
+            )}
           </Button>
         </form>
       </div>
