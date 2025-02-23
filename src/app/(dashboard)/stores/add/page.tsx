@@ -1,9 +1,10 @@
 "use client";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Modal, PageAction } from "@/components/moleculs";
-import { Button, Input, Selectbox, Title, Toggle } from "@/components/atomics";
+import { Button, Input, Title, Toggle } from "@/components/atomics";
+import Select from "react-select";
 import {
   PencilSimpleIcon,
   RepeatIcon,
@@ -14,36 +15,87 @@ import {
 import Image from "next/image";
 import { DropzoneIll } from "@/assets/illustration";
 import { useDropzone } from "react-dropzone";
+import { useFormik } from "formik";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { City } from "@/types";
+import { Save, X } from "lucide-react";
+import * as Yup from "yup";
 
-const vehicleTypes = [
-  {
-    name: "اختر نوع المركبة",
-    disabled: true,
-  },
-  { name: "سيارة" },
-  { name: "شاحنة" },
-  { name: "باص" },
-  { name: "دراجة نارية" },
-];
+interface FormValues {
+  name: string;
+  description: string;
+  license_number: string;
+  trading_license_number: string;
+  passport: File | null;
+  region: { label: string; value: number } | null;
+  user_name: string;
+  phone: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+const validationSchema = Yup.object<FormValues>({
+  name: Yup.string().required("الاسم مطلوب"),
+  description: Yup.string().required("الوصف مطلوب"),
+  license_number: Yup.string().required("رقم الرخصة مطلوب"),
+  trading_license_number: Yup.string().required("رقم تجاري مطلوب"),
+  passport: Yup.mixed().required("الصورة مطلوبة"),
+  region: Yup.object().required("المنطقة مطلوبة"),
+  user_name: Yup.string().required("اسم المستخدم مطلوب"),
+  phone: Yup.string().required("رقم الهاتف مطلوب"),
+  email: Yup.string()
+    .email("البريد الإلكتروني غير صالح")
+    .required("البريد الإلكتروني مطلوب"),
+  password: Yup.string()
+    .required("كلمة المرور مطلوبة")
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+      "يجب أن يحتوي كلمة المرور على حرف ورقم ولا يقل عدد الأحرف عن 8"
+    ),
+  confirmPassword: Yup.string()
+    .required("أدخل كلمة المرور مرة أخرى")
+    .oneOf([Yup.ref("password")], "كلمات المرور غير متطابقة"),
+});
 
-const regions = [
-  { name: "اختر المنطقة", disabled: true },
-  { name: "عين زارة" },
-  { name: "غوط الشعال" },
-  { name: "النجيلة" },
-  { name: "حي الأندلس" },
-];
-
-const cities = [
-  { name: "اختر المدينة", disabled: true },
-  { name: "طرابلس" },
-  { name: "بنغازي" },
-  { name: "سبها" },
-  { name: "مصراتة" },
-];
+const getCities = async () => {
+  const res = await api.get<{ data: City[] }>("/dashboards/cities");
+  console.log(res);
+  return res.data.data;
+};
 
 const Page = () => {
-  const router = useRouter();
+  const { data: cities } = useQuery({
+    queryKey: ["cities"],
+    queryFn: getCities,
+  });
+  const [selectedCity, setSelectedCity] = useState<{
+    value: number;
+    label: string;
+  } | null>(null);
+  const formik = useFormik<FormValues>({
+    initialValues: {
+      name: "",
+      description: "",
+      license_number: "",
+      trading_license_number: "",
+      passport: null,
+      region: null,
+      user_name: "",
+      phone: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validationSchema,
+    onSubmit: (values, helpers) => {
+      console.log(values);
+    },
+  });
+
+  const regions = selectedCity
+    ? cities?.find((city) => city.id === selectedCity.value)?.regions
+    : [];
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // formik.setFieldValue("image", acceptedFiles[0]);
@@ -91,7 +143,7 @@ const Page = () => {
           معلومات المتجر
         </Title>
 
-        <form>
+        <form onSubmit={formik.handleSubmit}>
           <div className="grid grid-cols-2 gap-4">
             <div className="w-full border-b border-netral-20 py-7 first:border-y">
               <h5 className="space-y-2 text-body-base font-semibold">الاسم</h5>
@@ -149,16 +201,42 @@ const Page = () => {
                 المدينة
               </h5>
 
-              <Selectbox datas={cities} />
+              <Select
+                options={cities?.map((city) => ({
+                  value: city.id,
+                  label: city.name,
+                }))}
+                value={selectedCity}
+                onChange={(e) => {
+                  setSelectedCity(e);
+                  formik.setFieldValue("region", null);
+                }}
+                placeholder="اختر المدينة"
+                noOptionsMessage={() => "لا يوجد مدن"}
+              />
             </div>
 
-            <div className="w-full border-b border-netral-20 py-7 first:border-y">
-              <h5 className="space-y-2 text-body-base font-semibold">
-                المنطقة
-              </h5>
+            {selectedCity && (
+              <div className="w-full border-b border-netral-20 py-7 first:border-y">
+                <h5 className="space-y-2 text-body-base font-semibold">
+                  المنطقة
+                </h5>
 
-              <Selectbox datas={regions} />
-            </div>
+                <Select
+                  options={regions?.map((region) => ({
+                    value: region.id,
+                    label: region.name,
+                  }))}
+                  value={formik.values.region}
+                  onChange={(e) => {
+                    formik.setFieldValue("region", e);
+                  }}
+                  noOptionsMessage={() => "لا يوجد مناطق"}
+                  placeholder="اختر المنطقة"
+                  className=""
+                />
+              </div>
+            )}
           </div>
           {/* photos section */}
           <div className="flex w-full items-start justify-between gap-8 border-b border-netral-20 py-7 first:border-y">
@@ -258,40 +336,29 @@ const Page = () => {
                 placeholder="تأكيد كلمة المرور"
               />
             </div>
-            <div className="w-full border-b border-netral-20 py-7 first:border-y">
-              <h5 className="space-y-2 text-body-base font-semibold">
-                الصورة الشخصية
-              </h5>
-              <p className="w-64 text-body-sm text-netral-50">
-                Recommended minimum width 1080px X 1080px, with a max size of
-                5MB, only *.png, *.jpg and *.jpeg image files are accepted
-              </p>
-            </div>
-            <div
-              {...getRootPropsProfile()}
-              className={`group relative flex h-56 w-full max-w-[1000px] flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-netral-30 bg-netral-15`}
+          </div>
+          <div className="mt-8 flex flex-row-reverse gap-4 rounded-lg p-3 shadow-lg outline outline-1 outline-primary-main">
+            <Button
+              // disabled={driverMutation.isPending || formik.isSubmitting}
+              variant="primary-bg"
+              type="submit"
             >
-              <input type="file" {...getInputPropsProfile()} accept="image/*" />
-              <UploadSimpleIcon className="h-8 w-8 text-netral-50" />
-
-              <Button
-                type="button"
-                size="sm"
-                variant="primary-bg"
-                className="mb-2 mt-5"
-              >
-                إضافة صورة
-              </Button>
-
-              <p className="text-center text-body-sm font-medium text-netral-50">
-                أو قم بسحب الصورة هنا
-              </p>
-            </div>
+              حفظ المتجر
+              <Save className="h-5 w-5" />
+            </Button>
+            <Button
+              // disabled={driverMutation.isPending}
+              variant="primary-outline"
+              type="button"
+            >
+              إلغاء
+              <X className="h-5 w-5" />
+            </Button>
           </div>
         </form>
       </section>
 
-      <PageAction
+      {/* <PageAction
         actionLabel="Last saved"
         actionDesc="Nov 9, 2022-17.09"
         btnPrimaryLabel="Next"
@@ -300,71 +367,7 @@ const Page = () => {
         btnSecondaryLabel="Discard"
         btnsecondaryVariant="primary-nude"
         btnSecondaryFun={() => router.back()}
-      />
-
-      <Modal
-        variant="default"
-        title="Add Image"
-        open={openModalDropzone}
-        setOpen={setOpenModalDropzone}
-        className="max-w-4xl"
-      >
-        {activeState === 1 && (
-          <main className="my-10 flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-netral-30 bg-netral-15 py-20">
-            <DropzoneIll className="h-32 w-32" />
-
-            <h5 className="mb-1 mt-6 text-body-lg font-semibold">
-              Click to upload, or drag and drop
-            </h5>
-
-            <p className="text-body-sm text-netral-50">
-              {"SVG, PNG, JPEG (MAX 800X400px)"}
-            </p>
-          </main>
-        )}
-
-        {activeState === 2 && (
-          <main className="relative my-10 flex h-96 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-netral-30 bg-netral-15">
-            <div className="relative aspect-square w-96">
-              <Image
-                className="h-full w-full object-cover"
-                src={"/category-upload.png"}
-                alt="Category Upload"
-                fill
-              />
-            </div>
-
-            <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
-              <Button type="button" size="md" variant="default-bg">
-                <RepeatIcon className="h-6 w-6" />
-                Replace
-              </Button>
-            </div>
-
-            <div className="absolute bottom-4 right-4 z-10">
-              <Button type="button" size="md" variant="default-bg">
-                <SelectionPlusIcon className="h-6 w-6" />
-                Crop
-              </Button>
-            </div>
-          </main>
-        )}
-
-        <footer className="flex flex-row justify-end gap-3">
-          <Button type="button" size="md" variant="default-nude">
-            Discard
-          </Button>
-
-          <Button
-            type="submit"
-            size="md"
-            variant="primary-bg"
-            onClick={nextState}
-          >
-            Save
-          </Button>
-        </footer>
-      </Modal>
+      /> */}
     </div>
   );
 };

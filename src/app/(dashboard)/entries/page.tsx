@@ -41,7 +41,7 @@ export default function Page() {
             {isLoading ? (
               <tr>
                 <td colSpan={3} className="text-center">
-                  <Loader2 className="mx-auto animate-spin" />
+                  <Loader2 className="mx-auto mt-4 h-20 w-20 animate-spin text-primary-main" />
                 </td>
               </tr>
             ) : (

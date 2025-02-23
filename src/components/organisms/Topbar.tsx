@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Menu, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment, Suspense, useState } from "react";
 
 import { CaretDownIcon, SignOutIcon } from "@/assets/icons";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -10,11 +10,13 @@ import { logout } from "@/store/authSlice";
 import { Modal } from "../moleculs";
 import { Button } from "../atomics";
 import { useRouter } from "next/navigation";
+import { User } from "@/types";
 
 const Topbar: React.FC = () => {
   const [modal, setModal] = useState(false);
   const router = useRouter();
-  const user = useAppSelector((state) => state.user);
+  let user: Partial<User> | null = { name: "اسم المستخدم" };
+  user = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
   const logoutHandler = () => {
     setModal(true);
@@ -33,30 +35,31 @@ const Topbar: React.FC = () => {
         <span className="h-10 w-px bg-netral-20"></span>
 
         <Menu as="div" className="relative inline-block text-left">
-          <Menu.Button className="flex items-center gap-7">
-            <section className="flex items-start gap-2">
-              <div className="relative h-10 w-10 overflow-hidden rounded-full">
-                <Image
-                  className="h-full w-full object-cover"
-                  src={user?.profile_photo_path || "/avatar-default.png"}
-                  sizes="40"
-                  alt="Avatar People 1"
-                  width={40}
-                  height={40}
-                />
-              </div>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Menu.Button className="flex items-center gap-7">
+              <section className="flex items-start gap-2">
+                <div className="relative h-10 w-10 overflow-hidden rounded-full">
+                  <Image
+                    className="h-full w-full object-cover"
+                    src={user?.profile_photo_path || "/avatar-default.png"}
+                    sizes="40"
+                    alt="Avatar People 1"
+                    width={40}
+                    height={40}
+                  />
+                </div>
 
-              <div className="space-y-1 text-right">
-                <h5 className="text-body-sm font-bold text-netral-100">
-                  {user?.name || "اسم المستخدم"}
-                </h5>
-                <p className="text-body-xs text-netral-50">{user?.role}</p>
-              </div>
-            </section>
+                <div className="space-y-1 text-right">
+                  <h5 className="text-body-sm font-bold text-netral-100">
+                    {user?.name || "اسم المستخدم"}
+                  </h5>
+                  <p className="text-body-xs text-netral-50">{user?.role}</p>
+                </div>
+              </section>
 
-            <CaretDownIcon className="h-6 w-6 text-netral-50" />
-          </Menu.Button>
-
+              <CaretDownIcon className="h-6 w-6 text-netral-50" />
+            </Menu.Button>
+          </Suspense>
           <Transition
             as={Fragment}
             enter="transition ease-out duration-100"

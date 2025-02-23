@@ -109,12 +109,26 @@ export interface ProductCategory {
   image: string;
   background_color: string;
   text_color: string;
-  variations?: ProductVariants[];
+  variations?: Variation[];
   parent?: ProductCategory | null;
   children?: ProductCategory[];
 }
 
-export interface ProductVariants {}
+export interface Variation {
+  id: number;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  options?: Option[];
+}
+
+export interface Option {
+  id: number;
+  value: string;
+  variation_id: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
 // => end
 
 export interface Order {

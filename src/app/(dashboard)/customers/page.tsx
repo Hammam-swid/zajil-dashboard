@@ -17,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { User } from "@/types";
 import api from "@/lib/api";
 import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const getCustomers = async (page: number, search?: string) => {
   const searchQuery = search ? `&search=${search}` : "";
@@ -118,7 +119,11 @@ const DBCustomersUsers = () => {
             </thead>
             <tbody className="divide-y divide-netral-20 pt-4 text-sm">
               {isLoading ? (
-                <p>جار التحميل...</p>
+                <tr>
+                  <td colSpan={8} className="py-10 text-center">
+                    <Loader2 className="mx-auto h-20 w-20 animate-spin text-primary-main" />
+                  </td>
+                </tr>
               ) : (
                 data?.data?.map((user, index) => (
                   <tr key={user.id}>

@@ -62,7 +62,7 @@ const Sidebar: React.FC = () => {
     >
       <Link
         href="/"
-        className="mb-8 flex items-center gap-3 rounded-md   bg-primary-main p-2 2xl:mb-10"
+        className="mb-8 flex w-fit rounded-md  bg-primary-main p-2 2xl:mb-10"
       >
         <Image
           src="/zajil-logo.png"

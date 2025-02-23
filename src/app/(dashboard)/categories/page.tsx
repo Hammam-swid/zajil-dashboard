@@ -21,6 +21,7 @@ import api from "@/lib/api";
 import { ProductCategory } from "@/types";
 import { useAppSelector } from "@/store/hooks";
 import CategoryForm from "@/components/templates/CategoryForm";
+import { Loader2 } from "lucide-react";
 const getCategories = async (): Promise<ProductCategory[]> => {
   const res = await api.get("/product-categories");
   console.log(res.data.data);
@@ -107,7 +108,9 @@ const DBCategories = () => {
 
         <Suspense fallback={<p>Loading...</p>}>
           {isLoading ? (
-            <p>جار التحميل...</p>
+            <p>
+              <Loader2 className="mx-auto mt-8 h-20 w-20 animate-spin text-primary-main" />
+            </p>
           ) : data ? (
             <CategoriesList categories={data as ProductCategory[]} />
           ) : isError ? (

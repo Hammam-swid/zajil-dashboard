@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Dropzone } from "@/components/moleculs";
@@ -9,9 +9,9 @@ import { City, Driver, VehicleType } from "@/types";
 import api from "@/lib/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { ChevronDown, ChevronDownCircle, Save, X } from "lucide-react";
+import { ChevronDown, Save, X } from "lucide-react";
 import { Listbox } from "@headlessui/react";
-import Select, { OptionsOrGroups } from "react-select";
+import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -335,62 +335,13 @@ const Page = () => {
               <Select
                 value={selectedCity}
                 options={cityOptions}
+                placeholder="اختر المدينة"
+                noOptionsMessage={() => "لا يوجد مدن"}
                 onChange={(v) => {
                   setSelectedCity(v);
                   formik.setFieldValue("region", { value: null, label: null });
                 }}
               />
-
-              {/* <Listbox
-                value={selectedCity}
-                onChange={(v) => {
-                  setSelectedCity(v);
-                  setSearchedCity(
-                    cities?.find((city) => city.id === Number(v))?.name ||
-                      searchedCity
-                  );
-                }}
-              >
-                <input
-                  type="text"
-                  className="w-full rounded-md p-3 text-start outline outline-1 outline-netral-30 focus:outline-primary-main"
-                  value={searchedCity}
-                  onChange={(e) => {
-                    setSearchedCity(e.target.value);
-                    buttonRef.current?.click();
-                    setTimeout(() => {
-                      e.target.focus();
-                    }, 0);
-                  }}
-                />
-                <Listbox.Button ref={buttonRef} hidden>
-                  <div className="relative">
-                    <span className="absolute end-0 top-1/2 -translate-y-1/2 text-netral-50">
-                      <ChevronDown />
-                    </span>
-                  </div>
-                </Listbox.Button>
-                <Listbox.Options className="absolute z-10 mt-1 w-1/2 rounded-md bg-white p-2 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  {cities
-                    ?.filter((city) =>
-                      searchedCity
-                        ? city.id.toString() === searchedCity ||
-                          new RegExp(`${searchedCity}`, "ig").test(city.name)
-                        : true
-                    )
-                    ?.map((city) => (
-                      <Listbox.Option
-                        className={
-                          "cursor-pointer rounded-md p-1 hover:bg-netral-20"
-                        }
-                        key={city.id}
-                        value={city.id.toString()}
-                      >
-                        {city.name}
-                      </Listbox.Option>
-                    ))}
-                </Listbox.Options>
-              </Listbox> */}
             </div>
 
             {selectedCity && (
@@ -402,55 +353,13 @@ const Page = () => {
                 <Select
                   value={formik.values.region}
                   options={regions}
+                  placeholder="اختر المنطقة"
+                  noOptionsMessage={() => "لا يوجد مناطق"}
                   onChange={(v) => {
                     console.log("onChange", v);
                     formik.setFieldValue("region", v);
                   }}
                 />
-                {/* <Listbox
-                  value={formik.values.region_id?.toString()}
-                  onChange={(v) => formik.setFieldValue("region_id", Number(v))}
-                >
-                  <Listbox.Button className="w-full rounded-md p-3 text-start outline outline-1 outline-netral-30 focus:outline-primary-main">
-                    <div className="relative">
-                      <Listbox.Label>
-                        <span className="block  text-netral-70">
-                          {formik.values.region_id
-                            ? regions?.find(
-                                (region) =>
-                                  region.id === formik.values.region_id
-                              )?.name
-                            : "اختر المنطقة"}
-                        </span>
-                      </Listbox.Label>
-                      <span className="absolute end-0 top-1/2 -translate-y-1/2 text-netral-50">
-                        <ChevronDown />
-                      </span>
-                    </div>
-                  </Listbox.Button>
-                  <Listbox.Options className="absolute z-10 mt-1 w-1/2 rounded-md bg-white p-2 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    {regions && regions?.length > 0 ? (
-                      regions?.map((region) => (
-                        <Listbox.Option
-                          className={
-                            "cursor-pointer rounded-md p-1 hover:bg-netral-20"
-                          }
-                          key={region.id}
-                          value={region.id.toString()}
-                        >
-                          {region.name}
-                        </Listbox.Option>
-                      ))
-                    ) : (
-                      <Listbox.Label>لا يوجد مناطق</Listbox.Label>
-                    )}
-                  </Listbox.Options>
-                </Listbox> */}
-                {formik.touched.region && formik.errors.region && (
-                  <p className="ms-2 text-sm text-error-main">
-                    {formik.errors.region}
-                  </p>
-                )}
               </div>
             )}
           </div>

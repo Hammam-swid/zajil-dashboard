@@ -12,7 +12,7 @@ export default function EntriesLinks() {
   const pathname = usePathname();
   return (
     <nav>
-      <ul className="mx-4 flex gap-4 rounded-full bg-white px-8 py-4">
+      <ul className="mx-4 flex gap-4 rounded-full bg-white px-8 py-4 shadow-md">
         {links.map((link) => (
           <li key={link.name}>
             <Link

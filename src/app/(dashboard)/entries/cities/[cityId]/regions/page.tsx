@@ -11,7 +11,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import { Loader2, Pencil, Plus } from "lucide-react";
+import { Check, Loader2, Pencil, Plus, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import * as Yup from "yup";
@@ -55,17 +55,46 @@ interface CityProps {
   cityId: string;
 }
 
+const editCity = async (value: { name: string; cityId: string }) => {
+  const { name } = value;
+  const res = await api.patch(`/dashboards/cities/${value.cityId}`, { name });
+  return res.data.data;
+};
+
 function CityComponent({ cityId }: CityProps) {
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const allCities = queryClient.getQueryData<City[]>(["cities"]);
   const [city, setCity] = useState<City | undefined>(
     allCities?.find((c) => c.id === +cityId)
   );
+  const [isEditable, setIsEditable] = useState<boolean>(false);
+  const [editName, setEditName] = useState<string>("");
 
   // const { data: city } = useQuery({
   //   queryKey: ["city", cityId],
   //   initialData: () => allCities?.find((c) => c.id === +cityId),
   // });
+
+  const editMutation = useMutation({
+    mutationKey: ["city", cityId],
+    mutationFn: editCity,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cities"] });
+      const t = toast({
+        title: "تم تعديل المدينة بنجاح",
+      });
+      setTimeout(() => t.dismiss(), 3000);
+      setIsEditable(false);
+    },
+    onError: () => {
+      const t = toast({
+        title: "حدث خطأ أثناء تعديل المدينة",
+        variant: "destructive",
+      });
+      setTimeout(() => t.dismiss(), 3000);
+    },
+  });
   const [isActive, setIsActive] = useState<boolean>(
     city?.is_active ? true : false
   );
@@ -76,26 +105,68 @@ function CityComponent({ cityId }: CityProps) {
   };
   return (
     <div className="my-8 flex w-fit items-center gap-3 rounded-md bg-white px-6 py-2 shadow-md">
-      <h3 className="text-2xl font-bold">{city?.name}</h3>
-      <Button size="sm" variant="primary-nude">
-        <Pencil />
-      </Button>
-      <Toggle
-        enabled={isActive}
-        setEnabled={async (v: boolean) => {
-          console.log(cityId);
-          setIsActive(v);
-          if (cityId) {
-            try {
-              toggleStatus(city?.id || cityId);
-              queryClient.invalidateQueries({ queryKey: ["cities"] });
-            } catch (error) {
-              console.log(error);
-              setIsActive(!v);
+      {!isEditable ? (
+        <h3 className="text-2xl font-bold">{city?.name}</h3>
+      ) : (
+        <Input
+          id="city-name"
+          value={editName}
+          placeholder="اسم المدينة"
+          onChange={(e) => setEditName(e.target.value)}
+        />
+      )}
+      {!isEditable ? (
+        <Button
+          onClick={() => {
+            setIsEditable(true);
+            setEditName(city?.name || "");
+          }}
+          size="sm"
+          variant="primary-nude"
+        >
+          <Pencil />
+        </Button>
+      ) : (
+        <>
+          <Button
+            onClick={() => setIsEditable(false)}
+            size="sm"
+            variant="error-nude"
+          >
+            <X />
+          </Button>
+          <Button
+            onClick={() => editMutation.mutate({ name: editName, cityId })}
+            size="sm"
+            variant="primary-nude"
+            disabled={editMutation.isPending}
+          >
+            {!editMutation.isPending ? (
+              <Check />
+            ) : (
+              <Loader2 className="animate-spin" />
+            )}
+          </Button>
+        </>
+      )}
+      {!isEditable && (
+        <Toggle
+          enabled={isActive}
+          setEnabled={async (v: boolean) => {
+            console.log(cityId);
+            setIsActive(v);
+            if (cityId) {
+              try {
+                toggleStatus(city?.id || cityId);
+                queryClient.invalidateQueries({ queryKey: ["cities"] });
+              } catch (error) {
+                console.log(error);
+                setIsActive(!v);
+              }
             }
-          }
-        }}
-      />
+          }}
+        />
+      )}
     </div>
   );
 }
