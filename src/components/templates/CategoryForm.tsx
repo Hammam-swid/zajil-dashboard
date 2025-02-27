@@ -9,6 +9,7 @@ import { Upload, UploadCloud } from "lucide-react";
 import NextImage from "next/image";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 interface CategoryFormProps {
   parent: ProductCategory | null;
@@ -30,6 +31,7 @@ export default function CategoryForm({
   category,
   hideForm,
 }: CategoryFormProps) {
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationKey: [category ? "update-category" : "create-category"],
@@ -45,9 +47,20 @@ export default function CategoryForm({
     onSuccess: () => {
       formik.resetForm();
       hideForm?.();
+      const t = toast({
+        title: category ? "تعديل الفئة" : "إضافة الفئة",
+        description: category ? "تم تعديل الفئة بنجاح" : "تم إضافة الفئة بنجاح",
+      });
+      setTimeout(t.dismiss, 3000);
       queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
     onError: (e) => {
+      const t = toast({
+        title: "حدث خطأ",
+        description: "حدث خطأ أثناء إضافة الفئة",
+        variant: "destructive",
+      });
+      setTimeout(t.dismiss, 3000);
       console.log(e);
     },
   });

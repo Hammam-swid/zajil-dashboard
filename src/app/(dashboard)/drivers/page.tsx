@@ -173,6 +173,7 @@ const DBDriversUsers = () => {
           </table>
         </div>
 
+        {/* Pagination  required from the backend first*/}
         <Pagination page={page} setPage={setPage} lastPage={1} />
       </section>
 

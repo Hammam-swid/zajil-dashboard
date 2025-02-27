@@ -20,7 +20,8 @@ import {
 import { SidebarMenu } from "@/components/moleculs";
 import { NijaLogo } from "@/assets/brands";
 import Image from "next/image";
-import { TruckIcon } from "lucide-react";
+import { ArrowLeftRight, TruckIcon } from "lucide-react";
+import { useAppSelector } from "@/store/hooks";
 
 const SidebarExpand: React.FC<{
   children?: React.ReactNode;
@@ -48,13 +49,9 @@ const SidebarExpand: React.FC<{
 };
 
 const Sidebar: React.FC = () => {
-  const [showUsersMenu, setShowUsersMenu] = React.useState(false);
   const [showProductsMenu, setShowProductsMenu] = React.useState(false);
-  const [showTransactionsMenu, setShowTransactionsMenu] = React.useState(false);
-  const [showAuthMenu, setShowAuthMenu] = React.useState(false);
 
-  // const localStorageData = window.localStorage.getItem("Customers")
-
+  const user = useAppSelector((state) => state.user);
   return (
     <aside
       id="sidebar"
@@ -137,12 +134,12 @@ const Sidebar: React.FC = () => {
           />
         </SidebarExpand> */}
 
-        <SidebarMenu
+        {/* <SidebarMenu
           icon={<TagIcon />}
           name="العمليات"
           variant="default"
           href="/flash-sale"
-        />
+        /> */}
 
         <SidebarMenu
           icon={<AppWindowIcon />}
@@ -159,11 +156,20 @@ const Sidebar: React.FC = () => {
         />
 
         <SidebarMenu
-          icon={<UserCircleIcon />}
-          name="Users Role"
+          icon={<ArrowLeftRight />}
+          name="التحويلات"
           variant="default"
-          href="/user-role"
+          href="/transactions"
         />
+
+        {user?.role === "super-admin" && (
+          <SidebarMenu
+            icon={<UserCircleIcon />}
+            name="المسؤولين"
+            variant="default"
+            href="/moderators"
+          />
+        )}
       </nav>
     </aside>
   );

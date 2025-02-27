@@ -1,22 +1,17 @@
 "use client";
 import { Button, Title } from "@/components/atomics";
 
-import {
-  FunnelIcon,
-  PencilSimpleIcon,
-  SortAscendingIcon,
-} from "@/assets/icons";
 import Image from "next/image";
-import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { User } from "@/types";
 import api from "@/lib/api";
-import { Ban, CircleCheck, ShieldCheck, TriangleAlert } from "lucide-react";
+import { Ban, CircleCheck, TriangleAlert } from "lucide-react";
 import { AxiosError } from "axios";
 import { Modal } from "@/components/moleculs";
 import { useState } from "react";
 import CustomerOrders from "@/components/templates/CustomerOrders";
+import { useToast } from "@/hooks/use-toast";
 
 const getUser = async (customerId: string) => {
   const res = await api.get<{ data: User }>(`/dashboards/users/${customerId}`);
@@ -39,14 +34,33 @@ const Page = () => {
 
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
 
+  const search = searchParams.get("search");
+  const fromPage = searchParams.get("from-page");
+  const status = searchParams.get("status");
+
+  const { toast } = useToast();
   const mutation = useMutation({
     mutationKey: ["customer-user", { customerId }],
     mutationFn: () => toggleStatus(customerId),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["customer-user", { customerId }],
       });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "customers-users",
+          { page: Number(fromPage) },
+          { search: search ? search : "" },
+          { status: status },
+        ],
+      });
+      const t = toast({
+        title: "حالة المستخدم",
+        description: "تم تغيير حالة المستخدم بنجاح",
+      });
+      setTimeout(t.dismiss, 3000);
       setOpenModalDelete(false);
     },
   });

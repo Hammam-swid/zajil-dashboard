@@ -12,11 +12,11 @@ import { Loader2 } from "lucide-react";
 import dateFormat from "dateformat";
 import Select, { GroupBase, Options } from "react-select";
 
-const getCustomers = async (page: number, search?: string, status?: string) => {
+const getAdmins = async (page: number, search?: string, status?: string) => {
   const searchQuery = search ? `&search=${search}` : "";
   const statusQuery = status && status !== "all" ? `&status=${status}` : "";
   const res = await api.get(
-    `/dashboards/users?role=user&per_page=10&page=${page}${searchQuery}${statusQuery}`
+    `/dashboards/users?role=super-admin&per_page=10&page=${page}${searchQuery}${statusQuery}`
   );
   console.log(res.data.data);
   res.data.data = res.data.data.map((user: User) => ({
@@ -33,7 +33,7 @@ const statusOptions: Options<{ value: string; label: string }> = [
   { value: "inactive", label: "غير مفعل" },
 ];
 
-const DBCustomersUsers = () => {
+const DBAdminsUsers = () => {
   const [search, setSearch] = useState("");
   const [searchText, setSearchText] = useState("");
   const [page, setPage] = React.useState(1);
@@ -46,19 +46,19 @@ const DBCustomersUsers = () => {
   });
   const { data, isLoading } = useQuery({
     queryKey: [
-      "customers-users",
+      "admins-users",
       { page },
       { search },
       { status: selectedStatus.value },
     ],
-    queryFn: () => getCustomers(page, search, selectedStatus.value),
+    queryFn: () => getAdmins(page, search, selectedStatus.value),
   });
 
   //----------------------------------------------------------------------------------//
 
   return (
     <div className="relative space-y-6 p-6">
-      <h1 className="text-heading-sm font-semibold">العملاء</h1>
+      <h1 className="text-heading-sm font-semibold">المسؤولين</h1>
 
       <section className="relative rounded-lg-10 bg-white p-6">
         <nav className="mb-8 flex items-center justify-between">
@@ -78,7 +78,7 @@ const DBCustomersUsers = () => {
                 if (e.target.value === "") setSearch("");
               }}
               type="text"
-              placeholder="ابحث عن عميل"
+              placeholder="ابحث عن مسؤول"
             />
           </form>
 
@@ -197,7 +197,7 @@ const DBCustomersUsers = () => {
 
                     <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
                       <Link
-                        href={`/customers/${user.id}/details?from-page=${page}&status=${selectedStatus.value}&search${search}`}
+                        href={`/moderators/${user.id}/details?from-page=${page}&status=${selectedStatus.value}&search${search}`}
                       >
                         <Button size="md" variant="primary-nude" type="button">
                           التفاصيل
@@ -223,4 +223,4 @@ const DBCustomersUsers = () => {
   );
 };
 
-export default DBCustomersUsers;
+export default DBAdminsUsers;

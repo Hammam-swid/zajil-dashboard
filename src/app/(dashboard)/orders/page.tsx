@@ -184,12 +184,13 @@ const Page = () => {
         </div>
 
         {/* Pagination */}
-        <Pagination
-          page={page}
-          setPage={setPage}
-          isLoading={isLoading}
-          lastPage={data?.meta.last_page as number}
-        />
+        {data?.meta?.last_page && data?.meta?.last_page > 1 && (
+          <Pagination
+            page={page}
+            setPage={setPage}
+            lastPage={data?.meta?.last_page as number}
+          />
+        )}
       </section>
     </div>
   );

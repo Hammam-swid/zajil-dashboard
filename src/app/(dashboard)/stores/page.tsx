@@ -194,11 +194,13 @@ const Page = () => {
           </table>
         </div>
 
-        <Pagination
-          page={page}
-          setPage={setPage}
-          lastPage={data?.meta?.last_page as number}
-        />
+        {data?.meta?.last_page && data?.meta?.last_page > 1 && (
+          <Pagination
+            page={page}
+            setPage={setPage}
+            lastPage={data?.meta?.last_page as number}
+          />
+        )}
       </section>
 
       {/* Page Action */}

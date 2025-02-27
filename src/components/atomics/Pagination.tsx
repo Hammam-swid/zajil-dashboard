@@ -47,7 +47,10 @@ const Pagination = ({
         </button>
 
         {paginations.map((pagination, index, array) =>
-          index < 5 || array.length === index - 1 || index + 2 === page + 1 ? (
+          index < 3 ||
+          array.length === index + 1 ||
+          page === index + 2 ||
+          index + 2 === page + 1 ? (
             <button
               onClick={() => setPage(index + 1)}
               key={index}
