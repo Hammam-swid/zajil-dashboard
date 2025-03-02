@@ -40,7 +40,7 @@ export default function ProductStats() {
   const radialDummy = [
     {
       color: "bg-primary-main",
-      label: "منجات نشطة",
+      label: "منتجات نشطة",
       number: data?.active_products,
     },
     {

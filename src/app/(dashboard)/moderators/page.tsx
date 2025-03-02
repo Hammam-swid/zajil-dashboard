@@ -199,7 +199,12 @@ const DBAdminsUsers = () => {
                       <Link
                         href={`/moderators/${user.id}/details?from-page=${page}&status=${selectedStatus.value}&search${search}`}
                       >
-                        <Button size="md" variant="primary-nude" type="button">
+                        <Button
+                          size="md"
+                          className="mx-auto"
+                          variant="primary-nude"
+                          type="button"
+                        >
                           التفاصيل
                         </Button>
                       </Link>

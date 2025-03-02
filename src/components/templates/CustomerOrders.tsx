@@ -102,7 +102,7 @@ export default function CustomerOrders({
                           order.status === "canceled"
                             ? "error"
                             : order.status === "in-transit"
-                            ? "warning"
+                            ? "info"
                             : "success"
                         }
                       >
@@ -131,7 +131,7 @@ export default function CustomerOrders({
 
                   <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
                     <Link href={`/orders/${order.id}/details`}>
-                      <Button type="button" variant="primary-outline">
+                      <Button type="button" size="sm" variant="primary-outline">
                         تفاصيل الطلب
                       </Button>
                     </Link>

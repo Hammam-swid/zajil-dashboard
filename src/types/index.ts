@@ -174,3 +174,9 @@ export interface Store {
   location: Location;
   products: Product[];
 }
+
+export interface FAQ {
+  id: number;
+  question: string;
+  answer: string;
+}

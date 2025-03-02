@@ -20,9 +20,7 @@ const authSlice = createSlice({
   reducers: {
     login: (state, action: PayloadAction<{ user?: User; token: string }>) => {
       if (action.payload.user) state.user = action.payload.user;
-      console.log(action.payload);
       state.token = action.payload.token;
-      console.log(state.token);
       setCookie("token", action.payload.token, {
         maxAge: 60 * 60 * 24 * 7,
       });

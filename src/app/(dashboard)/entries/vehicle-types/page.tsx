@@ -14,23 +14,27 @@ const getVehicleTypes = async () => {
   return res.data.data;
 };
 export default function Page() {
-  const { data: vehicleTypes } = useQuery({
+  const { data: vehicleTypes, isLoading } = useQuery({
     queryKey: ["vehicleTypes"],
     queryFn: () => getVehicleTypes(),
   });
   return (
     <div className="mt-8">
       <AddVehicleType />
-      <div className="grid grid-cols-4 gap-4 p-4">
-        {vehicleTypes?.map((type) => (
-          <div
-            className="rounded-md bg-white py-2 text-center text-lg font-semibold shadow-md"
-            key={type.id}
-          >
-            {type.name}
-          </div>
-        ))}
-      </div>
+      {isLoading ? (
+        <Loader2 className="mx-auto mt-8 h-20 w-20 animate-spin text-primary-main" />
+      ) : (
+        <div className="grid grid-cols-4 gap-4 p-4">
+          {vehicleTypes?.map((type) => (
+            <div
+              className="rounded-md bg-white py-2 text-center text-lg font-semibold shadow-md"
+              key={type.id}
+            >
+              {type.name}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

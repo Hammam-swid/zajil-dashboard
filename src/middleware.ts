@@ -9,7 +9,6 @@ export function middleware(request: NextRequest) {
   }
   const isAuthenticated = request.cookies.get("token");
 
-  console.log(isAuthenticated);
   if (!isAuthenticated) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
