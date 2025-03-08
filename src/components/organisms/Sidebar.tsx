@@ -162,7 +162,7 @@ const Sidebar: React.FC = () => {
           href="/transactions"
         />
 
-        {user?.role === "super-admin" && (
+        {user?.role === "super_admin" && (
           <SidebarMenu
             icon={<UserCircleIcon />}
             name="المسؤولين"

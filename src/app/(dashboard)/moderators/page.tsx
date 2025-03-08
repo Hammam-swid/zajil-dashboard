@@ -10,13 +10,13 @@ import { User } from "@/types";
 import api from "@/lib/api";
 import { Loader2 } from "lucide-react";
 import dateFormat from "dateformat";
-import Select, { GroupBase, Options } from "react-select";
+import Select, { Options } from "react-select";
 
 const getAdmins = async (page: number, search?: string, status?: string) => {
   const searchQuery = search ? `&search=${search}` : "";
   const statusQuery = status && status !== "all" ? `&status=${status}` : "";
   const res = await api.get(
-    `/dashboards/users?role=super-admin&per_page=10&page=${page}${searchQuery}${statusQuery}`
+    `/dashboards/admins?per_page=10&page=${page}${searchQuery}${statusQuery}`
   );
   console.log(res.data.data);
   res.data.data = res.data.data.map((user: User) => ({
@@ -44,7 +44,7 @@ const DBAdminsUsers = () => {
     value: "all",
     label: "الكل",
   });
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: [
       "admins-users",
       { page },
@@ -123,7 +123,7 @@ const DBAdminsUsers = () => {
                 </th>
 
                 <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
-                  <span className="text-body-sm font-semibold">الجنسية</span>
+                  <span className="text-body-sm font-semibold">الدور</span>
                 </th>
 
                 <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
@@ -138,7 +138,13 @@ const DBAdminsUsers = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-netral-20 pt-4 text-sm">
-              {isLoading ? (
+              {isError ? (
+                <tr>
+                  <td className="py-10 text-center text-error-main" colSpan={8}>
+                    حدث خطأ أثناء تحميل البيانات
+                  </td>
+                </tr>
+              ) : isLoading ? (
                 <tr>
                   <td colSpan={8} className="py-10 text-center">
                     <Loader2 className="mx-auto h-20 w-20 animate-spin text-primary-main" />
@@ -183,7 +189,7 @@ const DBAdminsUsers = () => {
 
                     <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
                       <span className="text-body-base font-medium text-netral-80">
-                        {user.nationality || "لا يوجد"}
+                        {user.role || "لا يوجد"}
                       </span>
                     </td>
 
