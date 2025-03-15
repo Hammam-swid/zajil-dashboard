@@ -158,7 +158,7 @@ const AuthLogin = () => {
             size="lg"
             disabled={loginMutation.isPending}
             variant="primary-bg"
-            className="w-full cursor-pointer hover:bg-primary-main disabled:cursor-not-allowed disabled:opacity-50 disabled:grayscale"
+            className="w-full cursor-pointer hover:bg-primary-main disabled:cursor-not-allowed disabled:opacity-50"
             // onClick={() => router.push("/")}
             // disabled={true}
           >

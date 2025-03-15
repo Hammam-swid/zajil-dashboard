@@ -11,15 +11,16 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import { Check, Loader2, Pencil, Plus, X } from "lucide-react";
+import { Check, Loader2, Pencil, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import * as Yup from "yup";
 
-const getRegions = async (cityId: string) => {
-  const res = await api.get<{ data: Region[] }>(
+const getCityWithRegions = async (cityId: string) => {
+  const res = await api.get<{ data: City }>(
     `/dashboards/cities/getRegions/${cityId}`
   );
+  console.log(res);
   return res.data.data;
 };
 
@@ -27,14 +28,15 @@ export default function Page() {
   const queryClient = useQueryClient();
   const { cityId } = useParams();
 
-  const { data: regions, isLoading: isRegionsLoading } = useQuery({
-    queryKey: ["regions", cityId],
-    queryFn: () => getRegions(cityId),
+  const { data: city, isLoading: isRegionsLoading } = useQuery({
+    queryKey: ["city", { cityId }],
+    queryFn: () => getCityWithRegions(cityId),
   });
+  const regions = city?.regions || [];
   return (
     <div className="px-8 pb-8">
       <div className="flex items-center justify-between">
-        <CityComponent cityId={cityId} />
+        {city && <CityComponent city={city} />}
         <AddRegion cityId={cityId} queryClient={queryClient} />
       </div>
       {isRegionsLoading ? (
@@ -44,7 +46,7 @@ export default function Page() {
       ) : (
         <div className="grid grid-cols-4 gap-4">
           {regions?.map((region) => (
-            <RegionComponent key={region.id} region={region} />
+            <RegionComponent key={region.id} cityId={cityId} region={region} />
           ))}
         </div>
       )}
@@ -52,35 +54,29 @@ export default function Page() {
   );
 }
 interface CityProps {
-  cityId: string;
+  city: City;
 }
 
-const editCity = async (value: { name: string; cityId: string }) => {
+const editCity = async (value: { name: string; cityId: number }) => {
   const { name } = value;
   const res = await api.patch(`/dashboards/cities/${value.cityId}`, { name });
   return res.data.data;
 };
 
-function CityComponent({ cityId }: CityProps) {
+function CityComponent({ city }: CityProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const allCities = queryClient.getQueryData<City[]>(["cities"]);
-  const [city, setCity] = useState<City | undefined>(
-    allCities?.find((c) => c.id === +cityId)
-  );
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const [editName, setEditName] = useState<string>("");
 
-  // const { data: city } = useQuery({
-  //   queryKey: ["city", cityId],
-  //   initialData: () => allCities?.find((c) => c.id === +cityId),
-  // });
-
   const editMutation = useMutation({
-    mutationKey: ["city", cityId],
+    mutationKey: ["city", { cityId: city?.id.toString() }],
     mutationFn: editCity,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cities"] });
+      queryClient.invalidateQueries({
+        queryKey: ["city", { cityId: city?.id.toString() }],
+      });
       const t = toast({
         title: "تم تعديل المدينة بنجاح",
       });
@@ -98,9 +94,14 @@ function CityComponent({ cityId }: CityProps) {
   const [isActive, setIsActive] = useState<boolean>(
     city?.is_active ? true : false
   );
+
   const toggleStatus = async (cityId: string | number) => {
     const res = await api.patch(`/dashboards/cities/toggle-status/${cityId}`);
     console.log(res);
+    queryClient.invalidateQueries({ queryKey: ["cities"] });
+    queryClient.invalidateQueries({
+      queryKey: ["city", { cityId: city?.id.toString() }],
+    });
     return res.data.data;
   };
   return (
@@ -136,7 +137,9 @@ function CityComponent({ cityId }: CityProps) {
             <X />
           </Button>
           <Button
-            onClick={() => editMutation.mutate({ name: editName, cityId })}
+            onClick={() =>
+              editMutation.mutate({ name: editName, cityId: city?.id })
+            }
             size="sm"
             variant="primary-nude"
             disabled={editMutation.isPending}
@@ -153,15 +156,14 @@ function CityComponent({ cityId }: CityProps) {
         <Toggle
           enabled={isActive}
           setEnabled={async (v: boolean) => {
-            console.log(cityId);
-            setIsActive(v);
-            if (cityId) {
+            if (city) {
               try {
-                toggleStatus(city?.id || cityId);
-                queryClient.invalidateQueries({ queryKey: ["cities"] });
+                toggleStatus(city?.id);
+                setIsActive(v);
+                // queryClient.invalidateQueries({ queryKey: ["cities"] });
               } catch (error) {
                 console.log(error);
-                setIsActive(!v);
+                // setIsActive(!v);
               }
             }
           }}
@@ -173,9 +175,10 @@ function CityComponent({ cityId }: CityProps) {
 
 interface RegionProps {
   region: Region;
+  cityId: string;
 }
 
-function RegionComponent({ region }: RegionProps) {
+function RegionComponent({ region, cityId }: RegionProps) {
   const [isActive, setIsActive] = useState<boolean>(
     region.is_active ? true : false
   );
@@ -184,7 +187,9 @@ function RegionComponent({ region }: RegionProps) {
     const res = await api.patch(
       `/dashboards/regions/toggle-status/${region_id}`
     );
-    console.log(res);
+    queryClient.invalidateQueries({
+      queryKey: ["city", { cityId }],
+    });
     return res.data.data;
   };
   return (
@@ -200,9 +205,9 @@ function RegionComponent({ region }: RegionProps) {
           setIsActive(v);
           try {
             toggleStatus(region.id);
-            queryClient?.invalidateQueries({
-              queryKey: ["regions", { cityId: String(region.city_id) }],
-            });
+            // queryClient?.invalidateQueries({
+            //   queryKey: ["city", { cityId: String(region.city_id) }],
+            // });
           } catch (error) {
             console.log(error);
             setIsActive(!v);
@@ -223,7 +228,6 @@ function AddRegion({ cityId, queryClient }: AddRegionProps) {
   const mutation = useMutation({
     mutationKey: ["regions", cityId],
     mutationFn: async (values: { name: string }) => {
-      console.log(values);
       const res = await api.post(`/dashboards/regions`, {
         ...values,
         city_id: +cityId,
@@ -231,13 +235,12 @@ function AddRegion({ cityId, queryClient }: AddRegionProps) {
       return res.data;
     },
     onSuccess: () => {
-      console.log("error");
       const t = toast({
         title: "تم اضافة المنطقة بنجاح",
         description: "يمكنك الآن اضافة المناطق الجديدة",
       });
       setTimeout(() => t.dismiss(), 3000);
-      queryClient?.invalidateQueries({ queryKey: ["regions", cityId] });
+      queryClient?.invalidateQueries({ queryKey: ["city", { cityId }] });
     },
     onError: () => {
       const t = toast({

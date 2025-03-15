@@ -17,24 +17,24 @@ import { Loader, Loader2, TriangleAlert } from "lucide-react";
 import { AxiosError } from "axios";
 
 const getDrivers = async (page: number) => {
-  const res = await api.get<{ data: Driver[] }>(
+  const res = await api.get<{ data: Driver[]; meta: { last_page: number } }>(
     `/dashboards/drivers?perPage=10&page=${page}`
   );
   console.log(res);
-  return res.data.data;
+  return res.data;
 };
 
 const DBDriversUsers = () => {
   const [page, setPage] = useState(1);
-  const {
-    data: drivers,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<Driver[], AxiosError<{ message: string }>>({
+  const { data, isLoading, isError, error } = useQuery<
+    { data: Driver[]; meta: { last_page: number } },
+    AxiosError<{ message: string }>
+  >({
     queryKey: ["drivers", { page }],
     queryFn: () => getDrivers(page),
   });
+  const drivers = data?.data || [];
+  const lastPage = data?.meta.last_page || 1;
 
   return (
     <div className="relative space-y-6 p-6">
@@ -174,7 +174,9 @@ const DBDriversUsers = () => {
         </div>
 
         {/* Pagination  required from the backend first*/}
-        <Pagination page={page} setPage={setPage} lastPage={1} />
+        {lastPage > 1 && (
+          <Pagination page={page} setPage={setPage} lastPage={lastPage} />
+        )}
       </section>
 
       {/* Page Action */}

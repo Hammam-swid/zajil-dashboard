@@ -1,5 +1,5 @@
 "use client";
-import { Button, Input } from "@/components/atomics";
+import { Button, Input, Pagination } from "@/components/atomics";
 import { useToast } from "@/hooks/use-toast";
 import api from "@/lib/api";
 import { FAQ } from "@/types";
@@ -8,25 +8,72 @@ import { useFormik } from "formik";
 import { Loader2, Pencil, PlusCircle, Save, X } from "lucide-react";
 import { useState } from "react";
 import * as Yup from "yup";
-const getFaqs = async () => {
-  const res = await api.get("/faqs");
-  return res.data.data as FAQ[];
+
+const getFaqs = async (page: number, search: string) => {
+  const pageQuery = page ? `&page=${page}` : "";
+  const searchQuery = search ? `&search=${search}` : "";
+  const res = await api.get<{ data: FAQ[]; meta: { last_page: number } }>(
+    `/faqs?per_page=10${pageQuery}${searchQuery}`
+  );
+  return res.data;
 };
+
 export default function Page() {
-  const { data: faqs } = useQuery({
-    queryKey: ["faqs"],
-    queryFn: getFaqs,
+  const [searchText, setSearchText] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = useQuery({
+    queryKey: ["faqs", { page }, { search }],
+    queryFn: () => getFaqs(page, search),
   });
+
+  const last_page = data?.meta.last_page || 1;
+
+  const faqs = data?.data || [];
 
   return (
     <div>
-      <div className="ms-auto mt-4 w-fit px-7">
-        <AddForm />
+      <div className="mt-4 flex items-center justify-between px-7">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (searchText) {
+              setSearch(searchText);
+              setPage(1);
+            }
+          }}
+          className="max-w-xs"
+        >
+          <Input
+            id="searchText"
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+              if (e.target.value === "") {
+                setSearch("");
+                setPage(1);
+              }
+            }}
+            placeholder="ابحث عن سؤال"
+          />
+        </form>
+        <div className="relative ms-auto w-fit">
+          <AddForm />
+        </div>
       </div>
-      <div className="mt-8 grid grid-cols-2 gap-3 px-7">
-        {faqs?.map((faq) => (
-          <Question faq={faq} key={faq.id} />
-        ))}
+      {isLoading ? (
+        <Loader2 className="mx-auto mt-8 h-20 w-20 animate-spin text-primary-main" />
+      ) : (
+        <div className="mt-8 grid grid-cols-2 gap-3 px-7">
+          {faqs?.map((faq) => (
+            <Question faq={faq} key={faq.id} />
+          ))}
+        </div>
+      )}
+      <div className="mb-8 mt-4 px-7">
+        {last_page > 1 && (
+          <Pagination page={page} setPage={setPage} lastPage={last_page} />
+        )}
       </div>
     </div>
   );
@@ -124,68 +171,69 @@ function AddForm() {
   const [show, setShow] = useState(false);
   const { formik, isPending } = useForm("add", () => setShow(false));
 
-  if (!show)
-    return (
-      <Button variant="primary-bg" onClick={() => setShow(true)}>
+  return (
+    <>
+      <Button variant="primary-bg" onClick={() => setShow((prev) => !prev)}>
         إضافة سؤال
         <PlusCircle className="h-4 w-4" />
       </Button>
-    );
-  return (
-    <form
-      onSubmit={formik.handleSubmit}
-      className="w-96 rounded-md bg-white p-4 shadow-md"
-    >
-      <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-body-lg font-bold">إضافة سؤال</h2>
-        <Button
-          type="button"
-          size="sm"
-          variant="error-nude"
-          onClick={() => {
-            setShow(false);
-            formik.resetForm();
-          }}
+      {show && (
+        <form
+          onSubmit={formik.handleSubmit}
+          className="absolute end-4 top-[120%] z-20 w-96 rounded-md bg-white p-4 shadow-md"
         >
-          <X className="h-4 w-4" />
-        </Button>
-      </div>
-      <Input
-        value={formik.values.question}
-        type="text"
-        id="question"
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        message={
-          formik.errors.question && formik.touched.question
-            ? formik.errors.question
-            : ""
-        }
-        variant={
-          formik.errors.question && formik.touched.question
-            ? "default-error"
-            : "default"
-        }
-        placeholder="السؤال"
-      />
-      <textarea
-        className="mt-4 h-52 w-full resize-none rounded-md border border-gray-300 p-2 focus:border-none focus:outline-1 focus:outline-primary-main"
-        placeholder="الجواب"
-        value={formik.values.answer}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        id="answer"
-        name="answer"
-      />
-      <Button
-        disabled={isPending}
-        type="submit"
-        variant="primary-bg"
-        className="mt-4 w-full disabled:opacity-50"
-      >
-        {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "إضافة"}
-      </Button>
-    </form>
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-body-lg font-bold">إضافة سؤال</h2>
+            <Button
+              type="button"
+              size="sm"
+              variant="error-nude"
+              onClick={() => {
+                setShow(false);
+                formik.resetForm();
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <Input
+            value={formik.values.question}
+            type="text"
+            id="question"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            message={
+              formik.errors.question && formik.touched.question
+                ? formik.errors.question
+                : ""
+            }
+            variant={
+              formik.errors.question && formik.touched.question
+                ? "default-error"
+                : "default"
+            }
+            placeholder="السؤال"
+          />
+          <textarea
+            className="mt-4 h-52 w-full resize-none rounded-md border border-gray-300 p-2 focus:border-none focus:outline-1 focus:outline-primary-main"
+            placeholder="الجواب"
+            value={formik.values.answer}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            id="answer"
+            name="answer"
+          />
+          <Button
+            disabled={isPending}
+            type="submit"
+            variant="primary-bg"
+            className="mt-4 w-full disabled:opacity-50"
+          >
+            {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "إضافة"}
+          </Button>
+        </form>
+      )}
+    </>
   );
 }
 

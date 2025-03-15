@@ -1,22 +1,37 @@
 "use client";
-import { Badge, Button, Checkbox, Input } from "@/components/atomics";
+import {
+  Badge,
+  Button,
+  Checkbox,
+  Input,
+  Pagination,
+} from "@/components/atomics";
 import AddCityForm from "@/components/organisms/AddCityForm";
 import api from "@/lib/api";
 import { City } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
-const getCities = async () => {
-  const res = await api.get<{ data: City[] }>("/dashboards/cities");
-  return res.data.data;
+const getCities = async (page: number) => {
+  const pageQuery = page ? `&page=${page}` : "";
+  const res = await api.get<{ data: City[]; meta: { last_page: number } }>(
+    `/dashboards/cities?per_page=10${pageQuery}&search=طرابلس`
+  );
+  return res.data;
 };
 
 export default function Page() {
-  const { data: cities, isLoading } = useQuery({
-    queryKey: ["cities"],
-    queryFn: getCities,
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["cities", { page }],
+    queryFn: () => getCities(page),
   });
+
+  const cities = data?.data || [];
+  const lastPage = data?.meta.last_page || 1;
 
   return (
     <div className="container relative mx-auto mt-8 min-h-[400px] overflow-hidden bg-white p-4">
@@ -71,6 +86,12 @@ export default function Page() {
             )}
           </tbody>
         </table>
+        <Pagination
+          page={page}
+          setPage={setPage}
+          lastPage={lastPage}
+          isLoading={isLoading}
+        />
       </div>
       <div className="fixed end-4 top-48 w-1/3 rounded-md border border-primary-main/50 bg-white p-4 shadow-xl">
         <AddCityForm />
