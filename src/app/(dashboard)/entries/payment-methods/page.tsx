@@ -1,15 +1,12 @@
 "use client";
 
-import { Button, Checkbox, Input, Toggle } from "@/components/atomics";
+import { Button, Input, Toggle } from "@/components/atomics";
 import { Dropzone } from "@/components/moleculs";
 import { useToast } from "@/hooks/use-toast";
 import api from "@/lib/api";
 import { PaymentMethod } from "@/types";
-import { Switch } from "@headlessui/react";
-import { isPending } from "@reduxjs/toolkit";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 
 const getPaymentMethods = async () => {
@@ -79,7 +76,7 @@ function PaymentMethodComponent({ paymentMethod }: PaymentMethodProps) {
 }
 
 function AddPaymentMethod() {
-  const [showForm, setShowForm] = useState<boolean>(true);
+  const [showForm, setShowForm] = useState<boolean>(false);
   return (
     <div>
       <Button
@@ -100,7 +97,11 @@ interface UsePaymentFormValues {
   image: string | File;
 }
 
-function usePaymentForm(type: "add" | "edit", method?: PaymentMethod) {
+function usePaymentForm(
+  type: "add" | "edit",
+  hideForm: () => void,
+  method?: PaymentMethod
+) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const mutation = useMutation({
@@ -118,6 +119,7 @@ function usePaymentForm(type: "add" | "edit", method?: PaymentMethod) {
       });
       setTimeout(() => t.dismiss(), 3000);
       queryClient.invalidateQueries({ queryKey: ["payment-methods"] });
+      hideForm();
     },
     onError: (error) => {
       const t = toast({
@@ -150,7 +152,11 @@ function PaymentMethodForm({
   type,
   method,
 }: PaymentMethodFormProps) {
-  const { formik } = usePaymentForm(type, method);
+  const { formik, isPending } = usePaymentForm(
+    type,
+    () => setShowForm(false),
+    method
+  );
   const [active, setActive] = useState<boolean>(method?.is_active || false);
   return (
     <div
@@ -169,6 +175,7 @@ function PaymentMethodForm({
           onBlur={formik.handleBlur}
           placeholder="أدخل اسم طريقة الدفع"
           label="الاسم:"
+          disabled={isPending}
         />
         <div className="w-full">
           <label className="block" htmlFor="description">
@@ -182,6 +189,7 @@ function PaymentMethodForm({
             value={formik.values.description}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
+            disabled={isPending}
           />
         </div>
         <div>
@@ -190,6 +198,7 @@ function PaymentMethodForm({
             fieldName="image"
             setField={formik.setFieldValue}
             setTouched={formik.setFieldTouched}
+            path={typeof method?.image === "string" ? method.image : undefined}
             className="mt-1 w-full"
           />
         </div>
@@ -200,10 +209,16 @@ function PaymentMethodForm({
           </div>
         )}
 
-        <Button type="submit" variant="primary-bg" className="block w-full">
+        <Button
+          disabled={isPending}
+          type="submit"
+          variant="primary-bg"
+          className="block w-full disabled:opacity-50"
+        >
           {type === "add" ? "إضافة" : "تعديل"}
         </Button>
         <Button
+          disabled={isPending}
           type="button"
           variant="error-outline"
           onClick={() => setShowForm(false)}

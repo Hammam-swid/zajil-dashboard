@@ -1,29 +1,22 @@
 "use client";
 import React, { useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
 
-import { Modal, PageAction } from "@/components/moleculs";
-import { Button, Input, Title, Toggle } from "@/components/atomics";
+import { Button, Input, Title } from "@/components/atomics";
 import Select from "react-select";
-import {
-  PencilSimpleIcon,
-  RepeatIcon,
-  SelectionPlusIcon,
-  TrashIcon,
-  UploadSimpleIcon,
-} from "@/assets/icons";
-import Image from "next/image";
-import { DropzoneIll } from "@/assets/illustration";
+import { UploadSimpleIcon } from "@/assets/icons";
+
 import { useDropzone } from "react-dropzone";
 import { useFormik } from "formik";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { City } from "@/types";
+import { City, Region } from "@/types";
 import { Save, X } from "lucide-react";
 import * as Yup from "yup";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface FormValues {
-  name: string;
+  store_name: string;
   description: string;
   license_number: string;
   trading_license_number: string;
@@ -34,9 +27,10 @@ interface FormValues {
   email: string;
   password: string;
   confirmPassword: string;
+  date_of_birth: Date | null;
 }
 const validationSchema = Yup.object<FormValues>({
-  name: Yup.string().required("الاسم مطلوب"),
+  store_name: Yup.string().required("الاسم مطلوب"),
   description: Yup.string().required("الوصف مطلوب"),
   license_number: Yup.string().required("رقم الرخصة مطلوب"),
   trading_license_number: Yup.string().required("رقم تجاري مطلوب"),
@@ -44,6 +38,7 @@ const validationSchema = Yup.object<FormValues>({
   region: Yup.object().required("المنطقة مطلوبة"),
   user_name: Yup.string().required("اسم المستخدم مطلوب"),
   phone: Yup.string().required("رقم الهاتف مطلوب"),
+  date_of_birth: Yup.date().required("تاريخ الميلاد مطلوب"),
   email: Yup.string()
     .email("البريد الإلكتروني غير صالح")
     .required("البريد الإلكتروني مطلوب"),
@@ -64,12 +59,20 @@ const getCities = async () => {
   return res.data.data;
 };
 
+const getRegions = async (cityId?: number) => {
+  if (!cityId) return [];
+  const res = await api.get<{ data: { regions: Region[] } }>(
+    `/dashboards/cities/getRegions/${cityId}`
+  );
+  return res.data.data.regions;
+};
+
 const createStore = async (values: FormValues) => {
   const formData = new FormData();
-  formData.append("name", values.name);
-  formData.append("description", values.description);
-  formData.append("license_number", values.license_number);
-  formData.append("trading_license_number", values.trading_license_number);
+  formData.append("store_name", values.store_name);
+  formData.append("store_description", values.description);
+  formData.append("trade_license", values.license_number);
+  formData.append("commercial_register", values.trading_license_number);
   formData.append("passport", values.passport as File);
   formData.append("region_id", "1");
   formData.append("user_name", values.user_name);
@@ -78,7 +81,7 @@ const createStore = async (values: FormValues) => {
   formData.append("password", values.password);
   console.log(formData.get("name"));
 
-  const res = await api.post("/stores", formData);
+  const res = await api.post("/dashboards/sellers", formData);
   console.log(res);
   return res.data;
 };
@@ -92,6 +95,10 @@ const Page = () => {
     value: number;
     label: string;
   } | null>(null);
+  const { data: regions } = useQuery({
+    queryKey: ["regions", { cityId: selectedCity?.value }],
+    queryFn: () => getRegions(selectedCity?.value),
+  });
   const mutation = useMutation({
     mutationKey: ["addStore"],
     mutationFn: createStore,
@@ -101,7 +108,7 @@ const Page = () => {
   });
   const formik = useFormik<FormValues>({
     initialValues: {
-      name: "",
+      store_name: "",
       description: "",
       license_number: "",
       trading_license_number: "",
@@ -112,8 +119,9 @@ const Page = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      date_of_birth: new Date("2000-01-01"),
     },
-    validationSchema,
+    // validationSchema,
     onSubmit: (values, helpers) => {
       console.log("mutation");
       mutation.mutate(values);
@@ -122,9 +130,9 @@ const Page = () => {
 
   console.log(cities);
 
-  const regions = selectedCity
-    ? cities?.find((city) => city.id === selectedCity.value)?.regions
-    : [];
+  // const regions = selectedCity
+  //   ? cities?.find((city) => city.id === selectedCity.value)?.regions
+  //   : [];
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // formik.setFieldValue("image", acceptedFiles[0]);
@@ -144,7 +152,7 @@ const Page = () => {
   }, []);
   const {
     getInputProps: getInputPropsProfile,
-    getRootProps: getRootPropsProfile,
+    getRootProps: getRootPrjopsProfile,
     isDragActive: isDragActiveProfile,
     isDragAccept: isDragAcceptProfile,
     acceptedFiles: acceptedFilesProfile,
@@ -178,10 +186,10 @@ const Page = () => {
               <h5 className="space-y-2 text-body-base font-semibold">الاسم</h5>
               <Input
                 type="text"
-                id="name"
+                id="store_name"
                 variant="default"
                 placeholder="أدخل اسم المتجر"
-                value={formik.values.name}
+                value={formik.values.store_name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
@@ -193,6 +201,9 @@ const Page = () => {
               </h5>
 
               <Input
+                value={formik.values.license_number}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 id="license-number"
                 type="text"
                 variant="default"
@@ -212,6 +223,9 @@ const Page = () => {
                 id="description"
                 className="w-full resize-none rounded-md p-3 outline outline-2 outline-netral-20 first:border-y focus:outline-2 focus:outline-primary-main"
                 placeholder="أدخل وصف المتجر"
+                value={formik.values.description}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
             </div>
 
@@ -225,6 +239,9 @@ const Page = () => {
                 type="text"
                 variant="default"
                 placeholder="رقم السجل التجاري"
+                value={formik.values.trading_license_number}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
             </div>
 
@@ -304,16 +321,18 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <p className="text-xs text-gray-500">بيانات البائع</p>
+          <div className="grid grid-cols-2 items-center justify-center gap-4">
             <div className="w-full border-b border-netral-20 py-7 first:border-y">
               <h5 className="space-y-2 text-body-base font-semibold">
-                اسم المستخدم
+                اسم البائع
               </h5>
               <Input
                 type="text"
                 id="user_name"
                 variant="default"
-                placeholder="أدخل اسم المستخدم"
+                placeholder="أدخل اسم البائع"
+                value={formik.values.user_name}
               />
             </div>
 
@@ -325,6 +344,9 @@ const Page = () => {
               <Input
                 id="email"
                 type="text"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 variant="default"
                 placeholder="أدخل البريد الإلكتروني"
               />
@@ -338,11 +360,35 @@ const Page = () => {
               <Input
                 id="phone"
                 type="text"
+                value={formik.values.phone}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 variant="default"
                 placeholder="أدخل رقم الهاتف"
               />
             </div>
-            <div></div>
+            <div>
+              <h5 className="space-y-2 text-body-base font-semibold">
+                تاريخ الميلاد
+                <span className="text-error-main">*</span>
+              </h5>
+
+              <div className="w-full">
+                <DatePicker
+                  id="date_of_birth"
+                  selected={formik.values.date_of_birth}
+                  showYearDropdown
+                  showMonthDropdown
+                  yearDropdownItemNumber={10}
+                  dateFormat={"dd/MM/yyyy"}
+                  placeholderText="تاريخ الميلاد"
+                  className="w-full grow rounded-lg-10 px-4 py-2 text-lg outline outline-1 outline-netral-50 focus:outline-primary-main"
+                  onChange={(date) =>
+                    formik.setFieldValue("date_of_birth", date)
+                  }
+                />
+              </div>
+            </div>
 
             <div className="w-full border-b border-netral-20 py-7 first:border-y">
               <h5 className="space-y-2 text-body-base font-semibold">

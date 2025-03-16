@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Dropzone } from "@/components/moleculs";
 import { Button, Input, Selectbox, Title } from "@/components/atomics";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { City, Driver, VehicleType } from "@/types";
+import { City, Driver, Region, VehicleType } from "@/types";
 import api from "@/lib/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -73,6 +73,10 @@ const Page = () => {
     queryKey: ["cities"],
     queryFn: getCities,
   });
+  const { data: regions } = useQuery({
+    queryKey: ["regions", { cityId: selectedCity?.value }],
+    queryFn: () => getRegions(selectedCity?.value),
+  });
   const { data: vehicleTypes } = useQuery({
     queryKey: ["vehicle-types"],
     queryFn: getVehicleTypes,
@@ -108,7 +112,6 @@ const Page = () => {
     },
     // validationSchema,
     onSubmit: (values) => {
-      console.log(values);
       driverMutation.mutate(values, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
@@ -121,20 +124,13 @@ const Page = () => {
     },
   });
 
-  console.log(formik.values.region);
-
-  const regions = selectedCity
-    ? cities
-        ?.find((city) => city.id === selectedCity.value)
-        ?.regions?.map((region) => ({
-          value: region.id,
-          label: region.name,
-        }))
-    : [];
-
   const cityOptions = cities?.map((city) => ({
     value: city.id,
     label: city.name,
+  }));
+  const regionsOptions = regions?.map((region) => ({
+    value: region.id,
+    label: region.name,
   }));
 
   return (
@@ -352,7 +348,7 @@ const Page = () => {
 
                 <Select
                   value={formik.values.region}
-                  options={regions}
+                  options={regionsOptions}
                   placeholder="اختر المنطقة"
                   noOptionsMessage={() => "لا يوجد مناطق"}
                   onChange={(v) => {
@@ -555,6 +551,14 @@ const getVehicleTypes = async () => {
 const getCities = async () => {
   const res = await api.get<{ data: City[] }>(`/dashboards/cities`);
   return res.data.data;
+};
+
+const getRegions = async (cityId?: number) => {
+  if (!cityId) return [];
+  const res = await api.get<{ data: { regions: Region[] } }>(
+    `/dashboards/cities/getRegions/${cityId}`
+  );
+  return res.data.data.regions;
 };
 
 const createDriver = async (values: FormValues) => {
