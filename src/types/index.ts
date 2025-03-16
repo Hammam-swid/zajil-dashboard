@@ -180,3 +180,11 @@ export interface FAQ {
   question: string;
   answer: string;
 }
+
+export interface PaymentMethod {
+  id: number;
+  name: string;
+  description: string;
+  image: string | File;
+  is_active: boolean;
+}

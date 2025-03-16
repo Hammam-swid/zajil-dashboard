@@ -16,7 +16,7 @@ import Image from "next/image";
 import { DropzoneIll } from "@/assets/illustration";
 import { useDropzone } from "react-dropzone";
 import { useFormik } from "formik";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { City } from "@/types";
 import { Save, X } from "lucide-react";
@@ -64,6 +64,25 @@ const getCities = async () => {
   return res.data.data;
 };
 
+const createStore = async (values: FormValues) => {
+  const formData = new FormData();
+  formData.append("name", values.name);
+  formData.append("description", values.description);
+  formData.append("license_number", values.license_number);
+  formData.append("trading_license_number", values.trading_license_number);
+  formData.append("passport", values.passport as File);
+  formData.append("region_id", "1");
+  formData.append("user_name", values.user_name);
+  formData.append("phone", values.phone);
+  formData.append("email", values.email);
+  formData.append("password", values.password);
+  console.log(formData.get("name"));
+
+  const res = await api.post("/stores", formData);
+  console.log(res);
+  return res.data;
+};
+
 const Page = () => {
   const { data: cities } = useQuery({
     queryKey: ["cities"],
@@ -73,6 +92,13 @@ const Page = () => {
     value: number;
     label: string;
   } | null>(null);
+  const mutation = useMutation({
+    mutationKey: ["addStore"],
+    mutationFn: createStore,
+    onError: (error) => {
+      console.log(error);
+    },
+  });
   const formik = useFormik<FormValues>({
     initialValues: {
       name: "",
@@ -89,9 +115,12 @@ const Page = () => {
     },
     validationSchema,
     onSubmit: (values, helpers) => {
-      console.log(values);
+      console.log("mutation");
+      mutation.mutate(values);
     },
   });
+
+  console.log(cities);
 
   const regions = selectedCity
     ? cities?.find((city) => city.id === selectedCity.value)?.regions
@@ -152,6 +181,9 @@ const Page = () => {
                 id="name"
                 variant="default"
                 placeholder="أدخل اسم المتجر"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
             </div>
 
@@ -342,6 +374,8 @@ const Page = () => {
               // disabled={driverMutation.isPending || formik.isSubmitting}
               variant="primary-bg"
               type="submit"
+              className="disabled:opacity-50"
+              disabled={mutation.isPending}
             >
               حفظ المتجر
               <Save className="h-5 w-5" />
