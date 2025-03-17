@@ -137,13 +137,15 @@ const Page = () => {
                       <td className="whitespace-nowrap px-3 py-5 text-start first:pl-5 last:pr-5">
                         <div className="flex items-center gap-3">
                           <div className="relative h-20 w-20 overflow-hidden rounded-lg-10">
-                            <Image
-                              src={store.image}
-                              className="h-full w-full object-cover"
-                              alt={"شعار " + store.name}
-                              width={80}
-                              height={80}
-                            />
+                            {store.image && (
+                              <Image
+                                src={store.image}
+                                className="h-full w-full object-cover"
+                                alt={"شعار " + store.name}
+                                width={80}
+                                height={80}
+                              />
+                            )}
                           </div>
 
                           <span className="w-48 whitespace-pre-wrap break-words text-body-base font-medium text-netral-80">
@@ -202,20 +204,6 @@ const Page = () => {
           />
         )}
       </section>
-
-      {/* Page Action */}
-      {/* {isSelecting && (
-        <PageAction
-          variant="sticky"
-          actionLabel="2 Product Selected"
-          btnPrimaryLabel="Delete"
-          btnPrimaryVariant="error-bg"
-          btnPrimaryFun={() => setOpenModalDelete(true)}
-          btnSecondaryLabel="Draft"
-          btnsecondaryVariant="warning-outline"
-          btnSecondaryFun={() => setOpenModalDraft(true)}
-        />
-      )} */}
 
       <Modal
         variant="error"

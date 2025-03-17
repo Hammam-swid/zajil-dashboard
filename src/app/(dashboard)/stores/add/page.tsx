@@ -14,31 +14,37 @@ import { Save, X } from "lucide-react";
 import * as Yup from "yup";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Dropzone } from "@/components/moleculs";
+import { useToast } from "@/hooks/use-toast";
+import { AxiosError } from "axios";
 
 interface FormValues {
   store_name: string;
-  description: string;
-  license_number: string;
-  trading_license_number: string;
+  store_description: string;
+  commercial_register: string;
+  trade_license: string;
   passport: File | null;
   region: { label: string; value: number } | null;
-  user_name: string;
-  phone: string;
+  name: string;
+  // phone: string;
   email: string;
+  nationality: string;
   password: string;
   confirmPassword: string;
   date_of_birth: Date | null;
 }
 const validationSchema = Yup.object<FormValues>({
   store_name: Yup.string().required("الاسم مطلوب"),
-  description: Yup.string().required("الوصف مطلوب"),
-  license_number: Yup.string().required("رقم الرخصة مطلوب"),
-  trading_license_number: Yup.string().required("رقم تجاري مطلوب"),
-  passport: Yup.mixed().required("الصورة مطلوبة"),
+  store_description: Yup.string().required("الوصف مطلوب"),
+  trade_license: Yup.string().required("رقم الرخصة التجارية مطلوب"),
+  commercial_register: Yup.string().required("رقم السجل التجاري مطلوب"),
+  passport: Yup.mixed().required("جواز السفر مطلوبة"),
   region: Yup.object().required("المنطقة مطلوبة"),
-  user_name: Yup.string().required("اسم المستخدم مطلوب"),
-  phone: Yup.string().required("رقم الهاتف مطلوب"),
-  date_of_birth: Yup.date().required("تاريخ الميلاد مطلوب"),
+  name: Yup.string().required("اسم البائع مطلوب"),
+  // phone: Yup.string().required("رقم الهاتف مطلوب"),
+  date_of_birth: Yup.date()
+    .min(new Date("1920-01-01"), "تاريخ الميلاد غير صالح")
+    .max(new Date(), "تاريخ الميلاد غير صالح"),
   email: Yup.string()
     .email("البريد الإلكتروني غير صالح")
     .required("البريد الإلكتروني مطلوب"),
@@ -70,18 +76,24 @@ const getRegions = async (cityId?: number) => {
 const createStore = async (values: FormValues) => {
   const formData = new FormData();
   formData.append("store_name", values.store_name);
-  formData.append("store_description", values.description);
-  formData.append("trade_license", values.license_number);
-  formData.append("commercial_register", values.trading_license_number);
+  formData.append("store_description", values.store_description);
+  formData.append("trade_license", values.trade_license);
+  formData.append("commercial_register", values.commercial_register);
   formData.append("passport", values.passport as File);
-  formData.append("region_id", "1");
-  formData.append("user_name", values.user_name);
-  formData.append("phone", values.phone);
+  formData.append("nationality", values.nationality);
+  formData.append("region_id", values.region?.value.toString() as string);
+  formData.append("name", values.name);
+  // formData.append("phone", values.phone);
   formData.append("email", values.email);
   formData.append("password", values.password);
+  formData.append("date_of_birth", values?.date_of_birth?.toString() as string);
   console.log(formData.get("name"));
 
-  const res = await api.post("/dashboards/sellers", formData);
+  const res = await api.post("/dashboards/sellers", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   console.log(res);
   return res.data;
 };
@@ -99,77 +111,52 @@ const Page = () => {
     queryKey: ["regions", { cityId: selectedCity?.value }],
     queryFn: () => getRegions(selectedCity?.value),
   });
+  const { toast } = useToast();
   const mutation = useMutation({
     mutationKey: ["addStore"],
     mutationFn: createStore,
+    onSuccess: () => {
+      const t = toast({
+        title: "تمت العملية بنجاح",
+        description: "تمت إضافة متجر بنجاح",
+      });
+      setTimeout(t.dismiss, 3000);
+    },
     onError: (error) => {
       console.log(error);
+      const t = toast({
+        type: "background",
+        title: "حدث خطأ",
+        description: "حدث خطأ أثناء إضافة المتجر، يرجى المحاولة مرة أخرى",
+        variant: "destructive",
+      });
+      setTimeout(() => t.dismiss(), 3000);
     },
   });
   const formik = useFormik<FormValues>({
     initialValues: {
       store_name: "",
-      description: "",
-      license_number: "",
-      trading_license_number: "",
+      store_description: "",
+      commercial_register: "",
+      trade_license: "",
       passport: null,
       region: null,
-      user_name: "",
-      phone: "",
+      name: "",
+      // phone: "",
       email: "",
+      nationality: "",
       password: "",
       confirmPassword: "",
       date_of_birth: new Date("2000-01-01"),
     },
     // validationSchema,
-    onSubmit: (values, helpers) => {
-      console.log("mutation");
+    onSubmit: (values) => {
+      console.log(values);
       mutation.mutate(values);
     },
   });
 
-  console.log(cities);
-
-  // const regions = selectedCity
-  //   ? cities?.find((city) => city.id === selectedCity.value)?.regions
-  //   : [];
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    // formik.setFieldValue("image", acceptedFiles[0]);
-    console.log(acceptedFiles[0]);
-  }, []);
-  const {
-    getInputProps,
-    getRootProps,
-    isDragActive,
-    isDragAccept,
-    acceptedFiles,
-  } = useDropzone({ onDrop });
-
-  const onProfileDrop = useCallback((acceptedFiles: File[]) => {
-    // formik.setFieldValue("user.image", acceptedFiles[0]);
-    console.log(acceptedFiles[0]);
-  }, []);
-  const {
-    getInputProps: getInputPropsProfile,
-    getRootProps: getRootPrjopsProfile,
-    isDragActive: isDragActiveProfile,
-    isDragAccept: isDragAcceptProfile,
-    acceptedFiles: acceptedFilesProfile,
-  } = useDropzone({ onDrop: onProfileDrop });
-
-  const [activeState, setActiveState] = React.useState(1);
-  const [openModalDropzone, setOpenModalDropzone] = React.useState(false);
-  // -------------------------------------------------------------------------
-  const nextState = () => {
-    if (activeState > 1) {
-      setOpenModalDropzone(false);
-      setActiveState(1);
-    } else {
-      setActiveState(activeState + 1);
-    }
-  };
-  // -------------------------------------------------------------------------
+  console.log(formik.errors);
 
   return (
     <div className="relative space-y-6 p-6">
@@ -187,7 +174,16 @@ const Page = () => {
               <Input
                 type="text"
                 id="store_name"
-                variant="default"
+                variant={
+                  formik.touched.store_name && formik.errors.store_name
+                    ? "default-error"
+                    : "default"
+                }
+                message={
+                  formik.touched.store_name && formik.errors.store_name
+                    ? formik.errors.store_name
+                    : ""
+                }
                 placeholder="أدخل اسم المتجر"
                 value={formik.values.store_name}
                 onChange={formik.handleChange}
@@ -201,32 +197,48 @@ const Page = () => {
               </h5>
 
               <Input
-                value={formik.values.license_number}
+                value={formik.values.trade_license}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                id="license-number"
+                id="trade_license"
                 type="text"
-                variant="default"
+                variant={
+                  formik.touched.trade_license && formik.errors.trade_license
+                    ? "default-error"
+                    : "default"
+                }
+                message={
+                  formik.touched.trade_license && formik.errors.trade_license
+                    ? formik.errors.trade_license
+                    : ""
+                }
                 placeholder="رقم الرخصة التجارية"
               />
             </div>
 
             <div className="w-full border-b border-netral-20 py-7 first:border-y">
               <label
-                htmlFor="description"
+                htmlFor="store_description"
                 className="space-y-2 text-body-base font-semibold"
               >
                 الوصف
               </label>
 
               <textarea
-                id="description"
+                id="store_description"
+                name="store_description"
                 className="w-full resize-none rounded-md p-3 outline outline-2 outline-netral-20 first:border-y focus:outline-2 focus:outline-primary-main"
                 placeholder="أدخل وصف المتجر"
-                value={formik.values.description}
+                value={formik.values.store_description}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
+              {formik.errors.store_description &&
+                formik.touched.store_description && (
+                  <p className="text-sm text-error-main">
+                    {formik.errors.store_description}
+                  </p>
+                )}
             </div>
 
             <div className="w-full border-b border-netral-20 py-7 first:border-y">
@@ -235,11 +247,22 @@ const Page = () => {
               </h5>
 
               <Input
-                id="trading-license-number"
+                id="commercial_register"
                 type="text"
-                variant="default"
+                variant={
+                  formik.touched.commercial_register &&
+                  formik.errors.commercial_register
+                    ? "default-error"
+                    : "default"
+                }
+                message={
+                  formik.touched.commercial_register &&
+                  formik.errors.commercial_register
+                    ? formik.errors.commercial_register
+                    : ""
+                }
                 placeholder="رقم السجل التجاري"
-                value={formik.values.trading_license_number}
+                value={formik.values.commercial_register}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
@@ -280,10 +303,14 @@ const Page = () => {
                   onChange={(e) => {
                     formik.setFieldValue("region", e);
                   }}
+                  onBlur={() => formik.setFieldTouched("region", true)}
                   noOptionsMessage={() => "لا يوجد مناطق"}
                   placeholder="اختر المنطقة"
                   className=""
                 />
+                {formik.errors.region && formik.touched.region && (
+                  <p>{formik.errors.region}</p>
+                )}
               </div>
             )}
           </div>
@@ -293,13 +320,16 @@ const Page = () => {
               <h5 className="space-y-2 text-body-base font-semibold">
                 صورة جواز السفر
               </h5>
-              <p className="w-64 text-body-sm text-netral-50">
+              {/* <p className="w-64 text-body-sm text-netral-50">
                 Recommended minimum width 1080px X 1080px, with a max size of
                 5MB, only *.png, *.jpg and *.jpeg image files are accepted
-              </p>
+                </p> */}
+              {formik.errors.passport && formik.touched.passport && (
+                <p>{formik.errors.passport}</p>
+              )}
             </div>
 
-            <div
+            {/* <div
               {...getRootProps()}
               className={`group relative flex h-56 w-full max-w-[1000px] flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-netral-30 bg-netral-15`}
             >
@@ -318,10 +348,18 @@ const Page = () => {
               <p className="text-center text-body-sm font-medium text-netral-50">
                 أو قم بسحب الصورة هنا
               </p>
-            </div>
+            </div> */}
+            <Dropzone
+              fieldName="passport"
+              className={`group relative flex h-56 w-full max-w-[1000px] flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-netral-30 bg-netral-15`}
+              setField={formik.setFieldValue}
+              setTouched={formik.setFieldTouched}
+            />
           </div>
 
-          <p className="text-xs text-gray-500">بيانات البائع</p>
+          <Title size="sm" variant="default">
+            بيانات البائع
+          </Title>
           <div className="grid grid-cols-2 items-center justify-center gap-4">
             <div className="w-full border-b border-netral-20 py-7 first:border-y">
               <h5 className="space-y-2 text-body-base font-semibold">
@@ -329,10 +367,21 @@ const Page = () => {
               </h5>
               <Input
                 type="text"
-                id="user_name"
-                variant="default"
+                id="name"
+                variant={
+                  formik.touched.name && formik.errors.name
+                    ? "default-error"
+                    : "default"
+                }
+                message={
+                  formik.touched.name && formik.errors.name
+                    ? formik.errors.name
+                    : ""
+                }
                 placeholder="أدخل اسم البائع"
-                value={formik.values.user_name}
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
             </div>
 
@@ -347,12 +396,21 @@ const Page = () => {
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                variant="default"
+                variant={
+                  formik.touched.email && formik.errors.email
+                    ? "default-error"
+                    : "default"
+                }
+                message={
+                  formik.touched.email && formik.errors.email
+                    ? formik.errors.email
+                    : ""
+                }
                 placeholder="أدخل البريد الإلكتروني"
               />
             </div>
 
-            <div className="w-full border-b border-netral-20 py-7 first:border-y">
+            {/* <div className="w-full border-b border-netral-20 py-7 first:border-y">
               <h5 className="space-y-2 text-body-base font-semibold">
                 رقم الهاتف
               </h5>
@@ -363,8 +421,42 @@ const Page = () => {
                 value={formik.values.phone}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                variant="default"
+                variant={
+                  formik.touched.phone && formik.errors.phone
+                    ? "default-error"
+                    : "default"
+                }
+                message={
+                  formik.touched.phone && formik.errors.phone
+                    ? formik.errors.phone
+                    : ""
+                }
                 placeholder="أدخل رقم الهاتف"
+              />
+            </div> */}
+
+            <div className="w-full border-b border-netral-20 py-7 first:border-y">
+              <h5 className="space-y-2 text-body-base font-semibold">
+                الجنسية
+              </h5>
+
+              <Input
+                id="nationality"
+                type="text"
+                value={formik.values.nationality}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                variant={
+                  formik.touched.nationality && formik.errors.nationality
+                    ? "default-error"
+                    : "default"
+                }
+                message={
+                  formik.touched.nationality && formik.errors.nationality
+                    ? formik.errors.nationality
+                    : ""
+                }
+                placeholder="أدخل جنسية البائع"
               />
             </div>
             <div>
@@ -386,10 +478,15 @@ const Page = () => {
                   onChange={(date) =>
                     formik.setFieldValue("date_of_birth", date)
                   }
+                  onBlur={() => formik.setFieldTouched("date_of_birth", true)}
                 />
               </div>
+              {formik.errors.date_of_birth && formik.touched.date_of_birth && (
+                <p>{formik.errors.date_of_birth}</p>
+              )}
             </div>
 
+            <div></div>
             <div className="w-full border-b border-netral-20 py-7 first:border-y">
               <h5 className="space-y-2 text-body-base font-semibold">
                 كلمة المرور
@@ -398,8 +495,20 @@ const Page = () => {
               <Input
                 id="password"
                 type="password"
-                variant="default"
+                variant={
+                  formik.touched.password && formik.errors.password
+                    ? "default-error"
+                    : "default"
+                }
+                message={
+                  formik.touched.password && formik.errors.password
+                    ? formik.errors.password
+                    : ""
+                }
                 placeholder="أدخل كلمة المرور"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
             </div>
             <div className="w-full border-b border-netral-20 py-7 first:border-y">
@@ -408,10 +517,24 @@ const Page = () => {
               </h5>
 
               <Input
-                id="passwordConfirm"
+                id="confirmPassword"
                 type="password"
-                variant="default"
+                variant={
+                  formik.touched.confirmPassword &&
+                  formik.errors.confirmPassword
+                    ? "default-error"
+                    : "default"
+                }
+                message={
+                  formik.touched.confirmPassword &&
+                  formik.errors.confirmPassword
+                    ? formik.errors.confirmPassword
+                    : ""
+                }
                 placeholder="تأكيد كلمة المرور"
+                value={formik.values.confirmPassword}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
             </div>
           </div>
@@ -437,17 +560,6 @@ const Page = () => {
           </div>
         </form>
       </section>
-
-      {/* <PageAction
-        actionLabel="Last saved"
-        actionDesc="Nov 9, 2022-17.09"
-        btnPrimaryLabel="Next"
-        btnPrimaryVariant="primary-bg"
-        btnPrimaryFun={() => router.push("/products/variants")}
-        btnSecondaryLabel="Discard"
-        btnsecondaryVariant="primary-nude"
-        btnSecondaryFun={() => router.back()}
-      /> */}
     </div>
   );
 };
