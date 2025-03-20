@@ -1,11 +1,10 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { Dropzone } from "@/components/moleculs";
-import { Button, Input, Selectbox, Title } from "@/components/atomics";
+import { Button, Input, Title } from "@/components/atomics";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { City, Driver, Region, VehicleType } from "@/types";
+import { City, Region, VehicleType } from "@/types";
 import api from "@/lib/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -14,6 +13,7 @@ import { Listbox } from "@headlessui/react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useToast } from "@/hooks/use-toast";
 
 interface FormValues {
   name: string;
@@ -65,6 +65,7 @@ const validationSchema = Yup.object<FormValues>({
 });
 
 const Page = () => {
+  const { toast } = useToast();
   const [selectedCity, setSelectedCity] = useState<{
     value: number;
     label: string;
@@ -82,13 +83,17 @@ const Page = () => {
     queryFn: getVehicleTypes,
   });
 
-  const router = useRouter();
   const queryClient = useQueryClient();
   const driverMutation = useMutation({
     mutationKey: ["create-driver"],
     mutationFn: createDriver,
-    onError: (error) => {
-      console.log(error);
+    onError: () => {
+      const t = toast({
+        title: "حدث خطأ",
+        description: "حدث خطأ أثناء عملية الإضافة",
+        variant: "destructive",
+      });
+      setTimeout(t.dismiss, 3000);
     },
   });
 
@@ -110,15 +115,16 @@ const Page = () => {
       year: "",
       document: null,
     },
-    // validationSchema,
+    validationSchema,
     onSubmit: (values) => {
       driverMutation.mutate(values, {
         onSuccess: () => {
+          const t = toast({
+            title: "نجحت العملية",
+            description: "تمت إضافة سائق بنجاح",
+          });
+          setTimeout(t.dismiss, 3000);
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
-          setTimeout(() => {
-            router.push("/drivers");
-          }, 2000);
-          // router.push("/drivers");
         },
       });
     },
@@ -519,7 +525,7 @@ const Page = () => {
           </div>
           <div className="mt-8 flex flex-row-reverse gap-4 rounded-lg p-3 shadow-lg outline outline-1 outline-primary-main">
             <Button
-              disabled={driverMutation.isPending || formik.isSubmitting}
+              disabled={driverMutation.isPending}
               variant="primary-bg"
               type="submit"
             >
@@ -562,8 +568,7 @@ const getRegions = async (cityId?: number) => {
 };
 
 const createDriver = async (values: FormValues) => {
-  const fakeUrl =
-    "https://static.vecteezy.com/system/resources/previews/041/290/593/non_2x/ai-generated-short-sleeves-black-tshirt-isolated-on-a-transparent-background-free-png.png";
+  console.log(values);
   const formData = new FormData();
   formData.append("name", values.name);
   formData.append("phone", values.phone);
@@ -572,20 +577,23 @@ const createDriver = async (values: FormValues) => {
   if (values.region?.value)
     formData.append("region_id", values.region?.value?.toString());
   formData.append("plate_no", values.plate_no);
-  formData.append("date_of_birth", values.date_of_birth.toISOString());
+  // formData.append("date_of_birth", values.date_of_birth.toString());
   if (values.vehicle_type_id)
     formData.append("vehicle_type_id", values.vehicle_type_id.toString());
   formData.append("vehicle_name", values.vehicle_name);
   formData.append("model", values.model);
   formData.append("vin", values.vin);
   formData.append("year", values.year);
-  if (values.passport) formData.append("passport", fakeUrl);
+  if (values.passport) formData.append("passport", values.passport);
   // if (values.clearance_form)
   //   formData.append("clearance_form", values.clearance_form);
-  if (values.driving_license) formData.append("driving_license", fakeUrl);
-  if (values.document) formData.append("document", fakeUrl);
+  if (values.driving_license)
+    formData.append("driving_license", values.driving_license);
+  if (values.document) formData.append("document", values.document);
 
-  const res = await api.post("/dashboards/drivers", formData);
+  const res = await api.post("/dashboards/drivers", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return res.data;
 };
 

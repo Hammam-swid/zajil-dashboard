@@ -143,7 +143,7 @@ const DBDriversUsers = () => {
 
                       <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
                         <Link
-                          className="block w-full text-center"
+                          className="mx-auto block w-fit text-center "
                           href={`/drivers/${item.id}/details`}
                         >
                           <Button size="md" variant="primary-nude">
@@ -178,17 +178,6 @@ const DBDriversUsers = () => {
           <Pagination page={page} setPage={setPage} lastPage={lastPage} />
         )}
       </section>
-
-      {/* Page Action */}
-      {/* {isSelecting && (
-        <PageAction
-          variant="sticky"
-          actionLabel="2 Product Selected"
-          btnPrimaryLabel="Delete"
-          btnPrimaryVariant="error-bg"
-          btnPrimaryFun={() => setOpenModalDelete(true)}
-        />
-      )} */}
     </div>
   );
 };

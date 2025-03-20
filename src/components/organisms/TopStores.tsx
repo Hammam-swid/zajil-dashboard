@@ -48,14 +48,16 @@ export default function TopStores() {
                 <td className="whitespace-nowrap px-3 py-2 text-start first:pl-5 last:pr-5">
                   <div className="flex items-center gap-3">
                     <div className="relative h-16 w-16 overflow-hidden rounded-lg-10 2xl:h-20 2xl:w-20">
-                      <Image
-                        src={store.image}
-                        className="h-full w-full object-cover"
-                        sizes="responsive"
-                        width={80}
-                        height={80}
-                        alt={"شعار " + store.name}
-                      />
+                      {store.image && (
+                        <Image
+                          src={store.image}
+                          className="h-full w-full object-cover"
+                          sizes="responsive"
+                          width={80}
+                          height={80}
+                          alt={"شعار " + store.name}
+                        />
+                      )}
                     </div>
 
                     <span className="w-24 whitespace-pre-wrap break-words text-body-sm font-medium text-netral-80 2xl:w-48 2xl:text-body-base">

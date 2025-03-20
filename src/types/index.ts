@@ -15,6 +15,7 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   orders?: Order[];
+  vehicles?: Vehicle[];
 }
 
 export interface Phone {
@@ -47,12 +48,19 @@ export interface Driver {
   isAvailable: boolean;
   region: Region;
   user: User;
+  passport: string;
+  driving_license: string;
   vehicles: Vehicle[];
 }
 
 export interface Vehicle {
   id: number;
-  plateNumber: string;
+  plate_no: string;
+  model: string;
+  name: string;
+  vin: string;
+  year: string;
+  document: string;
   vehicleType: VehicleType;
   createdAt: Date;
   updatedAt: Date;
