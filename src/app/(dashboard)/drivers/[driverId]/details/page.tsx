@@ -1,9 +1,8 @@
 "use client";
 
-import { Badge, Button, Title, Toggle } from "@/components/atomics";
+import { Badge, Button, Title } from "@/components/atomics";
 
 import {
-  CheckIcon,
   FunnelIcon,
   PencilSimpleIcon,
   SortAscendingIcon,
@@ -22,9 +21,7 @@ const Page = () => {
     queryKey: ["driver", { driverId }],
     queryFn: () => getDriver(driverId),
   });
-  console.log(driver);
 
-  const [isActive, setIsActive] = useState(false);
   return (
     <div className="relative space-y-6 p-6">
       <section className="relative rounded-lg-10 bg-white p-6">
@@ -129,7 +126,7 @@ const Page = () => {
                 </h5>
                 {driver?.passport && (
                   <Image
-                    src={driver?.passport}
+                    src={driver?.passport as string}
                     width={100}
                     height={100}
                     alt="صورة جواز السفر"
@@ -143,7 +140,7 @@ const Page = () => {
                 </h5>
                 {driver?.driving_license && (
                   <Image
-                    src={driver?.driving_license}
+                    src={driver?.driving_license as string}
                     width={100}
                     height={100}
                     alt="صورة رخصة القيادة"

@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { useToast } from "./use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface FormValues {
   name: string;
@@ -25,6 +25,7 @@ interface FormValues {
   vin: string;
   vehicle_type_id: number | null;
   year: string;
+  clearance_form: File | null;
 }
 
 const validationSchema = Yup.object<FormValues>({
@@ -53,20 +54,23 @@ const validationSchema = Yup.object<FormValues>({
   passport: Yup.mixed().required("جواز السفر مطلوب"),
   driving_license: Yup.mixed().required("رخصة القيادة مطلوبة"),
   document: Yup.mixed().required("كتيب السيارة مطلوب"),
+  clearance_form: Yup.mixed().typeError("إخلاء الطلب مطلوب"),
 });
 
 export default function useDriverForm(type: "add" | "edit", driver?: Driver) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const [selectedCity, setSelectedCity] = useState<{
-    value: number;
-    label: string;
-  } | null>(null);
   const { data: cities, isLoading: isCitiesLoading } = useQuery({
     queryKey: ["cities"],
     queryFn: getCities,
   });
+
+  const [selectedCity, setSelectedCity] = useState<{
+    value: number;
+    label: string;
+  } | null>(null);
+
   const { data: regions, isLoading: isRegionsLoading } = useQuery({
     queryKey: ["regions", { cityId: selectedCity?.value }],
     queryFn: () => getRegions(selectedCity?.value),
@@ -82,7 +86,8 @@ export default function useDriverForm(type: "add" | "edit", driver?: Driver) {
       type === "add"
         ? createDriver
         : (values: FormValues) => updateDriver(values, driver?.id as number),
-    onError: () => {
+    onError: (error) => {
+      console.log(error);
       const t = toast({
         title: "حدث خطأ",
         description:
@@ -94,24 +99,33 @@ export default function useDriverForm(type: "add" | "edit", driver?: Driver) {
       setTimeout(t.dismiss, 3000);
     },
   });
+  // useEffect(() => {
+  //   if (driver) {
+  //     formik.setFieldValue("region", {
+  //       value: driver.region.id.toString(),
+  //       label: driver.region.name,
+  //     });
+  //   }
+  // }, []);
 
   const formik = useFormik<FormValues>({
     initialValues: {
-      name: "",
-      phone: "",
-      email: "",
-      nationality: "",
+      name: driver?.user.name || "",
+      phone: driver?.user?.phones?.[0]?.phone || "",
+      email: driver?.user.email || "",
+      nationality: driver?.user?.nationality || "",
       driving_license: null,
       region: null,
-      plate_no: "",
+      plate_no: driver?.user?.vehicles?.[0]?.plate_no || "",
       passport: null,
-      date_of_birth: new Date("2000-01-01"),
-      vehicle_name: "",
-      model: "",
-      vin: "",
+      date_of_birth: driver?.user?.date_of_birth || new Date("2000-01-01"),
+      vehicle_name: driver?.user?.vehicles?.[0]?.name || "",
+      model: driver?.user?.vehicles?.[0]?.model || "",
+      vin: driver?.user?.vehicles?.[0]?.vin || "",
       vehicle_type_id: null,
-      year: "",
+      year: driver?.user?.vehicles?.[0]?.year || "",
       document: null,
+      clearance_form: null,
     },
     validationSchema,
     onSubmit: (values) => {

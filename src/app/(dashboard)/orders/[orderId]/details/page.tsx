@@ -106,7 +106,6 @@ const Page = () => {
           <section className="p-4">
             <h3 className="font-bold">معلومات المستخدم</h3>
             <div className="mt-3 flex gap-3">
-              {console.log(order?.user.profile_photo_path) ?? ""}
               <Image
                 className="h-10 w-10 rounded-full"
                 src={

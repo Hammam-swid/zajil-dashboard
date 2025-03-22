@@ -195,6 +195,7 @@ const DriverForm = ({ driver, formType }: DriverFormProps) => {
             <div className="flex flex-wrap gap-4">
               <Dropzone
                 fieldName="document"
+                path={driver?.user?.vehicles?.[0]?.document}
                 arabicName="كتيب السيارة"
                 setField={formik.setFieldValue}
                 setTouched={formik.setFieldTouched}
@@ -202,15 +203,26 @@ const DriverForm = ({ driver, formType }: DriverFormProps) => {
               <Dropzone
                 fieldName="driving_license"
                 arabicName="رخصة القيادة"
+                path={driver?.driving_license as string}
                 setField={formik.setFieldValue}
                 setTouched={formik.setFieldTouched}
               />
               <Dropzone
                 fieldName="passport"
                 arabicName="جواز السفر"
+                path={driver?.passport as string}
                 setField={formik.setFieldValue}
                 setTouched={formik.setFieldTouched}
               />
+              {formType === "edit" && (
+                <Dropzone
+                  fieldName="clearance_form"
+                  arabicName="إخلاء طرف"
+                  path={driver?.clearance_form as string}
+                  setField={formik.setFieldValue}
+                  setTouched={formik.setFieldTouched}
+                />
+              )}
             </div>
           </div>
 

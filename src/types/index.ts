@@ -48,8 +48,9 @@ export interface Driver {
   isAvailable: boolean;
   region: Region;
   user: User;
-  passport: string;
-  driving_license: string;
+  passport: string | File;
+  driving_license: string | File;
+  clearance_form: string | File;
   vehicles: Vehicle[];
 }
 

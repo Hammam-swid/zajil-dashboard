@@ -7,6 +7,7 @@ const links = [
   { name: "المدن والمناطق", href: "/entries", include: "/entries/cities" },
   { name: "أنواع المركبات", href: "/entries/vehicle-types" },
   { name: "المتغيرات", href: "/entries/variants" },
+  { name: "اللوحات الإعلانية", href: "/entries/banners" },
   { name: "الأسئلة الشائعة", href: "/entries/faqs" },
   { name: "طرق الدفع", href: "/entries/payment-methods" },
 ];
