@@ -11,21 +11,21 @@ interface FormValues {
   phone: string;
   email: string;
   nationality: string;
-  driving_license: File | null;
+  driving_license: File | string | null;
   region: {
     value: number | null;
     label: string | null;
   } | null;
   plate_no: string;
-  passport: File | null;
+  passport: File | string | null;
   date_of_birth: Date;
-  document: File | null;
+  document: File | string | null;
   vehicle_name: string;
   model: string;
   vin: string;
   vehicle_type_id: number | null;
   year: string;
-  clearance_form: File | null;
+  clearance_form: File | string | null;
 }
 
 const validationSchema = Yup.object<FormValues>({
@@ -54,7 +54,7 @@ const validationSchema = Yup.object<FormValues>({
   passport: Yup.mixed().required("جواز السفر مطلوب"),
   driving_license: Yup.mixed().required("رخصة القيادة مطلوبة"),
   document: Yup.mixed().required("كتيب السيارة مطلوب"),
-  clearance_form: Yup.mixed().typeError("إخلاء الطلب مطلوب"),
+  clearance_form: Yup.mixed().nullable().typeError("إخلاء الطلب مطلوب"),
 });
 
 export default function useDriverForm(type: "add" | "edit", driver?: Driver) {
@@ -99,14 +99,22 @@ export default function useDriverForm(type: "add" | "edit", driver?: Driver) {
       setTimeout(t.dismiss, 3000);
     },
   });
-  // useEffect(() => {
-  //   if (driver) {
-  //     formik.setFieldValue("region", {
-  //       value: driver.region.id.toString(),
-  //       label: driver.region.name,
-  //     });
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (driver) {
+      formik.setFieldValue("region", {
+        value: driver.region.id.toString(),
+        label: driver.region.name,
+      });
+      formik.setFieldValue(
+        "vehicle_type_id",
+        driver?.user?.vehicles?.[0]?.vehicle_type?.id
+      );
+      setSelectedCity({
+        value: driver.region.city.id,
+        label: driver.region.city.name,
+      });
+    }
+  }, []);
 
   const formik = useFormik<FormValues>({
     initialValues: {
@@ -114,18 +122,20 @@ export default function useDriverForm(type: "add" | "edit", driver?: Driver) {
       phone: driver?.user?.phones?.[0]?.phone || "",
       email: driver?.user.email || "",
       nationality: driver?.user?.nationality || "",
-      driving_license: null,
-      region: null,
+      driving_license: driver?.driving_license || null,
+      region: driver?.region
+        ? { value: driver.region.id, label: driver.region.name }
+        : null,
       plate_no: driver?.user?.vehicles?.[0]?.plate_no || "",
-      passport: null,
+      passport: driver?.passport || null,
       date_of_birth: driver?.user?.date_of_birth || new Date("2000-01-01"),
       vehicle_name: driver?.user?.vehicles?.[0]?.name || "",
       model: driver?.user?.vehicles?.[0]?.model || "",
       vin: driver?.user?.vehicles?.[0]?.vin || "",
       vehicle_type_id: null,
       year: driver?.user?.vehicles?.[0]?.year || "",
-      document: null,
-      clearance_form: null,
+      document: driver?.user?.vehicles?.[0]?.document || null,
+      clearance_form: driver?.clearance_form || null,
     },
     validationSchema,
     onSubmit: (values) => {
@@ -152,6 +162,8 @@ export default function useDriverForm(type: "add" | "edit", driver?: Driver) {
     value: region.id,
     label: region.name,
   }));
+
+  console.log(formik.errors);
 
   return {
     formik,

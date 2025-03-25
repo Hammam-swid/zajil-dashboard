@@ -8,7 +8,7 @@ import { Dropzone } from "../moleculs";
 import Select from "react-select";
 import { Listbox } from "@headlessui/react";
 import { ChevronDown, Save, X } from "lucide-react";
-
+import "react-datepicker/dist/react-datepicker.css";
 interface DriverFormProps {
   driver?: Driver;
   formType: "add" | "edit";

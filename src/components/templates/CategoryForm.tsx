@@ -10,6 +10,7 @@ import NextImage from "next/image";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { Dropzone } from "../moleculs";
 
 interface CategoryFormProps {
   parent: ProductCategory | null;
@@ -74,8 +75,6 @@ export default function CategoryForm({
       text_color: category?.text_color || "000000",
     },
     onSubmit: (values) => {
-      values.image =
-        "https://static.vecteezy.com/system/resources/previews/041/290/593/non_2x/ai-generated-short-sleeves-black-tshirt-isolated-on-a-transparent-background-free-png.png";
       mutation.mutate(values);
     },
   });
@@ -132,7 +131,14 @@ export default function CategoryForm({
             className="h-20 w-full rounded-lg-10 border border-netral-30 p-3.5 text-body-base shadow-1 outline-none ring-[2.5px] ring-transparent transition-all duration-300 ease-out focus:border-primary-border focus:ring-primary-surface disabled:bg-netral-20"
           />
         </div>
-        <div
+        <Dropzone
+          fieldName="image"
+          setField={formik.setFieldValue}
+          setTouched={formik.setFieldTouched}
+          path={category?.image as string}
+          className="h-40 w-full rounded-md border-2 border-dashed border-gray-400 bg-primary-surface p-6 text-center"
+        />
+        {/* <div
           {...getRootProps()}
           className="h-40 rounded-md border-2 border-dashed border-gray-400 bg-primary-surface p-6 text-center"
         >
@@ -159,7 +165,7 @@ export default function CategoryForm({
           {isDragAccept && (
             <p className="text-green-500">Drop the files here ...</p>
           )}
-        </div>
+        </div> */}
 
         <div className="grid grid-cols-2 gap-3">
           <div>

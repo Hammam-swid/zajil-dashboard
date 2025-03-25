@@ -62,7 +62,7 @@ export interface Vehicle {
   vin: string;
   year: string;
   document: string;
-  vehicleType: VehicleType;
+  vehicle_type: VehicleType;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -196,4 +196,11 @@ export interface PaymentMethod {
   description: string;
   image: string | File;
   is_active: boolean;
+}
+
+export interface Banner {
+  id: number;
+  title: string;
+  image: string | File;
+  is_active: boolean | 0 | 1;
 }
