@@ -35,7 +35,7 @@ export default function MainStatistics() {
           height={500}
         />
 
-        <figcaption className="relative z-10 px-8 py-6">
+        <figcaption className="relative z-[1] px-8 py-6">
           <span className="text-body-sm font-medium uppercase text-netral-60 2xl:text-body-base">
             عدد المستخدمين
           </span>
@@ -60,7 +60,7 @@ export default function MainStatistics() {
           height={500}
         />
 
-        <figcaption className="relative z-10 px-8 py-6">
+        <figcaption className="relative z-[1] px-8 py-6">
           <span className="text-body-sm font-medium uppercase text-netral-60 2xl:text-body-base">
             عدد المتاجر
           </span>
@@ -87,7 +87,7 @@ export default function MainStatistics() {
           height={500}
         />
 
-        <figcaption className="relative z-10 px-8 py-6">
+        <figcaption className="relative z-[1] px-8 py-6">
           <span className="text-body-sm font-medium uppercase text-netral-60 2xl:text-body-base">
             عدد الطلبات
           </span>

@@ -5,7 +5,7 @@ import React, { useCallback } from "react";
 import { Button, Input } from "../atomics";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { useDropzone } from "react-dropzone";
-import { Upload, UploadCloud } from "lucide-react";
+import { Loader2, Upload, UploadCloud } from "lucide-react";
 import NextImage from "next/image";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
@@ -204,7 +204,11 @@ export default function CategoryForm({
           </div>
         </div>
         <Button variant="primary-bg" type="submit">
-          {category ? "تعديل" : "إضافة"} الفئة
+          {mutation.isPending ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            <>{category ? "تعديل" : "إضافة"} الفئة</>
+          )}
         </Button>
       </div>
     </form>
@@ -234,6 +238,7 @@ const updateCategory = async (
   formData.append("name", values.name);
   formData.append("description", values.description);
   formData.append("image", values.image);
+  formData.append("_method", "PATCH");
   formData.append(
     "background_color",
     values.background_color.startsWith("#")
@@ -248,7 +253,7 @@ const updateCategory = async (
   );
   if (values.parent_id)
     formData.append("parent_id", values.parent_id?.toString() || "null");
-  const res = await api.patch("/product-categories/" + category?.id, formData);
+  const res = await api.post("/product-categories/" + category?.id, formData);
   const { data } = res;
   return data;
 };

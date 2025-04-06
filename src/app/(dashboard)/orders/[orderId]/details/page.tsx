@@ -146,7 +146,7 @@ const Page = () => {
           </section>
         </div>
 
-        <section className="mt-8">
+        {/* <section className="mt-8">
           <h5 className="font-bold">التحويلات المالية</h5>
           <div className="mt-4">
             <span className="font-bold">ID: </span>
@@ -178,7 +178,7 @@ const Page = () => {
               {order?.transaction.amount} {order?.transaction.currency}
             </span>
           </div>
-        </section>
+        </section> */}
       </section>
     </div>
   );

@@ -3,6 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { Transition } from "@headlessui/react";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
 import {
   AppWindowIcon,
@@ -48,130 +50,32 @@ const SidebarExpand: React.FC<{
   );
 };
 
-const Sidebar: React.FC = () => {
-  const [showProductsMenu, setShowProductsMenu] = React.useState(false);
+// Loading component
+const LoadingSidebar = () => (
+  <aside className="Sidebar h-screen w-64 overflow-y-auto overflow-x-hidden border border-netral-20 bg-white px-6 py-4 pt-8 shadow-sm 2xl:w-72 2xl:pt-10">
+    <div className="animate-pulse">
+      <div className="mb-8 h-10 w-32 rounded bg-gray-200" />
+      <div className="space-y-4">
+        <div className="h-8 w-full rounded bg-gray-200" />
+        <div className="h-8 w-full rounded bg-gray-200" />
+        <div className="h-8 w-full rounded bg-gray-200" />
+      </div>
+    </div>
+  </aside>
+);
 
-  const user = useAppSelector((state) => state.user);
+const SidebarClient = dynamic(
+  () => import("@/components/organisms/SidebarClient"),
+  {
+    ssr: false,
+  }
+);
+
+const Sidebar = () => {
   return (
-    <aside
-      id="sidebar"
-      className="Sidebar h-screen w-64 overflow-y-auto overflow-x-hidden border border-netral-20 bg-white px-6 py-4 pt-8 shadow-sm 2xl:w-72 2xl:pt-10"
-    >
-      <Link
-        href="/"
-        className="mb-8 flex w-fit rounded-md  bg-primary-main p-2 2xl:mb-10"
-      >
-        <Image
-          src="/zajil-logo.png"
-          alt="Zajil Logo"
-          width={100}
-          height={100}
-          priority
-        />
-        {/* <h5 className='text-body-xl font-semibold uppercase'>Nija Kit</h5> */}
-      </Link>
-
-      <nav className="mt-10 flex w-full flex-col items-start gap-3">
-        <SidebarMenu
-          icon={<HouseSimpleIcon />}
-          name="الصفحة الرئيسية"
-          variant="default"
-          href="/"
-          exact
-        />
-
-        {/* <SidebarExpand show={showUsersMenu}>
-          <SidebarMenu name='Users' variant='expand' href='/customers/users' />
-          
-          <SidebarMenu
-            name='Buyers'
-            variant='expand'
-            href='/customers/buyers'
-          />
-        </SidebarExpand> */}
-
-        <SidebarMenu
-          active={showProductsMenu}
-          onClick={() => setShowProductsMenu(!showProductsMenu)}
-          icon={<StoreFrontIcon />}
-          name="المتاجر"
-          variant="sub-menu"
-        />
-
-        <SidebarExpand show={showProductsMenu}>
-          <SidebarMenu name="قائمة المتاجر" variant="expand" href="/stores" />
-          <SidebarMenu
-            name="قائمة الفئات"
-            variant="expand"
-            href="/categories"
-          />
-        </SidebarExpand>
-
-        <SidebarMenu
-          icon={<UsersIcon />}
-          name="العملاء"
-          variant="default"
-          href="/customers"
-        />
-
-        <SidebarMenu
-          icon={<TruckIcon width={24} height={24} />}
-          name="السائقين"
-          variant="default"
-          href="/drivers"
-        />
-
-        {/* <SidebarExpand show={showTransactionsMenu}>
-          <SidebarMenu
-            name='Manage Transactions'
-            variant='expand'
-            href='/transactions/manage-transaction'
-          />
-          <SidebarMenu
-            name='Manage Returns'
-            variant='expand'
-            href='/transactions/manage-return'
-          />
-        </SidebarExpand> */}
-
-        {/* <SidebarMenu
-          icon={<TagIcon />}
-          name="العمليات"
-          variant="default"
-          href="/flash-sale"
-        /> */}
-
-        <SidebarMenu
-          icon={<AppWindowIcon />}
-          name="البيانات"
-          variant="default"
-          href="/entries"
-        />
-
-        <SidebarMenu
-          icon={<PackageIcon />}
-          name="الطلبيات"
-          variant="default"
-          href="/orders"
-        />
-
-        <SidebarMenu
-          icon={<ArrowLeftRight />}
-          name="التحويلات"
-          variant="default"
-          href="/transactions"
-        />
-
-        {user?.role === "super_admin" && (
-          <SidebarMenu
-            icon={<UserCircleIcon />}
-            name="المسؤولين"
-            variant="default"
-            href="/moderators"
-          />
-        )}
-      </nav>
-    </aside>
+    <Suspense fallback={<LoadingSidebar />}>
+      <SidebarClient />
+    </Suspense>
   );
 };
 

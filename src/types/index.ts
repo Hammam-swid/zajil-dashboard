@@ -174,7 +174,7 @@ export interface Store {
   name: string;
   description: string;
   image: string;
-  cover_image: string;
+  background_image: string;
   average_rating: number | string;
   number_of_ratings: number;
   number_of_followers: number;

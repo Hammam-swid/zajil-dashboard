@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Input, Toggle } from "@/components/atomics";
+import { Badge, Button, Input, Toggle } from "@/components/atomics";
 import { Dropzone } from "@/components/moleculs";
 import { useToast } from "@/hooks/use-toast";
 import api from "@/lib/api";
@@ -46,6 +46,11 @@ function PaymentMethodComponent({ paymentMethod }: PaymentMethodProps) {
         <div>
           <h3 className="text-lg font-bold">{paymentMethod.name}</h3>
           <p>{paymentMethod.description}</p>
+          {paymentMethod.is_active ? (
+            <Badge variant="success">فعالة</Badge>
+          ) : (
+            <Badge variant="error">غير فعالة</Badge>
+          )}
         </div>
         {typeof paymentMethod.image === "string" && (
           <img
@@ -102,8 +107,34 @@ function usePaymentForm(
   hideForm: () => void,
   method?: PaymentMethod
 ) {
+  const [active, setActive] = useState<boolean>(method?.is_active || false);
+  async function toggleActive() {
+    setActive((prev) => !prev);
+    await toggleMutate();
+  }
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { mutate: toggleMutate } = useMutation({
+    mutationKey: ["payment-method", { methodId: method?.id.toString() }],
+    mutationFn: () => api.patch(`/payment-methods/${method?.id}/toggle-status`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payment-methods"] });
+      const t = toast({
+        title: "تم تعديل حالة الطريقة بنجاح",
+      });
+      setTimeout(() => t.dismiss(), 3000);
+    },
+    onError: (error) => {
+      console.log(error);
+      const t = toast({
+        title: "حدث خطأ أثناء تعديل حالة الطريقة",
+        variant: "destructive",
+      });
+      setActive((prev) => !prev);
+      setTimeout(() => t.dismiss(), 3000);
+    },
+  });
+
   const mutation = useMutation({
     mutationKey: ["payment-method", { methodId: method?.id.toString() }],
     mutationFn:
@@ -138,7 +169,7 @@ function usePaymentForm(
     onSubmit: (values) => mutation.mutate(values),
   });
 
-  return { formik, isPending: mutation.isPending };
+  return { formik, isPending: mutation.isPending, active, toggleActive };
 }
 
 interface PaymentMethodFormProps {
@@ -152,12 +183,12 @@ function PaymentMethodForm({
   type,
   method,
 }: PaymentMethodFormProps) {
-  const { formik, isPending } = usePaymentForm(
+  const { formik, isPending, active, toggleActive } = usePaymentForm(
     type,
     () => setShowForm(false),
     method
   );
-  const [active, setActive] = useState<boolean>(method?.is_active || false);
+
   return (
     <div
       // onClick={() => setShowForm(false)}
@@ -205,7 +236,7 @@ function PaymentMethodForm({
         {type === "edit" && method && (
           <div className="flex items-center gap-4">
             <label htmlFor="is_active">مفعل؟</label>
-            <Toggle enabled={active} setEnabled={setActive} />
+            <Toggle enabled={active} setEnabled={toggleActive} />
           </div>
         )}
 
