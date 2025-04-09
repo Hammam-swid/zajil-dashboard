@@ -37,7 +37,7 @@ const AuthLogin = () => {
     ValuesTypes
   >({
     mutationFn: async (credentials: { email: string; password: string }) => {
-      const { data } = await api.post("/login", credentials);
+      const { data } = await api.post("/login-dashboard", credentials);
       return data;
     },
     onSuccess: (data) => {

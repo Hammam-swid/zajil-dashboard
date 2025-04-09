@@ -2,7 +2,7 @@ import store from "@/store";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://adimtech.com.ly/zajil/api",
+  baseURL: "https://adimtech.com.ly/zajil/public/api",
   // headers: {
   //   "Content-Type": "application/json",
   //   Accept: "application/json",

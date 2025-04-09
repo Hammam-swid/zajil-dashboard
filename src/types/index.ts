@@ -104,7 +104,7 @@ export interface Product {
 
 export interface ProductImage {
   id: number;
-  image: string;
+  url: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -143,7 +143,6 @@ export interface Option {
 export interface Order {
   id: number;
   code: string;
-  status: string;
   user: User;
   orderProducts: OrderProduct[];
   quantity: number;
@@ -152,6 +151,12 @@ export interface Order {
   store: Store;
   store_id: number;
   transaction: Transaction;
+  status: OrderStatus;
+}
+
+export interface OrderStatus {
+  id: number;
+  name: string;
 }
 
 export interface Transaction {
@@ -160,6 +165,14 @@ export interface Transaction {
   amount: string;
   status: string;
   currency: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface InternalTransaction {
+  id: number;
+  amount: string;
+  status: string;
   created_at: Date;
   updated_at: Date;
 }

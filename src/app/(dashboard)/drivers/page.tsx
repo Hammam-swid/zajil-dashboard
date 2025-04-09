@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { Modal, PageAction } from "@/components/moleculs";
 import {
   Alerts,
+  Badge,
   Button,
   Checkbox,
+  Input,
   Pagination,
   Title,
 } from "@/components/atomics";
@@ -16,9 +18,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader, Loader2, TriangleAlert } from "lucide-react";
 import { AxiosError } from "axios";
 
-const getDrivers = async (page: number) => {
+const getDrivers = async (page: number, search: string) => {
+  const searchQuery = search ? `&search=${search}` : "";
   const res = await api.get<{ data: Driver[]; meta: { last_page: number } }>(
-    `/dashboards/drivers?perPage=10&page=${page}`
+    `/dashboards/drivers?perPage=10&page=${page}${searchQuery}`
   );
   console.log(res);
   return res.data;
@@ -26,12 +29,14 @@ const getDrivers = async (page: number) => {
 
 const DBDriversUsers = () => {
   const [page, setPage] = useState(1);
+  const [searchText, setSearchText] = useState("");
+  const [search, setSearch] = useState("");
   const { data, isLoading, isError, error } = useQuery<
     { data: Driver[]; meta: { last_page: number } },
     AxiosError<{ message: string }>
   >({
-    queryKey: ["drivers", { page }],
-    queryFn: () => getDrivers(page),
+    queryKey: ["drivers", { page }, { search }],
+    queryFn: () => getDrivers(page, search),
   });
   const drivers = data?.data || [];
   const lastPage = data?.meta.last_page || 1;
@@ -39,11 +44,28 @@ const DBDriversUsers = () => {
   return (
     <div className="relative space-y-6 p-6">
       <section className="relative rounded-lg-10 bg-white p-6">
-        <nav className="mb-8 flex items-center justify-between">
-          <Title size="lg" variant="default">
-            السائقين
-          </Title>
-
+        <Title size="lg" variant="default">
+          السائقين
+        </Title>
+        <nav className="mb-8 mt-3 flex items-center justify-between">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (searchText) setSearch(searchText);
+            }}
+          >
+            <Input
+              placeholder="ابحث عن سائق"
+              id="searchText"
+              value={searchText}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+                if (!e.target.value) {
+                  setSearch("");
+                }
+              }}
+            />
+          </form>
           <div className="flex flex-row gap-3">
             <Link href="/drivers/add">
               <Button type="button" size="md" variant="primary-bg">
@@ -80,12 +102,12 @@ const DBDriversUsers = () => {
                 </th>
 
                 <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
-                  <span className="text-body-sm font-semibold">إنشاء في</span>
+                  <span className="text-body-sm font-semibold">الحالة</span>
                 </th>
 
                 <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
                   <span className="text-body-sm font-semibold">
-                    النشاط الأخير
+                    حالة الاتصال
                   </span>
                 </th>
 
@@ -136,9 +158,9 @@ const DBDriversUsers = () => {
                       </td>
 
                       <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
-                        <span className="text-body-base font-medium text-netral-80">
+                        <Badge variant={item.isOnline ? "success" : "error"}>
                           {item.isOnline ? "متصل" : "غير متصل"}
-                        </span>
+                        </Badge>
                       </td>
 
                       <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">

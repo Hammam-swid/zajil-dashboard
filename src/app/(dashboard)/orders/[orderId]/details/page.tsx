@@ -10,6 +10,10 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { Order } from "@/types";
 import { useParams } from "next/navigation";
+import {
+  convertOrderStatus,
+  convertOrderStatusVariant,
+} from "@/utils/convertStatuses";
 
 const getOrder = async (id: string) => {
   const res = await api.get<{ data: Order }>(`/dashboards/orders/${id}`);
@@ -23,6 +27,7 @@ const Page = () => {
     queryFn: () => getOrder(orderId),
     staleTime: 1000 * 60 * 60,
   });
+  console.log(order);
 
   return (
     <div className="relative space-y-6 p-6">
@@ -55,21 +60,9 @@ const Page = () => {
           <div className="mt-2">
             <span className="font-bold">الحالة: </span>
             <Badge
-              variant={
-                order?.status === "success"
-                  ? "success"
-                  : order?.status === "in-transit"
-                  ? "info"
-                  : "error"
-              }
+              variant={convertOrderStatusVariant(order?.status?.name as string)}
             >
-              {order?.status === "in-transit"
-                ? "جار التوصيل"
-                : order?.status === "canceled"
-                ? "ملغية"
-                : order?.status === "success"
-                ? "تم التوصيل"
-                : order?.status}
+              {convertOrderStatus(order?.status?.name as string)}
             </Badge>
           </div>
           <div className="mt-2">
@@ -84,7 +77,7 @@ const Page = () => {
             {order?.orderProducts?.map((product) => (
               <div key={order.id} className="mt-4 flex items-center gap-4">
                 <Image
-                  src={product.images[0].image}
+                  src={product.images[0].url}
                   alt="صورة المنتج"
                   width={100}
                   height={100}

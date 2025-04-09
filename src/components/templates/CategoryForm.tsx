@@ -21,7 +21,7 @@ interface CategoryFormProps {
 interface CategoryFormValues {
   name: string;
   description: string;
-  image: File | string;
+  image: File | null;
   background_color: string;
   text_color: string;
   parent_id: number | null;
@@ -70,7 +70,7 @@ export default function CategoryForm({
       name: category?.name || "",
       description: category?.description || "",
       parent_id: parent?.id || null,
-      image: category?.image || "",
+      image: null,
       background_color: category?.background_color || "FFFFFF",
       text_color: category?.text_color || "000000",
     },
@@ -220,7 +220,7 @@ const addCategory = async (values: CategoryFormValues) => {
   const formData = new FormData();
   formData.append("name", values.name);
   formData.append("description", values.description);
-  formData.append("image", values.image);
+  if (values.image) formData.append("image", values.image);
   formData.append("background_color", values.background_color.slice(1));
   formData.append("text_color", values.text_color.slice(1));
   if (values.parent_id)
@@ -237,7 +237,7 @@ const updateCategory = async (
   const formData = new FormData();
   formData.append("name", values.name);
   formData.append("description", values.description);
-  formData.append("image", values.image);
+  if (values.image) formData.append("image", values.image);
   formData.append("_method", "PATCH");
   formData.append(
     "background_color",

@@ -28,34 +28,47 @@ interface FormValues {
   clearance_form: File | string | null;
 }
 
-const validationSchema = Yup.object<FormValues>({
-  name: Yup.string().required("الاسم مطلوب"),
-  phone: Yup.string()
-    .required("رقم الهاتف مطلوب")
-    .matches(/^(\+218|00218|0)?(9[1-5]\d{7})$/, "رقم الهاتف غير صالح"),
-  email: Yup.string()
-    .email("البريد الإلكتروني غير صالح")
-    .required("البريد الإلكتروني مطلوب"),
-  nationality: Yup.string().required("الجنسية مطلوبة"),
-  region: Yup.object().shape({
-    value: Yup.number().required("المنطقة مطلوبة"),
-    label: Yup.string(),
-  }),
-  plate_no: Yup.string().required("رقم اللوحة مطلوب"),
-  date_of_birth: Yup.date()
-    .required("تاريخ الميلاد مطلوب")
-    .max(new Date(), "تاريخ الميلاد يجب أن يكون في الماضي")
-    .min(new Date("1900-01-01"), "تاريخ الميلاد يجب ألا يتخطى 1900"),
-  vehicle_name: Yup.string().required("اسم المركبة مطلوب"),
-  model: Yup.string().required("الموديل مطلوب"),
-  vin: Yup.string().required("رقم الهيكل مطلوب"),
-  year: Yup.string().required("سنة الصنع مطلوبة"),
-  vehicle_type_id: Yup.number().required("نوع المركبة مطلوب"),
-  passport: Yup.mixed().required("جواز السفر مطلوب"),
-  driving_license: Yup.mixed().required("رخصة القيادة مطلوبة"),
-  document: Yup.mixed().required("كتيب السيارة مطلوب"),
-  clearance_form: Yup.mixed().nullable().typeError("إخلاء الطلب مطلوب"),
-});
+const getValidationSchema = (type: "add" | "edit") =>
+  Yup.object<FormValues>({
+    name: Yup.string().required("الاسم مطلوب"),
+    phone: Yup.string()
+      .required("رقم الهاتف مطلوب")
+      .matches(/^(\+218|00218|0)?(9[1-5]\d{7})$/, "رقم الهاتف غير صالح"),
+    email: Yup.string()
+      .email("البريد الإلكتروني غير صالح")
+      .required("البريد الإلكتروني مطلوب"),
+    nationality: Yup.string().required("الجنسية مطلوبة"),
+    region: Yup.object().shape({
+      value: Yup.number().required("المنطقة مطلوبة"),
+      label: Yup.string(),
+    }),
+    plate_no: Yup.string().required("رقم اللوحة مطلوب"),
+    date_of_birth: Yup.date()
+      .required("تاريخ الميلاد مطلوب")
+      .max(new Date(), "تاريخ الميلاد يجب أن يكون في الماضي")
+      .min(new Date("1900-01-01"), "تاريخ الميلاد يجب ألا يتخطى 1900"),
+    vehicle_name: Yup.string().required("اسم المركبة مطلوب"),
+    model: Yup.string().required("الموديل مطلوب"),
+    vin: Yup.string().required("رقم الهيكل مطلوب"),
+    year: Yup.string().required("سنة الصنع مطلوبة"),
+    vehicle_type_id: Yup.number().required("نوع المركبة مطلوب"),
+    passport:
+      type === "edit"
+        ? Yup.mixed().nullable()
+        : Yup.mixed().required("جواز السفر مطلوب"),
+    driving_license:
+      type === "edit"
+        ? Yup.mixed().nullable()
+        : Yup.mixed().required("رخصة القيادة مطلوبة"),
+    document:
+      type === "edit"
+        ? Yup.mixed().nullable()
+        : Yup.mixed().required("كتيب السيارة مطلوب"),
+    clearance_form:
+      type === "edit"
+        ? Yup.mixed().nullable()
+        : Yup.mixed().nullable().typeError("إخلاء الطلب مطلوب"),
+  });
 
 export default function useDriverForm(type: "add" | "edit", driver?: Driver) {
   const { toast } = useToast();
@@ -85,7 +98,7 @@ export default function useDriverForm(type: "add" | "edit", driver?: Driver) {
     mutationFn:
       type === "add"
         ? createDriver
-        : (values: FormValues) => updateDriver(values, driver?.id as number),
+        : (values: FormValues) => updateDriver(values, driver as Driver),
     onError: (error) => {
       console.log(error);
       const t = toast({
@@ -122,22 +135,22 @@ export default function useDriverForm(type: "add" | "edit", driver?: Driver) {
       phone: driver?.user?.phones?.[0]?.phone || "",
       email: driver?.user.email || "",
       nationality: driver?.user?.nationality || "",
-      driving_license: driver?.driving_license || null,
+      driving_license: null,
       region: driver?.region
         ? { value: driver.region.id, label: driver.region.name }
         : null,
       plate_no: driver?.user?.vehicles?.[0]?.plate_no || "",
-      passport: driver?.passport || null,
+      passport: null,
       date_of_birth: driver?.user?.date_of_birth || new Date("2000-01-01"),
       vehicle_name: driver?.user?.vehicles?.[0]?.name || "",
       model: driver?.user?.vehicles?.[0]?.model || "",
       vin: driver?.user?.vehicles?.[0]?.vin || "",
       vehicle_type_id: null,
       year: driver?.user?.vehicles?.[0]?.year || "",
-      document: driver?.user?.vehicles?.[0]?.document || null,
-      clearance_form: driver?.clearance_form || null,
+      document: null,
+      clearance_form: null,
     },
-    validationSchema,
+    validationSchema: getValidationSchema(type),
     onSubmit: (values) => {
       driverMutation.mutate(values, {
         onSuccess: () => {
@@ -230,31 +243,57 @@ const createDriver = async (values: FormValues) => {
   return res.data;
 };
 
-const updateDriver = async (values: FormValues, driverId: number) => {
-  if (!driverId) throw new Error("يجب اختيار سائق");
+const updateDriver = async (values: FormValues, driver: Driver) => {
+  console.log(values);
+  if (!driver) throw new Error("يجب اختيار سائق");
   const formData = new FormData();
-  formData.append("name", values.name);
-  formData.append("phone", values.phone);
-  formData.append("email", values.email);
-  formData.append("nationality", values.nationality);
+  if (values.name && values.name !== driver.user.name)
+    formData.append("name", values.name);
+
+  if (values.phone && values.phone !== driver.user.phones[0].phone)
+    formData.append("phone", values.phone);
+
+  if (values.email && values.email !== driver.user.email)
+    formData.append("email", values.email);
+
+  if (values.nationality && values.nationality !== driver.user.nationality)
+    formData.append("nationality", values.nationality);
   if (values.region?.value)
     formData.append("region_id", values.region?.value?.toString());
-  formData.append("plate_no", values.plate_no);
+
+  if (
+    values.plate_no &&
+    values.plate_no !== driver?.user?.vehicles?.[0].plate_no
+  )
+    formData.append("plate_no", values.plate_no);
   // formData.append("date_of_birth", values.date_of_birth.toString());
   if (values.vehicle_type_id)
     formData.append("vehicle_type_id", values.vehicle_type_id.toString());
-  formData.append("vehicle_name", values.vehicle_name);
-  formData.append("model", values.model);
-  formData.append("vin", values.vin);
-  formData.append("year", values.year);
+  if (
+    values.vehicle_name &&
+    values.vehicle_name !== driver?.user?.vehicles?.[0].name
+  )
+    formData.append("vehicle_name", values.vehicle_name);
+  if (values.model && values.model !== driver?.user?.vehicles?.[0].model)
+    formData.append("model", values.model);
+  if (values.vin && values.vin !== driver?.user?.vehicles?.[0].vin)
+    formData.append("vin", values.vin);
+  if (values.year && values.year !== driver?.user?.vehicles?.[0].year)
+    formData.append("year", values.year);
+
   if (values.passport) formData.append("passport", values.passport);
   // if (values.clearance_form)
   //   formData.append("clearance_form", values.clearance_form);
   if (values.driving_license)
     formData.append("driving_license", values.driving_license);
   if (values.document) formData.append("document", values.document);
-  const res = await api.put(`/dashboards/drivers/${driverId}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+  formData.append("_method", "PATCH");
+  const res = await api.post(`/dashboards/drivers/${driver?.id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "X-HTTP-Method-Override": "PATCH",
+    },
   });
+  console.log(res);
   return res.data;
 };

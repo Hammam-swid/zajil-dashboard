@@ -4,13 +4,17 @@ import React, { useState } from "react";
 
 import { Badge, Button, Input, Pagination, Title } from "@/components/atomics";
 
-import { MagnifyingGlassIcon, StoreFrontIcon } from "@/assets/icons";
+import { MagnifyingGlassIcon } from "@/assets/icons";
 
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { Order } from "@/types";
 import Link from "next/link";
 import { PackageIcon, UserIcon } from "lucide-react";
+import {
+  convertOrderStatus,
+  convertOrderStatusVariant,
+} from "@/utils/convertStatuses";
 const getOrders = async (
   page: number,
   search: string,
@@ -22,6 +26,7 @@ const getOrders = async (
   const res = await api.get<{ data: Order[]; meta: { last_page: number } }>(
     `/dashboards/orders?per_page=10&page=${page}${searchQuery}`
   );
+  console.log(res.data);
   return res.data;
 };
 
@@ -141,23 +146,9 @@ const Page = () => {
 
                       <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
                         <Badge
-                          variant={
-                            order.status === "in-transit"
-                              ? "info"
-                              : order.status === "canceled"
-                              ? "error"
-                              : order.status === "success"
-                              ? "success"
-                              : "error"
-                          }
+                          variant={convertOrderStatusVariant(order.status.name)}
                         >
-                          {order.status === "in-transit"
-                            ? "جار التوصيل"
-                            : order.status === "canceled"
-                            ? "ملغية"
-                            : order.status === "success"
-                            ? "تم التوصيل"
-                            : order.status}
+                          {convertOrderStatus(order.status.name)}
                         </Badge>
                       </td>
 

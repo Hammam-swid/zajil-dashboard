@@ -21,7 +21,11 @@ const getBanners = async () => {
 };
 
 export default function Page() {
-  const { data: banners, error } = useQuery({
+  const {
+    data: banners,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["banners"],
     queryFn: getBanners,
   });
@@ -31,11 +35,15 @@ export default function Page() {
         <h1 className="text-2xl font-bold">اللوحات الإعلانية</h1>
         <AddBannerForm />
       </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {banners?.map((banner) => (
-          <BannerCard key={banner.id} banner={banner} />
-        ))}
-      </div>
+      {isLoading ? (
+        <Loader2 className="mx-auto h-20 w-20 animate-spin text-primary-main" />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {banners?.map((banner) => (
+            <BannerCard key={banner.id} banner={banner} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

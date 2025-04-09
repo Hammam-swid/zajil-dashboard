@@ -86,7 +86,7 @@ function VariationComponent({ variation }: { variation: Variation }) {
   });
 
   return (
-    <div className="rounded-md border p-4 shadow-md">
+    <div className="rounded-md border p-4 shadow-md transition-[height]">
       <div className="flex items-center justify-between">
         <span className="text-lg font-bold">{variation.name}</span>
         <button

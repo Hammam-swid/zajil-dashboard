@@ -11,9 +11,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { Driver } from "@/types";
+import { Modal } from "@/components/moleculs";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 const Page = () => {
   const { driverId } = useParams();
@@ -21,6 +24,7 @@ const Page = () => {
     queryKey: ["driver", { driverId }],
     queryFn: () => getDriver(driverId),
   });
+  const [inActiveModal, setInActiveModal] = useState(false);
 
   return (
     <div className="relative space-y-6 p-6">
@@ -30,12 +34,31 @@ const Page = () => {
             معلومات السائق
           </Title>
 
-          <Link href={"edit"}>
-            <Button size="md" variant="primary-bg" type="button">
-              <PencilSimpleIcon className="h-4 w-4 stroke-[4px]" />
-              تعديل
-            </Button>
-          </Link>
+          <div className="flex items-center gap-3">
+            {driver && (
+              <Button
+                onClick={() => setInActiveModal(true)}
+                variant={
+                  driver?.user.status === "active"
+                    ? "error-outline"
+                    : "primary-outline"
+                }
+              >
+                {driver?.user.status === "active" ? "إلغاء التفعيل" : "تفعيل"}
+              </Button>
+            )}
+            <InactivateModal
+              setOpen={setInActiveModal}
+              open={inActiveModal}
+              driver={driver}
+            />
+            <Link href={"edit"}>
+              <Button size="md" variant="primary-bg" type="button">
+                <PencilSimpleIcon className="h-4 w-4 stroke-[4px]" />
+                تعديل
+              </Button>
+            </Link>
+          </div>
         </nav>
 
         <section className="relative flex flex-row gap-5">
@@ -289,10 +312,82 @@ const Page = () => {
   );
 };
 
+interface InactivateModalProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  driver?: Driver;
+}
+
+const InactivateModal = ({ open, setOpen, driver }: InactivateModalProps) => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["toggle-driver-status", { driverId: driver?.id }],
+    mutationFn: toggleDriverStatus,
+    onSuccess: () => {
+      const t = toast({
+        title:
+          driver?.user.status === "active"
+            ? "تم إلغاء تفعيل السائق بنجاح"
+            : "تم تفعيل السائق بنجاح",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["driver", { driverId: driver?.id.toString() }],
+      });
+      setTimeout(t.dismiss, 3000);
+      setOpen(false);
+    },
+  });
+  return (
+    <Modal
+      open={open}
+      setOpen={setOpen}
+      variant={driver?.user.status === "active" ? "error" : "primary"}
+      className="max-w-xl"
+      title={
+        driver?.user.status === "active" ? "إلغاء تفعيل سائق" : "تفعيل سائق"
+      }
+    >
+      <p>
+        هل أنت متأكد من أنك تريد
+        {driver?.user.status === "active"
+          ? " إلغاء تفعيل السائق"
+          : " تفعيل السائق"}
+        ؟
+      </p>
+      <div className="mt-3 flex flex-row-reverse items-center gap-3">
+        <Button
+          variant={driver?.user.status === "active" ? "error-bg" : "primary-bg"}
+          size="md"
+          className="w-20"
+          disabled={isPending}
+          onClick={() => mutate(driver?.id || 0)}
+        >
+          {isPending ? <Loader2 className="animate-spin" /> : "نعم"}
+        </Button>
+        <Button
+          onClick={() => setOpen(false)}
+          variant={"default-outline"}
+          size="md"
+          disabled={isPending}
+          className="w-20"
+        >
+          لا
+        </Button>
+      </div>
+    </Modal>
+  );
+};
+
 const getDriver = async (driverId: string) => {
   const res = await api.get<Driver>(`/dashboards/drivers/${driverId}`);
 
   return res.data;
+};
+
+const toggleDriverStatus = async (id: number) => {
+  const res = await api.patch(`/drivers/toggle-account-status/${id}`);
+  return res;
 };
 
 export default Page;

@@ -7,6 +7,7 @@ import api from "@/lib/api";
 import { PaymentMethod } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
 const getPaymentMethods = async () => {
@@ -16,7 +17,11 @@ const getPaymentMethods = async () => {
 };
 
 export default function Page() {
-  const { data: methods, error } = useQuery({
+  const {
+    data: methods,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["payment-methods"],
     queryFn: getPaymentMethods,
   });
@@ -26,11 +31,15 @@ export default function Page() {
         <h1 className="text-2xl font-bold">طرق الدفع</h1>
         <AddPaymentMethod />
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        {methods?.map((method) => (
-          <PaymentMethodComponent key={method.id} paymentMethod={method} />
-        ))}
-      </div>
+      {isLoading ? (
+        <Loader2 className="mx-auto h-20 w-20 animate-spin text-primary-main" />
+      ) : (
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          {methods?.map((method) => (
+            <PaymentMethodComponent key={method.id} paymentMethod={method} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
