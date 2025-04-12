@@ -1,15 +1,17 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { Title } from "@/components/atomics";
+import { Badge, Button, Title } from "@/components/atomics";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { Store } from "@/types";
 import { useParams } from "next/navigation";
 import { Star } from "lucide-react";
+import { Modal } from "@/components/moleculs";
+import StorePayDuesModal from "@/components/organisms/StorePayDuesModal";
 
 const getStore = async (storeId: string) => {
-  const res = await api.get<{ data: Store }>(`/stores/${storeId}`);
+  const res = await api.get<{ data: Store }>(`/dashboards/stores/${storeId}`);
   return res.data.data;
 };
 
@@ -62,6 +64,7 @@ const Page = () => {
       text: store?.number_of_followers || "لا يوجد",
     },
   ];
+  const [openModal, setOpenModal] = useState(false);
 
   return (
     <div className="relative p-6">
@@ -69,17 +72,16 @@ const Page = () => {
 
       <section className="relative mt-2 space-y-8 rounded-lg-10 bg-white p-6">
         <nav className="flex items-center justify-between">
-          <Title size="lg" variant="default">
-            {store?.name}
-          </Title>
+          <h2 className="text-2xl font-bold">{store?.name}</h2>
 
-          {/* <Button size="md" variant="primary-outline" href="/outlet/edit">
-            <PencilSimpleIcon className="h-5 w-5 stroke-2" />
-            Edit Outlet
-          </Button> */}
+          <StorePayDuesModal
+            maxValue={Math.abs(store?.wallet.balance as number)}
+            open={openModal}
+            setOpen={setOpenModal}
+          />
         </nav>
 
-        <section className="flex flex-col gap-16">
+        <section className="grid grid-cols-2 gap-16">
           <div className="relative block aspect-video h-80 w-full rounded-lg-10">
             <Image
               className={`h-full w-full rounded-lg-10 object-cover ${
@@ -100,26 +102,118 @@ const Page = () => {
               />
             </div>
           </div>
+          <div>
+            {store?.wallet && (
+              <div className="mb-5">
+                <div className="mb-2 text-heading-sm font-semibold">
+                  المستحقات{" "}
+                </div>
+                <Badge variant={store.wallet.balance > 0 ? "success" : "error"}>
+                  <span className="text-base">
+                    {Math.abs(store?.wallet?.balance as number).toFixed(2)} د.ل
+                  </span>
+                </Badge>
+              </div>
+            )}
+            <div className="">
+              <h3 className="text-heading-sm font-semibold">الوصف</h3>
+              <p className="max-w-lg text-body-base text-netral-80">
+                {store?.description}
+              </p>
+            </div>
 
-          <div className="mt-10">
-            <h3 className="text-heading-sm font-semibold">الوصف</h3>
-            <p className="mt-2 max-w-lg text-body-base text-netral-50">
-              {store?.description}
-            </p>
-          </div>
+            <div className="mt-8 space-y-6">
+              {tableDetails.map((detail) => (
+                <span key={detail.id} className="grid grid-cols-2">
+                  <h5 className="text-body-sm uppercase text-netral-80">
+                    {detail.heading}
+                  </h5>
 
-          <div className="space-y-6">
-            {tableDetails.map((detail) => (
-              <span key={detail.id} className="grid grid-cols-2">
-                <h5 className="text-body-sm uppercase text-netral-50">
-                  {detail.heading}
-                </h5>
-
-                <p className="text-body-base font-semibold">{detail.text}</p>
-              </span>
-            ))}
+                  <p className="text-body-base font-semibold">{detail.text}</p>
+                </span>
+              ))}
+            </div>
           </div>
         </section>
+        {/* Table */}
+        <div className="mb-6 mt-6 overflow-x-auto">
+          <table className="w-full table-auto">
+            <thead className="bg-netral-15 text-body-sm font-semibold uppercase">
+              <tr>
+                <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
+                  <span className="text-body-sm font-semibold">order_id</span>
+                </th>
+
+                <th className="w-56 whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
+                  <span className="text-body-sm font-semibold">اسم المتجر</span>
+                </th>
+
+                <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
+                  <span className="text-body-sm font-semibold">الكمية</span>
+                </th>
+
+                <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
+                  <span className="text-body-sm font-semibold">الحالة</span>
+                </th>
+
+                <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
+                  <span className="text-body-sm font-semibold">
+                    سعر التوصيل
+                  </span>
+                </th>
+
+                <th className="whitespace-nowrap px-3 py-4 text-center text-netral-50 first:pl-5 last:pr-5">
+                  <span className="text-body-sm font-semibold">
+                    السعر الاجمالي
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-netral-20 pt-4 text-sm">
+              {[1, 2, 3, 4, 5, 6].map((item) => (
+                <tr key={item}>
+                  <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                    <span className="text-body-base font-medium text-netral-80">
+                      653518
+                    </span>
+                  </td>
+
+                  <td className="w-56 whitespace-pre-wrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                    <span className="whitespace-pre-wrap break-words text-body-base font-medium text-netral-80">
+                      {"Heimer Miller Sofa (Mint Condition)"}
+                    </span>
+                  </td>
+
+                  <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                    <span className="text-body-base font-medium text-netral-80">
+                      3
+                    </span>
+                  </td>
+
+                  <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                    <span className=" text-body-base font-medium text-netral-80">
+                      <Badge variant={item % 2 === 0 ? "success" : "error"}>
+                        {item % 2 === 0 ? "تم التوصيل" : "تم الإلغاء"}
+                      </Badge>
+                    </span>
+                  </td>
+
+                  <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                    <span className="text-body-base font-medium text-netral-80">
+                      $739.65
+                    </span>
+                  </td>
+
+                  <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
+                    <span className="text-body-base font-medium text-netral-80">
+                      ${782.01}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </div>
   );

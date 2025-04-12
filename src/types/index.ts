@@ -194,7 +194,13 @@ export interface Store {
   categories: Partial<ProductCategory>[];
   categories_string: string;
   location: Location;
+  wallet: Wallet;
   products: Product[];
+}
+
+export interface Wallet {
+  id: number;
+  balance: number;
 }
 
 export interface FAQ {
