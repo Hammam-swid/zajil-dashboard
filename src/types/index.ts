@@ -10,7 +10,7 @@ export interface User {
   profile_photo_path?: string | null;
   profile_photo_url?: string | null;
   email_verified_at: Date;
-  date_of_birth: Date;
+  date_of_birth: Date | string;
   nationality: string;
   createdAt: Date;
   updatedAt: Date;
@@ -196,6 +196,24 @@ export interface Store {
   location: Location;
   wallet: Wallet;
   products: Product[];
+  user: Partial<User> & { seller: Seller };
+}
+
+export interface StoreTransaction {
+  id: number;
+  amount: string;
+  status: "عملية ناجحة" | "قيد الانتظار" | "عملية فاشلة";
+  updated_at: Date;
+  description: string;
+  wallet_id: number;
+  reference: string;
+}
+
+export interface Seller {
+  id: number;
+  commercial_register: string;
+  trade_license: string;
+  passport: string;
 }
 
 export interface Wallet {

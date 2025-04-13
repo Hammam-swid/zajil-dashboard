@@ -42,6 +42,7 @@ const Page = () => {
     queryFn: () => getStores(page, search),
     staleTime: 1000 * 60 * 5,
   });
+  console.log(data);
   //----------------------------------------------------------------------------------------//
 
   const [openModalDraft, setOpenModalDraft] = React.useState(false);
@@ -175,7 +176,7 @@ const Page = () => {
 
                       <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
                         <span className="text-body-base font-medium capitalize text-netral-80">
-                          {store.location?.address}
+                          {store.location?.city}-{store.location?.country}
                         </span>
                       </td>
 
