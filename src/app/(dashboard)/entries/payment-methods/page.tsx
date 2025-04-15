@@ -11,7 +11,9 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
 const getPaymentMethods = async () => {
-  const res = await api.get<{ data: PaymentMethod[] }>("/payment-methods");
+  const res = await api.get<{ data: PaymentMethod[] }>(
+    "/dashboards/payment-methods"
+  );
   console.log(res);
   return res.data.data;
 };
@@ -34,10 +36,29 @@ export default function Page() {
       {isLoading ? (
         <Loader2 className="mx-auto h-20 w-20 animate-spin text-primary-main" />
       ) : (
-        <div className="mt-4 grid grid-cols-2 gap-4">
-          {methods?.map((method) => (
-            <PaymentMethodComponent key={method.id} paymentMethod={method} />
-          ))}
+        <div>
+          <h3>طرق الدفع الخاصة بالعملاء</h3>
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            {methods
+              ?.filter((method) => method.is_for_customers)
+              .map((method) => (
+                <PaymentMethodComponent
+                  key={method.id}
+                  paymentMethod={method}
+                />
+              ))}
+          </div>
+          <h3 className="mt-6">طرق الدفع الخاصة بلوحة التحكم</h3>
+          <div className="mt-4 grid grid-cols-2 gap-4 font-bold">
+            {methods
+              ?.filter((method) => !method.is_for_customers)
+              .map((method) => (
+                <PaymentMethodComponent
+                  key={method.id}
+                  paymentMethod={method}
+                />
+              ))}
+          </div>
         </div>
       )}
     </div>
@@ -108,6 +129,7 @@ function AddPaymentMethod() {
 interface UsePaymentFormValues {
   name: string;
   description: string;
+  is_for_customers: boolean;
   image: string | File;
 }
 
@@ -162,6 +184,7 @@ function usePaymentForm(
       hideForm();
     },
     onError: (error) => {
+      console.log(error);
       const t = toast({
         title: "حدث خطأ أثناء تنفيذ العملية",
         variant: "destructive",
@@ -173,6 +196,8 @@ function usePaymentForm(
     initialValues: {
       name: type === "edit" ? (method?.name as string) : "",
       description: type === "edit" ? (method?.description as string) : "",
+      is_for_customers:
+        type === "edit" ? (method?.is_for_customers ? true : false) : true,
       image: type === "edit" ? (method?.image as string) : "",
     },
     onSubmit: (values) => mutation.mutate(values),
@@ -232,6 +257,18 @@ function PaymentMethodForm({
             disabled={isPending}
           />
         </div>
+        <div className="flex items-center gap-2">
+          <label>للعملاء: </label>
+          <Toggle
+            enabled={formik.values.is_for_customers ? true : false}
+            setEnabled={() =>
+              formik.setFieldValue(
+                "is_for_customers",
+                !formik.values.is_for_customers
+              )
+            }
+          />
+        </div>
         <div>
           <label htmlFor="image">الصورة:</label>
           <Dropzone
@@ -274,6 +311,7 @@ const addPaymentMethod = async (values: UsePaymentFormValues) => {
   const formData = new FormData();
   formData.append("name", values.name);
   formData.append("description", values.description);
+  formData.append("is_for_customers", values.is_for_customers ? "1" : "0");
   formData.append("image", values.image);
   const res = await api.post("/payment-methods", formData, {
     headers: { "Content-Type": "multipart/form-data" },
@@ -291,6 +329,11 @@ const editPaymentMethod = async (
     formData.append("name", values.name);
   if (values.description && method.description !== values.description)
     formData.append("description", values.description);
+  if (
+    values.is_for_customers &&
+    values.is_for_customers !== method.is_for_customers
+  )
+    formData.append("is_for_customers", values.is_for_customers ? "1" : "0");
   if (values.image && values.image instanceof File)
     formData.append("image", values.image);
   console.log(formData.get("image"));

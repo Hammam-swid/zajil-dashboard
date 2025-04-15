@@ -1,28 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
-import { Badge, Pagination } from "../atomics";
-import api from "@/lib/api";
-import { StoreTransaction } from "@/types";
-import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { Badge, Pagination } from "../atomics";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { StoreTransaction } from "@/types";
+import api from "@/lib/api";
 
-const getTransactions = async (storeId: number, page: number) => {
-  const pageQuery = `?page=${page}`;
-
-  const res = await api.get<{
-    data: StoreTransaction[];
-    meta: { last_page: number };
-  }>(`/transactions/get-store-transactions/${storeId}${pageQuery}`);
-  return res.data;
-};
 interface TableProps {
-  storeId: number;
+  driverId: number;
 }
 
-export default function StoreTransactionsTable({ storeId }: TableProps) {
+export default function DriverTransactionTable({ driverId }: TableProps) {
   const [page, setPage] = useState(1);
   const { data, isLoading, error } = useQuery({
-    queryKey: ["store-transaction", { storeId }, { page }],
-    queryFn: () => getTransactions(storeId, page),
+    queryKey: ["transaction", { page }],
+    queryFn: () => getTransactions(driverId, page),
   });
   console.log(error);
 
@@ -129,3 +120,13 @@ export default function StoreTransactionsTable({ storeId }: TableProps) {
     </div>
   );
 }
+
+const getTransactions = async (driverId: number, page: number) => {
+  const pageQuery = `?page=${page}`;
+
+  const res = await api.get<{
+    data: StoreTransaction[];
+    meta: { last_page: number };
+  }>(`/transactions/get-driver-transactions/${driverId}${pageQuery}`);
+  return res.data;
+};

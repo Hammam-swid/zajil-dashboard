@@ -23,31 +23,41 @@ interface FormValues {
   date_of_birth: Date | null;
 }
 
-const validationSchema = Yup.object<FormValues>({
-  store_name: Yup.string().required("الاسم مطلوب"),
-  store_description: Yup.string().required("الوصف مطلوب"),
-  trade_license: Yup.string().required("رقم الرخصة التجارية مطلوب"),
-  commercial_register: Yup.string().required("رقم السجل التجاري مطلوب"),
-  passport: Yup.mixed().required("جواز السفر مطلوبة"),
-  region: Yup.object().required("المنطقة مطلوبة"),
-  name: Yup.string().required("اسم البائع مطلوب"),
-  phone: Yup.string().required("رقم الهاتف مطلوب"),
-  date_of_birth: Yup.date()
-    .min(new Date("1920-01-01"), "تاريخ الميلاد غير صالح")
-    .max(new Date(), "تاريخ الميلاد غير صالح"),
-  email: Yup.string()
-    .email("البريد الإلكتروني غير صالح")
-    .required("البريد الإلكتروني مطلوب"),
-  password: Yup.string()
-    .required("كلمة المرور مطلوبة")
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
-      "يجب أن يحتوي كلمة المرور على حرف ورقم ولا يقل عدد الأحرف عن 8"
-    ),
-  confirmPassword: Yup.string()
-    .required("أدخل كلمة المرور مرة أخرى")
-    .oneOf([Yup.ref("password")], "كلمات المرور غير متطابقة"),
-});
+const getValidationSchema = (type: "add" | "edit") =>
+  Yup.object<FormValues>({
+    store_name: Yup.string().required("الاسم مطلوب"),
+    store_description: Yup.string().required("الوصف مطلوب"),
+    trade_license: Yup.string().required("رقم الرخصة التجارية مطلوب"),
+    commercial_register: Yup.string().required("رقم السجل التجاري مطلوب"),
+    passport:
+      type === "add"
+        ? Yup.mixed().required("جواز السفر مطلوبة")
+        : Yup.mixed().nullable(),
+    region: Yup.object().required("المنطقة مطلوبة"),
+    name: Yup.string().required("اسم البائع مطلوب"),
+    phone: Yup.string().required("رقم الهاتف مطلوب"),
+    date_of_birth: Yup.date()
+      .min(new Date("1920-01-01"), "تاريخ الميلاد غير صالح")
+      .max(new Date(), "تاريخ الميلاد غير صالح"),
+    email: Yup.string()
+      .email("البريد الإلكتروني غير صالح")
+      .required("البريد الإلكتروني مطلوب"),
+    password:
+      type === "add"
+        ? Yup.string()
+            .required("كلمة المرور مطلوبة")
+            .matches(
+              /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+              "يجب أن يحتوي كلمة المرور على حرف ورقم ولا يقل عدد الأحرف عن 8"
+            )
+        : Yup.string().nullable(),
+    confirmPassword:
+      type === "add"
+        ? Yup.string()
+            .required("أدخل كلمة المرور مرة أخرى")
+            .oneOf([Yup.ref("password")], "كلمات المرور غير متطابقة")
+        : Yup.string().nullable,
+  });
 
 const getCities = async () => {
   const res = await api.get<{ data: City[] }>("/dashboards/cities");
@@ -63,7 +73,32 @@ const getRegions = async (cityId?: number) => {
   return res.data.data.regions;
 };
 
-const updateStore = async (values: FormValues, storeId: number) => {};
+const updateStore = async (values: FormValues, store: Store) => {
+  const formData = new FormData();
+  if (values.store_name && values.store_name !== store.name)
+    formData.append("store_name", values.store_name);
+
+  if (
+    values.store_description &&
+    values.store_description !== store.description
+  )
+    formData.append("store_description", values.store_description);
+
+  if (
+    values.trade_license &&
+    values.trade_license !== store.user.seller.trade_license
+  )
+    formData.append("trade_license", values.trade_license);
+  if (
+    values.commercial_register &&
+    values.commercial_register !== store.user.seller.commercial_register
+  )
+    formData.append("commercial_register", values.commercial_register);
+  if (values.passport) formData.append("passport", values.passport as File);
+  if (values.nationality && values.nationality !== store.user.nationality)
+    formData.append("nationality", values.nationality);
+  // if()
+};
 
 const createStore = async (values: FormValues) => {
   const formData = new FormData();
@@ -127,7 +162,7 @@ export const useStoreForm = ({ type, store }: StoreFormProps) => {
     mutationKey: ["addStore"],
     mutationFn:
       type === "edit"
-        ? (values: FormValues) => updateStore(values, store.id)
+        ? (values: FormValues) => updateStore(values, store)
         : createStore,
     onSuccess: () => {
       const t = toast({
@@ -167,7 +202,7 @@ export const useStoreForm = ({ type, store }: StoreFormProps) => {
         type === "edit" ? (store.user.date_of_birth as string) : "2000-01-01"
       ),
     },
-    validationSchema,
+    validationSchema: getValidationSchema(type),
     onSubmit: (values) => {
       console.log(values);
       mutation.mutate(values);

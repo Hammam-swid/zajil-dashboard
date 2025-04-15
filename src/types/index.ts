@@ -233,6 +233,7 @@ export interface PaymentMethod {
   description: string;
   image: string | File;
   is_active: boolean;
+  is_for_customers: boolean | 0 | 1;
 }
 
 export interface Banner {

@@ -75,11 +75,14 @@ const Page = () => {
         <nav className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">{store?.name}</h2>
 
-          <StorePayDuesModal
-            maxValue={Math.abs(store?.wallet.balance as number)}
-            open={openModal}
-            setOpen={setOpenModal}
-          />
+          {store && (
+            <StorePayDuesModal
+              maxValue={Number(store?.wallet.balance as number)}
+              open={openModal}
+              setOpen={setOpenModal}
+              store={store as Store}
+            />
+          )}
         </nav>
 
         <section className="grid grid-cols-2 gap-16">
@@ -109,9 +112,9 @@ const Page = () => {
                 <div className="mb-2 text-heading-sm font-semibold">
                   المستحقات{" "}
                 </div>
-                <Badge variant={store.wallet.balance > 0 ? "success" : "error"}>
+                <Badge variant={store.wallet.balance < 0 ? "success" : "error"}>
                   <span className="text-base">
-                    {Math.abs(store?.wallet?.balance as number).toFixed(2)} د.ل
+                    {Number(store?.wallet?.balance as number).toFixed(2)} د.ل
                   </span>
                 </Badge>
               </div>
