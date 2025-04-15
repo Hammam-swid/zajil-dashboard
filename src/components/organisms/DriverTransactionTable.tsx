@@ -12,7 +12,7 @@ interface TableProps {
 export default function DriverTransactionTable({ driverId }: TableProps) {
   const [page, setPage] = useState(1);
   const { data, isLoading, error } = useQuery({
-    queryKey: ["transaction", { page }],
+    queryKey: ["driver-transaction", { driverId }, { page }],
     queryFn: () => getTransactions(driverId, page),
   });
   console.log(error);
@@ -127,6 +127,6 @@ const getTransactions = async (driverId: number, page: number) => {
   const res = await api.get<{
     data: StoreTransaction[];
     meta: { last_page: number };
-  }>(`/transactions/get-driver-transactions/${driverId}${pageQuery}`);
+  }>(`/driver/${driverId}/transactions${pageQuery}`);
   return res.data;
 };

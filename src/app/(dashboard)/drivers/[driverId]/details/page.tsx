@@ -18,6 +18,7 @@ import { Modal } from "@/components/moleculs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import DriverTransactionTable from "@/components/organisms/DriverTransactionTable";
+import DriverPayDuesModal from "@/components/organisms/DriverPayDuesModal";
 
 const Page = () => {
   const { driverId } = useParams();
@@ -26,6 +27,7 @@ const Page = () => {
     queryFn: () => getDriver(driverId),
   });
   const [inActiveModal, setInActiveModal] = useState(false);
+  const [duesModal, setDuesModal] = useState(false);
 
   return (
     <div className="relative space-y-6 p-6">
@@ -36,6 +38,20 @@ const Page = () => {
           </Title>
 
           <div className="flex items-center gap-3">
+            {/* <Button
+              onClick={() => setDuesModal(true)}
+              variant="primary-outline"
+            >
+              دفع المستحقات
+            </Button> */}
+            {driver && (
+              <DriverPayDuesModal
+                open={duesModal}
+                setOpen={setDuesModal}
+                maxValue={1000}
+                driver={driver}
+              />
+            )}
             {driver && (
               <Button
                 onClick={() => setInActiveModal(true)}
@@ -229,7 +245,7 @@ const Page = () => {
           </div>
         </nav>
 
-        <DriverTransactionTable driverId={driver?.id as number} />
+        {driver && <DriverTransactionTable driverId={driver?.id as number} />}
       </section>
     </div>
   );
