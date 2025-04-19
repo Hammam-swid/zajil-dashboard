@@ -41,7 +41,7 @@ const Topbar: React.FC = () => {
                 <div className="relative h-10 w-10 overflow-hidden rounded-full">
                   <Image
                     className="h-full w-full object-cover"
-                    src={user?.profile_photo_path || "/avatar-default.png"}
+                    src={user?.profile_photo_url || "/avatar-default.png"}
                     sizes="40"
                     alt="Avatar People 1"
                     width={40}

@@ -1,6 +1,7 @@
 "use client";
+import { useAppSelector } from "@/store/hooks";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ReactNode } from "react";
 
 interface LayoutProps {
@@ -12,7 +13,11 @@ const links = [
 ];
 export default function layout({ children }: LayoutProps) {
   const pathname = usePathname();
-  console.log(pathname);
+  const router = useRouter();
+  const user = useAppSelector((state) => state.user);
+  if (!user || user.role !== "super_admin") {
+    router.push("/");
+  }
   return (
     <div>
       <nav>

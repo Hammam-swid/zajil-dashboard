@@ -46,7 +46,8 @@ export default function Page() {
     queryKey: ["system-transaction", { page }],
     queryFn: () => getTransaction(page),
   });
-  const transactions = dummyData; // data && data.data ? data.data : dummyData;
+  console.log(data);
+  const transactions = data && data.data ? data.data : [];
   return (
     <div className="p-6">
       <div className="mb-6 overflow-x-auto rounded-md bg-white p-4 shadow-md">
@@ -133,7 +134,7 @@ export default function Page() {
 
                     <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
                       <span className="text-body-base font-medium text-netral-80">
-                        {transaction.reference}
+                        {transaction.reference || "/"}
                       </span>
                     </td>
 

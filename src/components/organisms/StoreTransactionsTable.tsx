@@ -105,7 +105,7 @@ export default function StoreTransactionsTable({ storeId }: TableProps) {
 
                 <td className="whitespace-nowrap px-3 py-5 text-center first:pl-5 last:pr-5">
                   <span className="text-body-base font-medium text-netral-80">
-                    {transaction.reference}
+                    {transaction.reference || "/"}
                   </span>
                 </td>
 

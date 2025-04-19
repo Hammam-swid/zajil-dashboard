@@ -12,6 +12,13 @@ export function middleware(request: NextRequest) {
   if (!isAuthenticated) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
+  const user = request.cookies.get("user");
+  console.log(user);
+  if (request.nextUrl.pathname.startsWith("/finance")) {
+    if (!user || JSON.parse(user.value).role !== "super_admin") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
   return NextResponse.next();
 }
 

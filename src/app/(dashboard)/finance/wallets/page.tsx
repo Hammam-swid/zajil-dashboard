@@ -19,6 +19,7 @@ export default function Page() {
     queryKey: ["system-wallets"],
     queryFn: getWallets,
   });
+  console.log(data);
   const wallets = data && data.data ? data.data : [];
   return (
     <div className="p-6">
