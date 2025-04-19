@@ -52,6 +52,8 @@ export interface Driver {
   driving_license: string | File;
   clearance_form: string | File;
   vehicles: Vehicle[];
+  earnings?: Wallet;
+  debits?: Wallet;
 }
 
 export interface Vehicle {
@@ -161,10 +163,12 @@ export interface OrderStatus {
 
 export interface Transaction {
   id: number;
-  order: Order;
   amount: string;
-  status: string;
-  currency: string;
+  status: "عملية ناجحة" | "عملية فاشلة";
+  description: string;
+  wallet_type: string;
+  reference: string;
+  receiver_name: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -219,6 +223,10 @@ export interface Seller {
 export interface Wallet {
   id: number;
   balance: number;
+  wallet_type_id: number;
+  wallet_type: string;
+  created_at: Date | string;
+  updated_at: Date | string;
 }
 
 export interface FAQ {

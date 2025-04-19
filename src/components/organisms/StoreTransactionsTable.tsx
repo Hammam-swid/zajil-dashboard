@@ -11,7 +11,7 @@ const getTransactions = async (storeId: number, page: number) => {
   const res = await api.get<{
     data: StoreTransaction[];
     meta: { last_page: number };
-  }>(`/transactions/get-store-transactions/${storeId}${pageQuery}`);
+  }>(`/stores/${storeId}/transactions${pageQuery}`);
   return res.data;
 };
 interface TableProps {

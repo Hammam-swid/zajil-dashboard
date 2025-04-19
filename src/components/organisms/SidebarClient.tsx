@@ -17,7 +17,11 @@ import {
 } from "@/assets/icons";
 import { SidebarMenu } from "@/components/moleculs";
 import Image from "next/image";
-import { ArrowLeftRight, TruckIcon } from "lucide-react";
+import {
+  ArrowLeftRight,
+  ChartNoAxesCombinedIcon,
+  TruckIcon,
+} from "lucide-react";
 import { useAppSelector } from "@/store/hooks";
 // ... باقي الاستيرادات ...
 
@@ -133,12 +137,14 @@ const SidebarClient: React.FC = () => {
           href="/orders"
         />
 
-        <SidebarMenu
-          icon={<ArrowLeftRight />}
-          name="التحويلات"
-          variant="default"
-          href="/transactions"
-        />
+        {user?.role === "super_admin" && (
+          <SidebarMenu
+            icon={<ChartNoAxesCombinedIcon />}
+            name="المالية"
+            variant="default"
+            href="/finance"
+          />
+        )}
 
         {user?.role === "super_admin" && (
           <SidebarMenu

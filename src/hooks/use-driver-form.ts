@@ -5,6 +5,7 @@ import { useToast } from "./use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { useEffect, useState } from "react";
+import { format } from "date-fns";
 
 interface FormValues {
   name: string;
@@ -141,7 +142,7 @@ export default function useDriverForm(type: "add" | "edit", driver?: Driver) {
         : null,
       plate_no: driver?.user?.vehicles?.[0]?.plate_no || "",
       passport: null,
-      date_of_birth: driver?.user?.date_of_birth || new Date("2000-01-01"),
+      date_of_birth: new Date(driver?.user?.date_of_birth || "2000-01-01"),
       vehicle_name: driver?.user?.vehicles?.[0]?.name || "",
       model: driver?.user?.vehicles?.[0]?.model || "",
       vin: driver?.user?.vehicles?.[0]?.vin || "",
@@ -223,7 +224,10 @@ const createDriver = async (values: FormValues) => {
   if (values.region?.value)
     formData.append("region_id", values.region?.value?.toString());
   formData.append("plate_no", values.plate_no);
-  // formData.append("date_of_birth", values.date_of_birth.toString());
+  formData.append(
+    "date_of_birth",
+    format(values.date_of_birth as Date, "yyyy-MM-dd")
+  );
   if (values.vehicle_type_id)
     formData.append("vehicle_type_id", values.vehicle_type_id.toString());
   formData.append("vehicle_name", values.vehicle_name);
@@ -266,7 +270,10 @@ const updateDriver = async (values: FormValues, driver: Driver) => {
     values.plate_no !== driver?.user?.vehicles?.[0].plate_no
   )
     formData.append("plate_no", values.plate_no);
-  // formData.append("date_of_birth", values.date_of_birth.toString());
+  formData.append(
+    "date_of_birth",
+    format(values.date_of_birth as Date, "yyyy-MM-dd")
+  );
   if (values.vehicle_type_id)
     formData.append("vehicle_type_id", values.vehicle_type_id.toString());
   if (

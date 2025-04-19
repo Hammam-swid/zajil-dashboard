@@ -28,6 +28,7 @@ const Page = () => {
   });
   const [inActiveModal, setInActiveModal] = useState(false);
   const [duesModal, setDuesModal] = useState(false);
+  console.log(driver);
 
   return (
     <div className="relative space-y-6 p-6">
@@ -48,7 +49,16 @@ const Page = () => {
               <DriverPayDuesModal
                 open={duesModal}
                 setOpen={setDuesModal}
-                maxValue={1000}
+                debitsBalance={
+                  driver.debits?.balance
+                    ? (+driver?.debits?.balance as number)
+                    : 0
+                }
+                earningsBalance={
+                  driver.earnings?.balance
+                    ? (+driver?.earnings?.balance as number)
+                    : 0
+                }
                 driver={driver}
               />
             )}

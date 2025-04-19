@@ -3,11 +3,9 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "https://adimtech.com.ly/zajil/public/api",
-  // headers: {
-  //   "Content-Type": "application/json",
-  //   Accept: "application/json",
-  //   language: "ar",
-  // },
+  headers: {
+    "X-APP-SOURCE": "system-dashboard",
+  },
 });
 
 api.interceptors.request.use((config) => {

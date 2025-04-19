@@ -7,11 +7,11 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 
-const getTransaction = async () => {
+const getTransaction = async (page: number) => {
   const res = await api.get<{
     data: Transaction[];
     meta: { last_page: number };
-  }>("/system/transactions");
+  }>(`/system/transactions?page=${page}`);
   return res.data;
 };
 
@@ -44,7 +44,7 @@ export default function Page() {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useQuery({
     queryKey: ["system-transaction", { page }],
-    queryFn: getTransaction,
+    queryFn: () => getTransaction(page),
   });
   const transactions = dummyData; // data && data.data ? data.data : dummyData;
   return (

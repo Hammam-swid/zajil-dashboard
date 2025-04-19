@@ -1,32 +1,29 @@
-import { useFormik } from "formik";
-import { Badge, Button, Input } from "../atomics";
+import { Driver, PaymentMethod } from "@/types";
 import { Modal } from "../moleculs";
-import { WalletIcon } from "lucide-react";
-import * as Yup from "yup";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { Driver, PaymentMethod, Store } from "@/types";
+import { Badge, Button, Input } from "../atomics";
 import Image from "next/image";
-import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { WalletIcon } from "lucide-react";
+import { useFormik } from "formik";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import * as Yup from "yup";
 
-interface StorePayDuesModalProps {
+interface ModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  debitsBalance: number;
-  earningsBalance: number;
   driver: Driver;
+  maxValue: number;
 }
-
-export default function DriverPayDuesModal({
+export default function DriverReceiveCashModal({
+  driver,
+  maxValue,
   open,
   setOpen,
-  debitsBalance,
-  earningsBalance,
-  driver,
-}: StorePayDuesModalProps) {
-  const { formik, methods, setPaymentMethod, isPending, isPay, setIsPay } =
-    useDueForm(debitsBalance, earningsBalance, driver, setOpen);
+}: ModalProps) {
+  const { formik, methods, setPaymentMethod } = useReceiveCashForm(
+    driver,
+    maxValue
+  );
   return (
     <>
       <Modal
@@ -34,34 +31,16 @@ export default function DriverPayDuesModal({
         variant="default"
         className="max-w-md"
         open={open}
-        title="إغلاق الحسابات المالية"
+        title="دفع المستحقات"
       >
         <form
           onSubmit={formik.handleSubmit}
           className="mt-4 flex flex-col gap-4"
         >
-          <div className="grid grid-cols-2 gap-4">
-            {[true, false].map((e, i) => (
-              <div
-                className={`bottom-2 cursor-pointer rounded-md border p-2 text-center text-primary-main shadow-sm transition-colors ${
-                  isPay == e
-                    ? "bg-primary-main text-white"
-                    : "text-primary-main"
-                }`}
-                onClick={() => setIsPay(e)}
-                key={i}
-              >
-                {e ? "دفع المستحقات" : "استلام النقد"}
-              </div>
-            ))}
-          </div>
           <p>
             أقصى قيمة:{" "}
             <Badge variant={"info"}>
-              <span className="text-base">
-                {isPay ? earningsBalance.toFixed(2) : debitsBalance.toFixed()}{" "}
-                د.ل
-              </span>
+              <span className="text-base">{maxValue.toFixed(2)} د.ل</span>
             </Badge>
           </p>
           <Input
@@ -82,7 +61,6 @@ export default function DriverPayDuesModal({
                 : ""
             }
           />
-          <label>طريقة الدفع</label>
           <div className="grid grid-cols-3 gap-2">
             {methods
               ?.filter((m) => !m.is_for_customers)
@@ -132,99 +110,38 @@ export default function DriverPayDuesModal({
         variant="primary-outline"
         href="/outlet/edit"
       >
-        إغلاق الحسابات المالية
+        استلام النقد
       </Button>
     </>
   );
 }
 
-interface FormValues {
-  amount: number | string;
-  payment_method_id: number | null;
-}
-
-const useDueForm = (
-  debitsBalance: number,
-  earningsBalance: number,
-  driver: Driver,
-  setOpen: (open: boolean) => void
-) => {
-  const [isPay, setIsPay] = useState(true);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+const useReceiveCashForm = (driver: Driver, maxValue: number) => {
   const { data: methods } = useQuery({
     queryKey: ["payment-methods"],
     queryFn: getPaymentMethods,
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationKey: ["pay-driver-dues", { driverId: driver.id }],
-    mutationFn: (values: FormValues) =>
-      isPay ? payDues(values, driver) : receiveCash(values, driver),
-    onSuccess: () => {
-      const t = toast({
-        title: "تمت العملية بنجاح",
-      });
-      setTimeout(t.dismiss, 3000);
-      queryClient.invalidateQueries({
-        queryKey: ["driver", { driverId: driver.id.toString() }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["driver-transactions", { driverId: driver.id }],
-      });
-      formik.resetForm();
-      setOpen(false);
-    },
-    onError: (error) => {
-      console.log(error);
-      const t = toast({
-        title: "حدث خطأ أثناء عملية دفع المستحقات",
-        variant: "destructive",
-      });
-      setTimeout(t.dismiss, 3000);
-    },
-  });
   const validationSchema = Yup.object({
     amount: Yup.number()
       .required("يجب إدخال القيمة")
-      .max(
-        isPay ? earningsBalance : debitsBalance,
-        `يجب ألا تتخطى القيمة ${isPay ? earningsBalance : debitsBalance}`
-      )
+      .max(maxValue, "يجب ألا تتخطى القيمة " + maxValue)
       .positive("يجب أن يقوم القيمة أكبر من صفر")
       .typeError("يمكنك إدخال أرقام فقط"),
     payment_method_id: Yup.number().required("يجب اختيار طريقة دفع"),
   });
-  const formik = useFormik<FormValues>({
+  const formik = useFormik({
     initialValues: {
       amount: "",
       payment_method_id: null,
     },
     validationSchema,
-    onSubmit: (values) => {
-      mutate(values);
-    },
+    onSubmit: (values) => {},
   });
-
   const setPaymentMethod = (id: number) => {
     formik.setFieldValue("payment_method_id", id);
   };
-  return { formik, methods, setPaymentMethod, isPending, isPay, setIsPay };
-};
-
-const payDues = async (values: FormValues, driver: Driver) => {
-  const res = await api.post(`/dashboards/drivers/${driver.id}/pay-to`, values);
-  console.log(res);
-  return res.data;
-};
-
-const receiveCash = async (values: FormValues, driver: Driver) => {
-  const res = await api.post(
-    `/dashboards/drivers/${driver.id}/recieve-cash-from`,
-    values
-  );
-  console.log(res);
-  return res.data;
+  return { formik, setPaymentMethod, methods };
 };
 
 const getPaymentMethods = async () => {

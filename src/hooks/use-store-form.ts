@@ -97,7 +97,21 @@ const updateStore = async (values: FormValues, store: Store) => {
   if (values.passport) formData.append("passport", values.passport as File);
   if (values.nationality && values.nationality !== store.user.nationality)
     formData.append("nationality", values.nationality);
-  // if()
+  if (values.region)
+    formData.append("region_id", values.region.value.toString());
+  if (values.name && values.name !== store.user.name)
+    formData.append("name", values.name);
+
+  if (values.email && values.email !== store.user.email)
+    formData.append("email", values.email);
+  if (values.date_of_birth)
+    formData.append(
+      "date_of_birth",
+      format(values.date_of_birth as Date, "yyyy-MM-dd")
+    );
+
+  const res = await api.patch(`/dashboards/sellers/${store.user.seller.id}`);
+  return res.data;
 };
 
 const createStore = async (values: FormValues) => {
@@ -193,7 +207,7 @@ export const useStoreForm = ({ type, store }: StoreFormProps) => {
       passport: null,
       region: null,
       name: type === "edit" ? store.user.name || "" : "",
-      phone: type === "edit" ? store.user.phones?.[0].phone || "" : "",
+      phone: type === "edit" ? store.user.phones?.[0]?.phone || "" : "",
       email: type === "edit" ? store?.user?.email || "" : "",
       nationality: type === "edit" ? store.user.nationality || "" : "",
       password: "",

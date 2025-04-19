@@ -192,6 +192,7 @@ export default function StoreForm({ type, store }: StoreFormProps) {
             </div>
 
             <Dropzone
+              path={store?.user.seller.passport as string}
               fieldName="passport"
               className={`group relative flex h-56 w-full max-w-[1000px] flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-netral-30 bg-netral-15`}
               setField={formik.setFieldValue}
